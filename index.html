@@ -1,0 +1,1919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Customer Onboarding Completion Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --surface: #ffffff;
+      --surface-2: #f9fbff;
+      --text: #12213a;
+      --muted: #5c6b85;
+      --border: #dbe4f1;
+      --primary: #1f6feb;
+      --success: #16a34a;
+      --warning: #f59e0b;
+      --danger: #e11d48;
+      --compliance: #7c3aed;
+      --commercials: #0f766e;
+      --conversion: #ea580c;
+      --fraud: #db2777;
+      --shadow: 0 8px 24px rgba(20, 39, 82, 0.08);
+      --radius: 14px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topbar-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 14px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+    }
+
+    .brand-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #2f81f7, #1f6feb);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--success);
+      animation: pulse 1.8s infinite;
+      box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.5);
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.6);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(22, 163, 74, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
+      }
+    }
+
+    main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 16px 18px 32px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .filter-panel {
+      padding: 14px;
+      margin-bottom: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: end;
+      justify-content: space-between;
+    }
+
+    .filter-group-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 220px;
+    }
+
+    .filter-group label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      text-transform: uppercase;
+    }
+
+    select {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.92rem;
+      background: #fff;
+      color: var(--text);
+      font-family: inherit;
+      outline: none;
+    }
+
+    select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.15);
+    }
+
+    .helper-note {
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 500;
+      max-width: 540px;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(110px, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+      border-color: #b8c8df;
+    }
+
+    .tab-btn.active {
+      color: #fff;
+      border-color: transparent;
+      background: var(--primary);
+      box-shadow: 0 8px 20px rgba(31, 111, 235, 0.3);
+    }
+
+    .tab-btn[data-tab="compliance"].active { background: var(--compliance); box-shadow: 0 8px 20px rgba(124, 58, 237, 0.3); }
+    .tab-btn[data-tab="commercials"].active { background: var(--commercials); box-shadow: 0 8px 20px rgba(15, 118, 110, 0.3); }
+    .tab-btn[data-tab="conversion"].active { background: var(--conversion); box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3); }
+    .tab-btn[data-tab="fraud"].active { background: var(--fraud); box-shadow: 0 8px 20px rgba(219, 39, 119, 0.3); }
+
+    .tab-panel {
+      display: none;
+      gap: 14px;
+    }
+
+    .tab-panel.active {
+      display: grid;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(150px, 1fr));
+      gap: 12px;
+    }
+
+    .kpi-card {
+      padding: 14px;
+    }
+
+    .kpi-title {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-size: 1.45rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .kpi-meta {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .accent-overview { border-top: 3px solid var(--primary); }
+    .accent-compliance { border-top: 3px solid var(--compliance); }
+    .accent-commercials { border-top: 3px solid var(--commercials); }
+    .accent-conversion { border-top: 3px solid var(--conversion); }
+    .accent-fraud { border-top: 3px solid var(--fraud); }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: minmax(280px, 1fr) minmax(280px, 1fr);
+      gap: 12px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .section-card {
+      padding: 14px;
+    }
+
+    .section-title {
+      margin: 0 0 12px;
+      font-size: 1rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .chart-wrap {
+      min-height: 240px;
+      position: relative;
+    }
+
+    .chart-wrap.chart-tall {
+      min-height: 300px;
+    }
+
+    .funnel-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(115px, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .funnel-stage {
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      border-radius: 10px;
+      padding: 10px;
+      min-height: 84px;
+      transition: all 0.2s ease;
+    }
+
+    .funnel-stage.clickable {
+      cursor: pointer;
+    }
+
+    .funnel-stage.clickable:hover {
+      border-color: var(--primary);
+      box-shadow: 0 6px 18px rgba(31, 111, 235, 0.15);
+    }
+
+    .funnel-stage.active {
+      border-color: var(--primary);
+      background: rgba(31, 111, 235, 0.08);
+    }
+
+    .funnel-stage.readonly {
+      opacity: 0.82;
+    }
+
+    .funnel-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.01em;
+    }
+
+    .funnel-value {
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+
+    .funnel-rate {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .drilldown-panel {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.45s ease;
+      border-top: 1px solid var(--border);
+    }
+
+    .drilldown-panel.open {
+      margin-top: 10px;
+    }
+
+    .drilldown-inner {
+      padding-top: 12px;
+    }
+
+    .drilldown-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .drilldown-controls .filter-group {
+      min-width: 180px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+    }
+
+    th, td {
+      padding: 9px 8px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.01em;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: #e7edf7;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: var(--primary);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .badge.on-track { background: rgba(22, 163, 74, 0.12); color: #0f7c37; border-color: rgba(15, 124, 55, 0.25); }
+    .badge.review { background: rgba(245, 158, 11, 0.14); color: #b45309; border-color: rgba(180, 83, 9, 0.2); }
+    .badge.at-risk { background: rgba(225, 29, 72, 0.12); color: #be123c; border-color: rgba(190, 18, 60, 0.22); }
+    .badge.low-risk { background: rgba(31, 111, 235, 0.1); color: #1e5fcc; border-color: rgba(30, 95, 204, 0.22); }
+    .badge.high-risk { background: rgba(219, 39, 119, 0.11); color: #be185d; border-color: rgba(190, 24, 93, 0.22); }
+    .badge.healthy { background: rgba(22, 163, 74, 0.12); color: #0f7c37; border-color: rgba(15, 124, 55, 0.25); }
+    .badge.critical { background: rgba(225, 29, 72, 0.12); color: #be123c; border-color: rgba(190, 18, 60, 0.22); }
+    .badge.tag-friction { background: rgba(245, 158, 11, 0.14); color: #b45309; border-color: rgba(180, 83, 9, 0.2); }
+    .badge.tag-technical { background: rgba(225, 29, 72, 0.12); color: #be123c; border-color: rgba(190, 18, 60, 0.22); }
+    .badge.tag-trust { background: rgba(124, 58, 237, 0.12); color: #6d28d9; border-color: rgba(109, 40, 217, 0.22); }
+    .badge.tag-motivation { background: rgba(15, 118, 110, 0.12); color: #0f766e; border-color: rgba(15, 118, 110, 0.2); }
+    .badge.tag-not-a-failure { background: rgba(22, 163, 74, 0.12); color: #0f7c37; border-color: rgba(15, 124, 55, 0.25); }
+
+    .recommendations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+    }
+
+    .action-card {
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: #fff;
+      padding: 11px;
+    }
+
+    .action-card h4 {
+      margin: 0 0 8px;
+      font-size: 0.9rem;
+    }
+
+    .action-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .insight {
+      border: 1px solid var(--border);
+      background: linear-gradient(130deg, #ffffff, #f5f8ff);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+
+    .insight.overview { border-left: 4px solid var(--primary); }
+    .insight.compliance { border-left: 4px solid var(--compliance); }
+    .insight.commercials { border-left: 4px solid var(--commercials); }
+    .insight.conversion { border-left: 4px solid var(--conversion); }
+    .insight.fraud { border-left: 4px solid var(--fraud); }
+
+    .fade-up {
+      animation: fadeUp 0.55s ease both;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .tabs {
+        grid-template-columns: repeat(3, minmax(100px, 1fr));
+      }
+      .kpi-grid {
+        grid-template-columns: repeat(2, minmax(160px, 1fr));
+      }
+      .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+      }
+      .funnel-grid {
+        grid-template-columns: repeat(3, minmax(130px, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      .tabs {
+        grid-template-columns: repeat(2, minmax(100px, 1fr));
+      }
+      .funnel-grid {
+        grid-template-columns: repeat(2, minmax(130px, 1fr));
+      }
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+      .topbar-inner {
+        padding: 12px;
+      }
+      main {
+        padding: 12px;
+      }
+      .filter-group {
+        width: 100%;
+        min-width: 0;
+      }
+      .helper-note {
+        font-size: 0.78rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand" aria-label="Dashboard logo">
+        <div class="brand-mark">CO</div>
+        <div>Customer Onboarding Intelligence</div>
+      </div>
+      <div class="status">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span id="liveStatusText">Live synthetic feed</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="filter-panel card fade-up">
+      <div class="filter-group-wrap">
+        <div class="filter-group">
+          <label for="countryFilter">Country</label>
+          <select id="countryFilter" aria-label="Filter by country"></select>
+        </div>
+        <div class="filter-group">
+          <label for="failureTypeFilter">Failure Type</label>
+          <select id="failureTypeFilter" aria-label="Filter by failure type"></select>
+        </div>
+      </div>
+      <div class="helper-note">
+        Failure Type segmentation applies inferred signal share to all metrics, so Country + Failure Type filters update every chart, table, and recommendation together.
+      </div>
+    </section>
+
+    <nav class="tabs fade-up" role="tablist" aria-label="Analytical lenses">
+      <button class="tab-btn active" data-tab="overview" role="tab" aria-selected="true">Overview</button>
+      <button class="tab-btn" data-tab="compliance" role="tab" aria-selected="false">Compliance</button>
+      <button class="tab-btn" data-tab="commercials" role="tab" aria-selected="false">Commercials</button>
+      <button class="tab-btn" data-tab="conversion" role="tab" aria-selected="false">Conversion</button>
+      <button class="tab-btn" data-tab="fraud" role="tab" aria-selected="false">Fraud</button>
+    </nav>
+
+    <section id="overviewPanel" class="tab-panel active" role="tabpanel" aria-label="Overview panel">
+      <div id="overviewKpis" class="kpi-grid"></div>
+      <div class="grid-2">
+        <article class="section-card card fade-up">
+          <h3 class="section-title">Completion Rate</h3>
+          <div class="chart-wrap">
+            <canvas id="overviewCompletionChart"></canvas>
+          </div>
+        </article>
+        <article class="section-card card fade-up">
+          <h3 class="section-title">Started vs Completed by Country</h3>
+          <div class="chart-wrap">
+            <canvas id="overviewCountryChart"></canvas>
+          </div>
+        </article>
+      </div>
+
+      <article class="section-card card fade-up">
+        <h3 class="section-title">
+          <span>Onboarding Funnel &amp; Control Drill-down</span>
+          <span id="funnelHint" class="kpi-meta"></span>
+        </h3>
+        <div id="overviewFunnel" class="funnel-grid"></div>
+        <div id="overviewDrilldownPanel" class="drilldown-panel">
+          <div class="drilldown-inner">
+            <div class="drilldown-controls">
+              <div>
+                <strong id="drilldownTitle"></strong>
+                <div class="kpi-meta" id="drilldownSubtitle"></div>
+              </div>
+              <div class="filter-group">
+                <label for="controlTypeFilter">Control Type Sub-filter</label>
+                <select id="controlTypeFilter" aria-label="Filter controls by control type"></select>
+              </div>
+            </div>
+            <div class="grid-2">
+              <div class="chart-wrap">
+                <canvas id="overviewDrillChart"></canvas>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Control</th>
+                      <th>Type</th>
+                      <th>Pass</th>
+                      <th>Fail</th>
+                      <th>Pass Rate</th>
+                    </tr>
+                  </thead>
+                  <tbody id="drilldownTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="section-card card fade-up">
+        <h3 class="section-title">Country Breakdown</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Country</th>
+                <th>Started</th>
+                <th>Completed</th>
+                <th>Completion Rate</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="overviewCountryTableBody"></tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="section-card card fade-up">
+        <h3 class="section-title">Failure Type Analysis</h3>
+        <div class="table-wrap" style="margin-bottom: 12px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Raw Signal</th>
+                <th>Context</th>
+                <th>Failure Type</th>
+                <th>Count</th>
+                <th>Why</th>
+              </tr>
+            </thead>
+            <tbody id="failureSignalsTableBody"></tbody>
+          </table>
+        </div>
+        <div class="grid-2" style="margin-bottom: 12px;">
+          <div class="chart-wrap">
+            <canvas id="overviewFailureTypeChart"></canvas>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="overviewFailureCountryChart"></canvas>
+          </div>
+        </div>
+        <h4 style="margin: 0 0 8px;">Actionable Recommendations</h4>
+        <div id="recommendationsPanel" class="recommendations-grid"></div>
+      </article>
+
+      <div id="overviewInsight" class="insight overview fade-up"></div>
+    </section>
+
+    <section id="compliancePanel" class="tab-panel" role="tabpanel" aria-label="Compliance panel">
+      <div id="complianceKpis" class="kpi-grid"></div>
+      <div class="grid-2">
+        <article class="section-card card fade-up">
+          <h3 class="section-title">Compliance Control Pass Rates</h3>
+          <div class="chart-wrap chart-tall">
+            <canvas id="complianceControlChart"></canvas>
+          </div>
+        </article>
+        <article class="section-card card fade-up">
+          <h3 class="section-title">Country Comparison</h3>
+          <div class="chart-wrap">
+            <canvas id="complianceCountryChart"></canvas>
+          </div>
+        </article>
+      </div>
+      <article class="section-card card fade-up">
+        <h3 class="section-title">Compliance Detail Table</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Control</th>
+                <th>Pass</th>
+                <th>Fail</th>
+                <th>Pass Rate</th>
+                <th>Risk Badge</th>
+              </tr>
+            </thead>
+            <tbody id="complianceTableBody"></tbody>
+          </table>
+        </div>
+      </article>
+      <div id="complianceInsight" class="insight compliance fade-up"></div>
+    </section>
+
+    <section id="commercialsPanel" class="tab-panel" role="tabpanel" aria-label="Commercials panel">
+      <div id="commercialsKpis" class="kpi-grid"></div>
+      <div class="grid-2">
+        <article class="section-card card fade-up">
+          <h3 class="section-title">Revenue Impact by Country</h3>
+          <div class="chart-wrap">
+            <canvas id="commercialRevenueChart"></canvas>
+          </div>
+        </article>
+        <article class="section-card card fade-up">
+          <h3 class="section-title">Cost of Drop-offs</h3>
+          <div class="chart-wrap">
+            <canvas id="commercialDropoffCostChart"></canvas>
+          </div>
+        </article>
+      </div>
+      <article class="section-card card fade-up">
+        <h3 class="section-title">Commercial Performance Table</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Country</th>
+                <th>Revenue</th>
+                <th>Revenue at Risk</th>
+                <th>Cost per Onboard</th>
+                <th>Net Value / Customer</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="commercialTableBody"></tbody>
+          </table>
+        </div>
+      </article>
+      <div id="commercialsInsight" class="insight commercials fade-up"></div>
+    </section>
+
+    <section id="conversionPanel" class="tab-panel" role="tabpanel" aria-label="Conversion panel">
+      <div id="conversionKpis" class="kpi-grid"></div>
+      <article class="section-card card fade-up">
+        <h3 class="section-title">Stage Conversion Waterfall (Converted vs Dropped)</h3>
+        <div class="chart-wrap chart-tall">
+          <canvas id="conversionWaterfallChart"></canvas>
+        </div>
+      </article>
+      <article class="section-card card fade-up">
+        <h3 class="section-title">Stage Transition Table</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Transition</th>
+                <th>Converted</th>
+                <th>Dropped</th>
+                <th>Conversion Rate</th>
+                <th>Health</th>
+              </tr>
+            </thead>
+            <tbody id="conversionTableBody"></tbody>
+          </table>
+        </div>
+      </article>
+      <div id="conversionInsight" class="insight conversion fade-up"></div>
+    </section>
+
+    <section id="fraudPanel" class="tab-panel" role="tabpanel" aria-label="Fraud panel">
+      <div id="fraudKpis" class="kpi-grid"></div>
+      <div class="grid-2">
+        <article class="section-card card fade-up">
+          <h3 class="section-title">Fraud Controls (Passed vs Failed)</h3>
+          <div class="chart-wrap chart-tall">
+            <canvas id="fraudControlChart"></canvas>
+          </div>
+        </article>
+        <article class="section-card card fade-up">
+          <h3 class="section-title">Fraud Flags by Country</h3>
+          <div class="chart-wrap">
+            <canvas id="fraudCountryChart"></canvas>
+          </div>
+        </article>
+      </div>
+      <article class="section-card card fade-up">
+        <h3 class="section-title">Fraud Control Breakdown</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Control</th>
+                <th>Passed</th>
+                <th>Failed</th>
+                <th>Pass Rate</th>
+                <th>Risk</th>
+              </tr>
+            </thead>
+            <tbody id="fraudTableBody"></tbody>
+          </table>
+        </div>
+      </article>
+      <div id="fraudInsight" class="insight fraud fade-up"></div>
+    </section>
+  </main>
+
+  <script>
+    const STAGES = [
+      "Application Started",
+      "Customer Registration",
+      "Identity Verified",
+      "Compliance Passed",
+      "Account Created",
+      "Onboarding Complete"
+    ];
+
+    const COUNTRIES = ["Australia", "New Zealand", "United Kingdom", "Singapore", "Hong Kong"];
+
+    const CONTROL_CATALOG = {
+      "Customer Registration": [
+        { name: "Mobile number verified", type: "Verification" },
+        { name: "Email verified", type: "Verification" },
+        { name: "Password created", type: "Credential Setup" },
+        { name: "Temporary credentials created", type: "Credential Setup" }
+      ],
+      "Identity Verified": [
+        { name: "Selfie captured", type: "Document Capture" },
+        { name: "Document scanned", type: "Document Capture" },
+        { name: "OCR completed", type: "Document Processing" },
+        { name: "Fraud check on selfie", type: "Fraud Check" },
+        { name: "Fraud check on document", type: "Fraud Check" },
+        { name: "Fraud check on document velocity", type: "Fraud Check" },
+        { name: "Fraud check on Death Registry", type: "Fraud Check" },
+        { name: "IDV verification at DVS & non-DVS", type: "Identity Verification" },
+        { name: "Internal fraud check", type: "Fraud Check" }
+      ],
+      "Compliance Passed": [
+        { name: "SOW captured", type: "Compliance" },
+        { name: "N&P and Tax Residency completed", type: "Compliance" }
+      ],
+      "Account Created": [
+        { name: "Product eligibility checks passed", type: "Eligibility" }
+      ]
+    };
+
+    const CONTROL_TYPE_BASE = {
+      "Verification": 0.975,
+      "Credential Setup": 0.982,
+      "Document Capture": 0.955,
+      "Document Processing": 0.948,
+      "Fraud Check": 0.965,
+      "Identity Verification": 0.958,
+      "Compliance": 0.972,
+      "Eligibility": 0.984
+    };
+
+    const FAILURE_RULES = [
+      {
+        id: "otp_recover",
+        rawSignal: "OTP incorrect (1-2 times, then success)",
+        context: "User recovers",
+        failureType: "Not a failure",
+        why: "Normal behavior",
+        action: "No action needed",
+        remediation: "Users recover naturally. Keep monitoring for unusual spikes, but this pattern is healthy.",
+        min: 75,
+        max: 165
+      },
+      {
+        id: "otp_many_drop",
+        rawSignal: "OTP incorrect (3+ times, then drop-off)",
+        context: "No completion",
+        failureType: "Friction",
+        why: "UX too hard / confusing",
+        action: "Simplify OTP Entry UX",
+        remediation: "Reduce cognitive load with clearer error messaging, input auto-focus, and forgiving retry guidance.",
+        min: 25,
+        max: 85
+      },
+      {
+        id: "otp_not_entered",
+        rawSignal: "OTP not entered at all",
+        context: "User exits step",
+        failureType: "Motivation / Context",
+        why: "User disengaged",
+        action: "Improve In-Flow Motivation",
+        remediation: "Add contextual microcopy and progress reassurance to explain value and keep users moving.",
+        min: 20,
+        max: 70
+      },
+      {
+        id: "otp_expired",
+        rawSignal: "OTP expired repeatedly",
+        context: "Multiple resend attempts",
+        failureType: "Friction",
+        why: "Timing / delivery issue",
+        action: "Stabilize OTP Timing Window",
+        remediation: "Increase OTP validity where appropriate and provide visible countdown + one-tap resend flow.",
+        min: 24,
+        max: 72
+      },
+      {
+        id: "otp_delivery_fail",
+        rawSignal: "OTP delivery failure (SMS error)",
+        context: "System logs show send failure",
+        failureType: "Technical",
+        why: "Infrastructure issue",
+        action: "Fix SMS Delivery Pipeline",
+        remediation: "Harden provider failover, track carrier latency, and alert on send-failure thresholds.",
+        min: 9,
+        max: 38
+      },
+      {
+        id: "switch_contact",
+        rawSignal: "User switches phone/email mid-flow",
+        context: "Restart pattern",
+        failureType: "Trust",
+        why: "Hesitation / second thoughts",
+        action: "Build Trust & Reduce Anxiety",
+        remediation: "Surface data-use transparency and trust markers before verification to reduce hesitation.",
+        min: 14,
+        max: 54
+      }
+    ];
+
+    const FAILURE_TYPE_OPTIONS = [
+      "All Failure Types",
+      "Not a failure",
+      "Friction",
+      "Motivation / Context",
+      "Technical",
+      "Trust"
+    ];
+
+    const TAB_IDS = ["overview", "compliance", "commercials", "conversion", "fraud"];
+
+    function hashString(input) {
+      let hash = 1779033703;
+      for (let i = 0; i < input.length; i++) {
+        hash = Math.imul(hash ^ input.charCodeAt(i), 3432918353);
+        hash = (hash << 13) | (hash >>> 19);
+      }
+      return () => {
+        hash = Math.imul(hash ^ (hash >>> 16), 2246822507);
+        hash = Math.imul(hash ^ (hash >>> 13), 3266489909);
+        return (hash ^= hash >>> 16) >>> 0;
+      };
+    }
+
+    function mulberry32(seed) {
+      return function() {
+        let t = (seed += 0x6d2b79f5);
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function createRng(name) {
+      const seed = hashString(name)();
+      return mulberry32(seed);
+    }
+
+    function randRange(rng, min, max) {
+      return min + (max - min) * rng();
+    }
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function formatNumber(value) {
+      return new Intl.NumberFormat("en-US").format(Math.round(value));
+    }
+
+    function formatCurrency(value) {
+      return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value);
+    }
+
+    function formatPercent(value, digits = 1) {
+      if (!isFinite(value) || Number.isNaN(value)) return "0.0%";
+      return `${(value * 100).toFixed(digits)}%`;
+    }
+
+    function generateCountryData(country) {
+      const rng = createRng(`country-${country}`);
+      const started = Math.round(randRange(rng, 2800, 6200));
+      const stageRetention = [
+        [0.87, 0.95],
+        [0.86, 0.94],
+        [0.9, 0.97],
+        [0.91, 0.98],
+        [0.93, 0.99]
+      ];
+      const funnelCounts = [started];
+      for (let i = 1; i < STAGES.length; i++) {
+        funnelCounts[i] = Math.round(funnelCounts[i - 1] * randRange(rng, stageRetention[i - 1][0], stageRetention[i - 1][1]));
+      }
+
+      const stageControls = {};
+      Object.entries(CONTROL_CATALOG).forEach(([stage, controls]) => {
+        const stageIndex = STAGES.indexOf(stage);
+        const population = funnelCounts[Math.max(0, stageIndex - 1)];
+        stageControls[stage] = controls.map((control) => {
+          const baseRate = CONTROL_TYPE_BASE[control.type] ?? 0.95;
+          const noisyRate = clamp(baseRate + randRange(rng, -0.035, 0.012), 0.83, 0.995);
+          const pass = Math.round(population * noisyRate);
+          const fail = Math.max(0, population - pass);
+          return {
+            name: control.name,
+            type: control.type,
+            pass,
+            fail
+          };
+        });
+      });
+
+      const scale = started / 4000;
+      const failureSignals = FAILURE_RULES.map((rule) => ({
+        ruleId: rule.id,
+        count: Math.max(1, Math.round(randRange(rng, rule.min, rule.max) * scale))
+      }));
+
+      return {
+        country,
+        started,
+        completed: funnelCounts[funnelCounts.length - 1],
+        funnelCounts,
+        stageControls,
+        costPerOnboard: Number(randRange(rng, 6, 8).toFixed(2)),
+        revenuePerCustomer: Math.round(randRange(rng, 450, 650)),
+        failureSignals
+      };
+    }
+
+    const baseData = COUNTRIES.map(generateCountryData);
+
+    const state = {
+      activeTab: "overview",
+      country: "All Countries",
+      failureType: "All Failure Types",
+      selectedFunnelStage: 1,
+      controlType: "All Control Types"
+    };
+
+    let chartStore = {};
+
+    function destroyCharts() {
+      Object.values(chartStore).forEach((chart) => chart.destroy());
+      chartStore = {};
+    }
+
+    function createChart(canvasId, config) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      if (chartStore[canvasId]) {
+        chartStore[canvasId].destroy();
+      }
+      chartStore[canvasId] = new Chart(canvas, config);
+    }
+
+    function renderSelectOptions() {
+      const countryFilter = document.getElementById("countryFilter");
+      const failureFilter = document.getElementById("failureTypeFilter");
+      countryFilter.innerHTML = ["All Countries", ...COUNTRIES]
+        .map((country) => `<option value="${country}">${country}</option>`)
+        .join("");
+      failureFilter.innerHTML = FAILURE_TYPE_OPTIONS
+        .map((type) => `<option value="${type}">${type}</option>`)
+        .join("");
+      countryFilter.value = state.country;
+      failureFilter.value = state.failureType;
+    }
+
+    function getFailureTypeTagClass(type) {
+      const token = type.toLowerCase().replace(/\s+\/\s+/g, "-").replace(/\s+/g, "-");
+      return `tag-${token}`;
+    }
+
+    function getScopedCountries() {
+      const countries = state.country === "All Countries"
+        ? baseData
+        : baseData.filter((entry) => entry.country === state.country);
+
+      return countries.map((country) => {
+        const totalSignals = country.failureSignals.reduce((sum, item) => sum + item.count, 0);
+        const selectedSignals = state.failureType === "All Failure Types"
+          ? totalSignals
+          : country.failureSignals
+              .filter((item) => FAILURE_RULES.find((rule) => rule.id === item.ruleId)?.failureType === state.failureType)
+              .reduce((sum, item) => sum + item.count, 0);
+
+        const factor = state.failureType === "All Failure Types" ? 1 : (totalSignals > 0 ? selectedSignals / totalSignals : 0);
+        const scaledFunnel = country.funnelCounts.map((count) => Math.round(count * factor));
+        const scaledStageControls = {};
+
+        Object.entries(country.stageControls).forEach(([stage, controls]) => {
+          scaledStageControls[stage] = controls.map((control) => ({
+            ...control,
+            pass: Math.round(control.pass * factor),
+            fail: Math.round(control.fail * factor)
+          }));
+        });
+
+        return {
+          ...country,
+          factor,
+          started: Math.round(country.started * factor),
+          completed: Math.round(country.completed * factor),
+          funnelCounts: scaledFunnel,
+          stageControls: scaledStageControls
+        };
+      });
+    }
+
+    function aggregateFunnel(countries) {
+      const totals = Array(STAGES.length).fill(0);
+      countries.forEach((country) => {
+        country.funnelCounts.forEach((value, idx) => {
+          totals[idx] += value;
+        });
+      });
+      return totals;
+    }
+
+    function aggregateStageControls(countries, stageName) {
+      const controlMap = new Map();
+      countries.forEach((country) => {
+        const controls = country.stageControls[stageName] ?? [];
+        controls.forEach((control) => {
+          if (!controlMap.has(control.name)) {
+            controlMap.set(control.name, { name: control.name, type: control.type, pass: 0, fail: 0 });
+          }
+          const item = controlMap.get(control.name);
+          item.pass += control.pass;
+          item.fail += control.fail;
+        });
+      });
+      return Array.from(controlMap.values());
+    }
+
+    function getBadgeByRate(rate) {
+      if (rate >= 0.96) return { label: "On Track", className: "on-track" };
+      if (rate >= 0.9) return { label: "Review", className: "review" };
+      return { label: "At Risk", className: "at-risk" };
+    }
+
+    function applyFadeUpDelays() {
+      document.querySelectorAll(".fade-up").forEach((node, idx) => {
+        node.style.animationDelay = `${Math.min(idx * 0.04, 0.24)}s`;
+      });
+    }
+
+    function renderKpis(containerId, cards, accentClass) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = cards.map((card) => `
+        <article class="kpi-card card ${accentClass} fade-up">
+          <div class="kpi-title">${card.title}</div>
+          <div class="kpi-value">${card.value}</div>
+          <div class="kpi-meta">${card.meta}</div>
+        </article>
+      `).join("");
+    }
+
+    function updateFunnelDrilldown(countries) {
+      const panel = document.getElementById("overviewDrilldownPanel");
+      const title = document.getElementById("drilldownTitle");
+      const subtitle = document.getElementById("drilldownSubtitle");
+      const select = document.getElementById("controlTypeFilter");
+      const tbody = document.getElementById("drilldownTableBody");
+      const stageName = STAGES[state.selectedFunnelStage];
+
+      if (!stageName || !CONTROL_CATALOG[stageName]) {
+        panel.classList.remove("open");
+        panel.style.maxHeight = "0px";
+        return;
+      }
+
+      const controls = aggregateStageControls(countries, stageName);
+      const types = ["All Control Types", ...new Set(controls.map((control) => control.type))];
+      if (!types.includes(state.controlType)) state.controlType = "All Control Types";
+      select.innerHTML = types.map((type) => `<option value="${type}">${type}</option>`).join("");
+      select.value = state.controlType;
+
+      const filteredControls = controls.filter((control) => {
+        return state.controlType === "All Control Types" || control.type === state.controlType;
+      });
+
+      title.textContent = `${stageName} Controls`;
+      const totalChecks = filteredControls.reduce((sum, control) => sum + control.pass + control.fail, 0);
+      subtitle.textContent = `${formatNumber(filteredControls.length)} controls · ${formatNumber(totalChecks)} checks`;
+
+      tbody.innerHTML = filteredControls.map((control) => {
+        const total = control.pass + control.fail;
+        const rate = total ? control.pass / total : 0;
+        return `
+          <tr>
+            <td>${control.name}</td>
+            <td>${control.type}</td>
+            <td>${formatNumber(control.pass)}</td>
+            <td>${formatNumber(control.fail)}</td>
+            <td>
+              ${formatPercent(rate)}
+              <div class="progress-track">
+                <div class="progress-fill" style="width:${(rate * 100).toFixed(1)}%;"></div>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("") || `<tr><td colspan="5">No controls match this filter.</td></tr>`;
+
+      createChart("overviewDrillChart", {
+        type: "bar",
+        data: {
+          labels: filteredControls.map((control) => control.name),
+          datasets: [
+            {
+              label: "Pass",
+              data: filteredControls.map((control) => control.pass),
+              backgroundColor: "rgba(22, 163, 74, 0.72)",
+              borderRadius: 6
+            },
+            {
+              label: "Fail",
+              data: filteredControls.map((control) => control.fail),
+              backgroundColor: "rgba(225, 29, 72, 0.72)",
+              borderRadius: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: "bottom" } },
+          scales: {
+            x: {
+              ticks: { maxRotation: 40, minRotation: 0 }
+            },
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+
+      panel.classList.add("open");
+      panel.style.maxHeight = `${panel.scrollHeight + 12}px`;
+    }
+
+    function renderOverview() {
+      const countries = getScopedCountries();
+      const totalStarted = countries.reduce((sum, country) => sum + country.started, 0);
+      const totalCompleted = countries.reduce((sum, country) => sum + country.completed, 0);
+      const completionRate = totalStarted ? totalCompleted / totalStarted : 0;
+      const dropoffRate = 1 - completionRate;
+
+      renderKpis("overviewKpis", [
+        { title: "Started", value: formatNumber(totalStarted), meta: "Total onboarding starts" },
+        { title: "Completed", value: formatNumber(totalCompleted), meta: "Completed onboardings" },
+        { title: "Completion Rate", value: formatPercent(completionRate), meta: "End-to-end conversion" },
+        { title: "Drop-off Rate", value: formatPercent(dropoffRate), meta: "Users leaving before completion" }
+      ], "accent-overview");
+
+      createChart("overviewCompletionChart", {
+        type: "doughnut",
+        data: {
+          labels: ["Completed", "Dropped"],
+          datasets: [{
+            data: [totalCompleted, Math.max(totalStarted - totalCompleted, 0)],
+            backgroundColor: ["rgba(31, 111, 235, 0.82)", "rgba(225, 29, 72, 0.72)"],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: "bottom" }
+          }
+        }
+      });
+
+      createChart("overviewCountryChart", {
+        type: "bar",
+        data: {
+          labels: countries.map((entry) => entry.country),
+          datasets: [
+            {
+              label: "Started",
+              data: countries.map((entry) => entry.started),
+              backgroundColor: "rgba(31, 111, 235, 0.72)",
+              borderRadius: 7
+            },
+            {
+              label: "Completed",
+              data: countries.map((entry) => entry.completed),
+              backgroundColor: "rgba(22, 163, 74, 0.76)",
+              borderRadius: 7
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: "bottom" }
+          },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+
+      const aggregate = aggregateFunnel(countries);
+      const funnel = document.getElementById("overviewFunnel");
+      const funnelHint = document.getElementById("funnelHint");
+      funnelHint.textContent = "Stages 1-4 are interactive for control drill-down";
+      funnel.innerHTML = STAGES.map((stage, idx) => {
+        const value = aggregate[idx];
+        const previous = idx > 0 ? aggregate[idx - 1] : aggregate[0];
+        const rate = previous > 0 ? value / previous : 1;
+        const clickable = idx >= 1 && idx <= 4;
+        const activeClass = state.selectedFunnelStage === idx ? "active" : "";
+        const readOnlyClass = clickable ? "clickable" : "readonly";
+        return `
+          <div
+            class="funnel-stage ${activeClass} ${readOnlyClass}"
+            data-stage-index="${idx}"
+            ${clickable ? 'role="button" tabindex="0"' : 'aria-readonly="true"'}
+            ${clickable ? `aria-pressed="${state.selectedFunnelStage === idx}"` : ""}
+          >
+            <div class="funnel-label">${stage}</div>
+            <div class="funnel-value">${formatNumber(value)}</div>
+            <div class="funnel-rate">${idx === 0 ? "Baseline" : `${formatPercent(rate)} from prior`}</div>
+          </div>
+        `;
+      }).join("");
+
+      funnel.querySelectorAll(".funnel-stage.clickable").forEach((node) => {
+        node.addEventListener("click", () => {
+          state.selectedFunnelStage = Number(node.dataset.stageIndex);
+          state.controlType = "All Control Types";
+          renderActiveTab();
+        });
+        node.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            state.selectedFunnelStage = Number(node.dataset.stageIndex);
+            state.controlType = "All Control Types";
+            renderActiveTab();
+          }
+        });
+      });
+
+      updateFunnelDrilldown(countries);
+
+      const countryTable = document.getElementById("overviewCountryTableBody");
+      countryTable.innerHTML = countries.map((country) => {
+        const rate = country.started ? country.completed / country.started : 0;
+        const badge = getBadgeByRate(rate);
+        return `
+          <tr>
+            <td>${country.country}</td>
+            <td>${formatNumber(country.started)}</td>
+            <td>${formatNumber(country.completed)}</td>
+            <td>
+              ${formatPercent(rate)}
+              <div class="progress-track"><div class="progress-fill" style="width:${(rate * 100).toFixed(1)}%;"></div></div>
+            </td>
+            <td><span class="badge ${badge.className}">${badge.label}</span></td>
+          </tr>
+        `;
+      }).join("");
+
+      const failureRows = FAILURE_RULES
+        .filter((rule) => state.failureType === "All Failure Types" || rule.failureType === state.failureType)
+        .map((rule) => {
+          const count = countries.reduce((sum, country) => {
+            const signal = country.failureSignals.find((entry) => entry.ruleId === rule.id);
+            return sum + (signal ? signal.count : 0);
+          }, 0);
+          return { ...rule, count };
+        });
+
+      const failureTable = document.getElementById("failureSignalsTableBody");
+      failureTable.innerHTML = failureRows.map((row) => `
+        <tr>
+          <td>${row.rawSignal}</td>
+          <td>${row.context}</td>
+          <td><span class="badge ${getFailureTypeTagClass(row.failureType)}">${row.failureType}</span></td>
+          <td>${formatNumber(row.count)}</td>
+          <td>${row.why}</td>
+        </tr>
+      `).join("");
+
+      const failureTypeMap = new Map();
+      failureRows.forEach((row) => {
+        failureTypeMap.set(row.failureType, (failureTypeMap.get(row.failureType) || 0) + row.count);
+      });
+
+      createChart("overviewFailureTypeChart", {
+        type: "doughnut",
+        data: {
+          labels: Array.from(failureTypeMap.keys()),
+          datasets: [{
+            data: Array.from(failureTypeMap.values()),
+            backgroundColor: ["#16a34a", "#f59e0b", "#0f766e", "#e11d48", "#7c3aed"],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            title: { display: true, text: "Failure Type Distribution", font: { weight: "700" } },
+            legend: { position: "bottom" }
+          }
+        }
+      });
+
+      createChart("overviewFailureCountryChart", {
+        type: "bar",
+        data: {
+          labels: countries.map((country) => country.country),
+          datasets: [{
+            label: "Signals",
+            data: countries.map((country) => {
+              return country.failureSignals
+                .filter((item) => {
+                  const rule = FAILURE_RULES.find((entry) => entry.id === item.ruleId);
+                  return state.failureType === "All Failure Types" || rule.failureType === state.failureType;
+                })
+                .reduce((sum, item) => sum + item.count, 0);
+            }),
+            backgroundColor: "rgba(31, 111, 235, 0.72)",
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            title: { display: true, text: "Failure Signals by Country", font: { weight: "700" } },
+            legend: { display: false }
+          },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+
+      const recommendations = document.getElementById("recommendationsPanel");
+      recommendations.innerHTML = failureRows.map((row) => `
+        <article class="action-card">
+          <h4>${row.action}</h4>
+          <div class="kpi-meta" style="margin-bottom: 7px;">Signals: ${formatNumber(row.count)}</div>
+          <p>${row.remediation}</p>
+        </article>
+      `).join("") || `<article class="action-card"><p>No recommendation for this filtered view.</p></article>`;
+
+      document.getElementById("overviewInsight").textContent =
+        `Insight: ${formatPercent(completionRate)} completion suggests ${
+          completionRate >= 0.75 ? "solid onboarding momentum" : "material onboarding leakage"
+        }, with ${formatNumber(failureRows.reduce((sum, row) => sum + row.count, 0))} inferred failure signals in the active segment.`;
+    }
+
+    function renderCompliance() {
+      const countries = getScopedCountries();
+      const controls = aggregateStageControls(countries, "Compliance Passed");
+      const checks = controls.reduce((sum, control) => sum + control.pass + control.fail, 0);
+      const pass = controls.reduce((sum, control) => sum + control.pass, 0);
+      const overallRate = checks ? pass / checks : 0;
+      const lowest = [...controls].sort((a, b) => (a.pass / (a.pass + a.fail || 1)) - (b.pass / (b.pass + b.fail || 1)))[0];
+      const belowThreshold = controls.filter((control) => ((control.pass + control.fail) ? (control.pass / (control.pass + control.fail)) : 0) < 0.97).length;
+
+      renderKpis("complianceKpis", [
+        { title: "Total Compliance Checks", value: formatNumber(checks), meta: "All compliance control executions" },
+        { title: "Overall Pass Rate", value: formatPercent(overallRate), meta: "Across compliance controls" },
+        { title: "Highest Risk Control", value: lowest?.name ?? "-", meta: "Lowest pass-rate control" },
+        { title: "Controls Below 97%", value: formatNumber(belowThreshold), meta: "Controls under threshold" }
+      ], "accent-compliance");
+
+      createChart("complianceControlChart", {
+        type: "bar",
+        data: {
+          labels: controls.map((control) => control.name),
+          datasets: [{
+            label: "Pass Rate %",
+            data: controls.map((control) => {
+              const total = control.pass + control.fail;
+              return total ? Number(((control.pass / total) * 100).toFixed(2)) : 0;
+            }),
+            backgroundColor: "rgba(124, 58, 237, 0.75)",
+            borderRadius: 7
+          }]
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { min: 85, max: 100, ticks: { callback: (v) => `${v}%` } }
+          }
+        }
+      });
+
+      createChart("complianceCountryChart", {
+        type: "line",
+        data: {
+          labels: countries.map((country) => country.country),
+          datasets: [{
+            label: "Compliance pass rate",
+            data: countries.map((country) => {
+              const ctrls = country.stageControls["Compliance Passed"] ?? [];
+              const totalChecks = ctrls.reduce((sum, c) => sum + c.pass + c.fail, 0);
+              return totalChecks ? Number(((ctrls.reduce((sum, c) => sum + c.pass, 0) / totalChecks) * 100).toFixed(2)) : 0;
+            }),
+            borderColor: "#7c3aed",
+            backgroundColor: "rgba(124, 58, 237, 0.18)",
+            tension: 0.25,
+            fill: true,
+            pointRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: "bottom" } },
+          scales: { y: { min: 85, max: 100, ticks: { callback: (v) => `${v}%` } } }
+        }
+      });
+
+      const tableBody = document.getElementById("complianceTableBody");
+      tableBody.innerHTML = controls.map((control) => {
+        const total = control.pass + control.fail;
+        const rate = total ? control.pass / total : 0;
+        const badge = rate >= 0.97
+          ? { label: "Low Risk", className: "low-risk" }
+          : { label: "High Risk", className: "high-risk" };
+        return `
+          <tr>
+            <td>${control.name}</td>
+            <td>${formatNumber(control.pass)}</td>
+            <td>${formatNumber(control.fail)}</td>
+            <td>
+              ${formatPercent(rate)}
+              <div class="progress-track"><div class="progress-fill" style="width:${(rate * 100).toFixed(1)}%; background: var(--compliance);"></div></div>
+            </td>
+            <td><span class="badge ${badge.className}">${badge.label}</span></td>
+          </tr>
+        `;
+      }).join("");
+
+      document.getElementById("complianceInsight").textContent =
+        `Insight: Compliance controls are running at ${formatPercent(overallRate)} pass rate, and ${belowThreshold} control(s) are below the 97% policy threshold in the current segment.`;
+    }
+
+    function renderCommercials() {
+      const countries = getScopedCountries();
+      const rows = countries.map((country) => {
+        const revenue = country.completed * country.revenuePerCustomer;
+        const dropoffs = Math.max(country.started - country.completed, 0);
+        const revenueAtRisk = dropoffs * country.revenuePerCustomer;
+        const dropoffCost = dropoffs * country.costPerOnboard;
+        const netValue = country.revenuePerCustomer - country.costPerOnboard;
+        return {
+          country: country.country,
+          revenue,
+          revenueAtRisk,
+          dropoffCost,
+          costPerOnboard: country.costPerOnboard,
+          netValue,
+          completionRate: country.started ? country.completed / country.started : 0
+        };
+      });
+
+      const totalRevenue = rows.reduce((sum, row) => sum + row.revenue, 0);
+      const totalRisk = rows.reduce((sum, row) => sum + row.revenueAtRisk, 0);
+      const avgCost = rows.length ? rows.reduce((sum, row) => sum + row.costPerOnboard, 0) / rows.length : 0;
+      const avgNet = rows.length ? rows.reduce((sum, row) => sum + row.netValue, 0) / rows.length : 0;
+
+      renderKpis("commercialsKpis", [
+        { title: "Total Revenue", value: formatCurrency(totalRevenue), meta: "From completed customers" },
+        { title: "Revenue at Risk", value: formatCurrency(totalRisk), meta: "Attributed to drop-offs" },
+        { title: "Avg Cost / Onboarding", value: formatCurrency(avgCost), meta: "Across selected countries" },
+        { title: "Net Value / Customer", value: formatCurrency(avgNet), meta: "Revenue minus onboarding cost" }
+      ], "accent-commercials");
+
+      createChart("commercialRevenueChart", {
+        type: "bar",
+        data: {
+          labels: rows.map((row) => row.country),
+          datasets: [
+            {
+              label: "Revenue",
+              data: rows.map((row) => row.revenue),
+              backgroundColor: "rgba(15, 118, 110, 0.74)",
+              borderRadius: 8
+            },
+            {
+              label: "Revenue at risk",
+              data: rows.map((row) => row.revenueAtRisk),
+              backgroundColor: "rgba(225, 29, 72, 0.62)",
+              borderRadius: 8
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: "bottom" } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+
+      createChart("commercialDropoffCostChart", {
+        type: "bar",
+        data: {
+          labels: rows.map((row) => row.country),
+          datasets: [{
+            label: "Drop-off cost",
+            data: rows.map((row) => row.dropoffCost),
+            backgroundColor: "rgba(234, 88, 12, 0.75)",
+            borderRadius: 8
+          }]
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { x: { beginAtZero: true } }
+        }
+      });
+
+      const tableBody = document.getElementById("commercialTableBody");
+      tableBody.innerHTML = rows.map((row) => {
+        const badge = getBadgeByRate(row.completionRate);
+        return `
+          <tr>
+            <td>${row.country}</td>
+            <td>${formatCurrency(row.revenue)}</td>
+            <td>${formatCurrency(row.revenueAtRisk)}</td>
+            <td>${formatCurrency(row.costPerOnboard)}</td>
+            <td>
+              ${formatCurrency(row.netValue)}
+              <div class="progress-track"><div class="progress-fill" style="width:${Math.min((row.netValue / 700) * 100, 100).toFixed(1)}%; background: var(--commercials);"></div></div>
+            </td>
+            <td><span class="badge ${badge.className}">${badge.label}</span></td>
+          </tr>
+        `;
+      }).join("");
+
+      const riskPct = (totalRevenue + totalRisk) ? (totalRisk / (totalRevenue + totalRisk)) : 0;
+      document.getElementById("commercialsInsight").textContent =
+        `Insight: ${formatPercent(riskPct)} of potential value is exposed to drop-off in this segment, with average net value at ${formatCurrency(avgNet)} per customer.`;
+    }
+
+    function renderConversion() {
+      const countries = getScopedCountries();
+      const funnel = aggregateFunnel(countries);
+      const transitions = [];
+      for (let i = 0; i < STAGES.length - 1; i++) {
+        const from = funnel[i];
+        const to = funnel[i + 1];
+        const converted = to;
+        const dropped = Math.max(from - to, 0);
+        const rate = from ? to / from : 0;
+        transitions.push({
+          name: `${STAGES[i]} -> ${STAGES[i + 1]}`,
+          converted,
+          dropped,
+          rate
+        });
+      }
+
+      const endToEnd = funnel[0] ? funnel[funnel.length - 1] / funnel[0] : 0;
+      const sortedByRate = [...transitions].sort((a, b) => b.rate - a.rate);
+      const best = sortedByRate[0];
+      const worst = sortedByRate[sortedByRate.length - 1];
+      const avgDrop = transitions.length ? transitions.reduce((sum, item) => sum + item.dropped, 0) / transitions.length : 0;
+
+      renderKpis("conversionKpis", [
+        { title: "End-to-End Conversion", value: formatPercent(endToEnd), meta: "Application to completion" },
+        { title: "Best Stage Conversion", value: `${best ? formatPercent(best.rate) : "0.0%"} `, meta: best?.name ?? "-" },
+        { title: "Worst Stage Conversion", value: `${worst ? formatPercent(worst.rate) : "0.0%"} `, meta: worst?.name ?? "-" },
+        { title: "Avg Drop / Stage", value: formatNumber(avgDrop), meta: "Average customers lost each stage" }
+      ], "accent-conversion");
+
+      createChart("conversionWaterfallChart", {
+        type: "bar",
+        data: {
+          labels: transitions.map((item) => item.name),
+          datasets: [
+            {
+              label: "Converted",
+              data: transitions.map((item) => item.converted),
+              backgroundColor: "rgba(22, 163, 74, 0.75)",
+              stack: "stack-1",
+              borderRadius: 7
+            },
+            {
+              label: "Dropped",
+              data: transitions.map((item) => item.dropped),
+              backgroundColor: "rgba(234, 88, 12, 0.75)",
+              stack: "stack-1",
+              borderRadius: 7
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: "bottom" } },
+          scales: {
+            x: { stacked: true },
+            y: { stacked: true, beginAtZero: true }
+          }
+        }
+      });
+
+      const tableBody = document.getElementById("conversionTableBody");
+      tableBody.innerHTML = transitions.map((item) => {
+        const badge = item.rate >= 0.93
+          ? { label: "Healthy", className: "healthy" }
+          : { label: "Critical", className: "critical" };
+        return `
+          <tr>
+            <td>${item.name}</td>
+            <td>${formatNumber(item.converted)}</td>
+            <td>${formatNumber(item.dropped)}</td>
+            <td>
+              ${formatPercent(item.rate)}
+              <div class="progress-track"><div class="progress-fill" style="width:${(item.rate * 100).toFixed(1)}%; background: var(--conversion);"></div></div>
+            </td>
+            <td><span class="badge ${badge.className}">${badge.label}</span></td>
+          </tr>
+        `;
+      }).join("");
+
+      document.getElementById("conversionInsight").textContent =
+        `Insight: The biggest conversion pressure is at "${worst?.name ?? "-"}", where targeted improvements could recover approximately ${formatNumber(avgDrop)} users per stage on average.`;
+    }
+
+    function renderFraud() {
+      const countries = getScopedCountries();
+      const fraudControls = aggregateStageControls(countries, "Identity Verified")
+        .filter((control) => control.type === "Fraud Check");
+
+      const totalChecks = fraudControls.reduce((sum, control) => sum + control.pass + control.fail, 0);
+      const totalPass = fraudControls.reduce((sum, control) => sum + control.pass, 0);
+      const totalFail = fraudControls.reduce((sum, control) => sum + control.fail, 0);
+      const passRate = totalChecks ? totalPass / totalChecks : 0;
+      const highestFail = [...fraudControls].sort((a, b) => b.fail - a.fail)[0];
+
+      renderKpis("fraudKpis", [
+        { title: "Total Fraud Checks", value: formatNumber(totalChecks), meta: "Executed fraud controls" },
+        { title: "Overall Pass Rate", value: formatPercent(passRate), meta: "Across fraud controls" },
+        { title: "Total Fraud Flags", value: formatNumber(totalFail), meta: "Failed fraud outcomes" },
+        { title: "Highest Failure Control", value: highestFail?.name ?? "-", meta: "Most fraud flags" }
+      ], "accent-fraud");
+
+      createChart("fraudControlChart", {
+        type: "bar",
+        data: {
+          labels: fraudControls.map((control) => control.name),
+          datasets: [
+            {
+              label: "Passed",
+              data: fraudControls.map((control) => control.pass),
+              backgroundColor: "rgba(22, 163, 74, 0.72)",
+              stack: "fraud",
+              borderRadius: 7
+            },
+            {
+              label: "Failed",
+              data: fraudControls.map((control) => control.fail),
+              backgroundColor: "rgba(219, 39, 119, 0.78)",
+              stack: "fraud",
+              borderRadius: 7
+            }
+          ]
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: "bottom" } },
+          scales: { x: { stacked: true, beginAtZero: true }, y: { stacked: true } }
+        }
+      });
+
+      createChart("fraudCountryChart", {
+        type: "bar",
+        data: {
+          labels: countries.map((country) => country.country),
+          datasets: [{
+            label: "Fraud flags",
+            data: countries.map((country) => {
+              const controls = (country.stageControls["Identity Verified"] ?? []).filter((control) => control.type === "Fraud Check");
+              return controls.reduce((sum, control) => sum + control.fail, 0);
+            }),
+            backgroundColor: "rgba(219, 39, 119, 0.72)",
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+
+      const tableBody = document.getElementById("fraudTableBody");
+      tableBody.innerHTML = fraudControls.map((control) => {
+        const total = control.pass + control.fail;
+        const rate = total ? control.pass / total : 0;
+        const badge = getBadgeByRate(rate);
+        return `
+          <tr>
+            <td>${control.name}</td>
+            <td>${formatNumber(control.pass)}</td>
+            <td>${formatNumber(control.fail)}</td>
+            <td>
+              ${formatPercent(rate)}
+              <div class="progress-track"><div class="progress-fill" style="width:${(rate * 100).toFixed(1)}%; background: var(--fraud);"></div></div>
+            </td>
+            <td><span class="badge ${badge.className}">${badge.label}</span></td>
+          </tr>
+        `;
+      }).join("");
+
+      document.getElementById("fraudInsight").textContent =
+        `Insight: ${formatNumber(totalFail)} fraud flags were raised in this cut, with "${highestFail?.name ?? "-"}" driving the largest share of failed fraud outcomes.`;
+    }
+
+    function renderActiveTab() {
+      destroyCharts();
+      if (state.activeTab === "overview") renderOverview();
+      if (state.activeTab === "compliance") renderCompliance();
+      if (state.activeTab === "commercials") renderCommercials();
+      if (state.activeTab === "conversion") renderConversion();
+      if (state.activeTab === "fraud") renderFraud();
+      applyFadeUpDelays();
+    }
+
+    function setActiveTab(tabId) {
+      state.activeTab = tabId;
+      TAB_IDS.forEach((id) => {
+        const panel = document.getElementById(`${id}Panel`);
+        const button = document.querySelector(`.tab-btn[data-tab="${id}"]`);
+        const isActive = id === tabId;
+        panel.classList.toggle("active", isActive);
+        button.classList.toggle("active", isActive);
+        button.setAttribute("aria-selected", String(isActive));
+      });
+      renderActiveTab();
+    }
+
+    function startLiveClock() {
+      const liveStatus = document.getElementById("liveStatusText");
+      function update() {
+        const now = new Date();
+        liveStatus.textContent = `Live synthetic feed · ${now.toLocaleTimeString()}`;
+      }
+      update();
+      setInterval(update, 1000);
+    }
+
+    function initializeEvents() {
+      document.getElementById("countryFilter").addEventListener("change", (event) => {
+        state.country = event.target.value;
+        renderActiveTab();
+      });
+
+      document.getElementById("failureTypeFilter").addEventListener("change", (event) => {
+        state.failureType = event.target.value;
+        renderActiveTab();
+      });
+
+      document.querySelectorAll(".tab-btn").forEach((button) => {
+        button.addEventListener("click", () => setActiveTab(button.dataset.tab));
+      });
+
+      document.getElementById("controlTypeFilter").addEventListener("change", (event) => {
+        state.controlType = event.target.value;
+        if (state.activeTab === "overview") renderActiveTab();
+      });
+    }
+
+    renderSelectOptions();
+    initializeEvents();
+    setActiveTab("overview");
+    startLiveClock();
+  </script>
+</body>
+</html>
