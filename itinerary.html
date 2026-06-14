@@ -768,9 +768,166 @@
       color: var(--accent-2);
     }
 
+    /* TIMINGS */
+    .timings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 18px;
+    }
+
+    .timing-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 18px 14px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .timing-card h3 {
+      margin: 0 0 12px;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .timing-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .timing-row {
+      background: rgba(0, 0, 0, 0.18);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+
+    .timing-row-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .timing-row .route {
+      flex: 1;
+      font-weight: 600;
+      color: var(--text);
+      padding: 4px 6px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      cursor: text;
+      min-width: 0;
+    }
+
+    .timing-row .route:focus {
+      outline: none;
+      background: rgba(0, 0, 0, 0.3);
+      border-color: var(--accent);
+    }
+
+    .timing-row .est {
+      font-size: 0.78rem;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 2px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .timing-row .duration {
+      font-size: 0.78rem;
+      color: var(--accent);
+      background: rgba(0, 194, 168, 0.1);
+      padding: 2px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+      font-weight: 600;
+    }
+
+    .timing-row-body {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
+    }
+
+    .timing-row-body label {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      gap: 4px;
+    }
+
+    .timing-row-body input {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 7px 9px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      color-scheme: dark;
+    }
+
+    .timing-row-body input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(0, 194, 168, 0.2);
+    }
+
+    .timing-row-body input[data-field="notes"] {
+      grid-column: 1 / -1;
+    }
+
+    .timing-row .remove {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 1.05rem;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .timing-row .remove:hover {
+      background: rgba(255, 107, 107, 0.15);
+      color: #ffaaaa;
+    }
+
+    .timing-card .add-row {
+      margin-top: 12px;
+      align-self: flex-start;
+      font-size: 0.85rem;
+      color: var(--accent);
+      background: transparent;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .timing-card .add-row:hover {
+      background: rgba(0, 194, 168, 0.08);
+      border-color: var(--accent);
+    }
+
     @media (max-width: 720px) {
       .totals { grid-template-columns: 1fr; }
       .cost-row { grid-template-columns: 1fr 100px auto; }
+      .timings-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 640px) {
@@ -837,6 +994,29 @@
         actually enjoy.
       </p>
       <div class="hotel-grid" id="hotel-grid"></div>
+    </section>
+
+    <!-- TIMINGS -->
+    <section id="timings">
+      <h2 class="section-title"><span class="dot"></span> Timings</h2>
+      <p class="section-subtitle">
+        Add your flight and inter-base drive times. Click any field to edit;
+        values auto-save in your browser. Duration is computed automatically
+        from departure and arrival.
+      </p>
+      <div class="timings-grid">
+        <div class="timing-card">
+          <h3>✈️ Flight Timings</h3>
+          <div class="timing-rows" id="flight-rows"></div>
+          <button class="add-row" id="add-flight" type="button">＋ Add flight</button>
+        </div>
+
+        <div class="timing-card">
+          <h3>🚗 Travel Between Stays</h3>
+          <div class="timing-rows" id="leg-rows"></div>
+          <button class="add-row" id="add-leg" type="button">＋ Add leg</button>
+        </div>
+      </div>
     </section>
 
     <!-- COSTS -->
@@ -1260,6 +1440,284 @@
     // Fit map to bounds
     const allCoords = Object.values(POINTS).map((p) => p.coord);
     map.fitBounds(allCoords, { padding: [40, 40] });
+
+    // ===========================================================
+    // TIMINGS SECTION
+    // ===========================================================
+    const TIMINGS_KEY = "nz-itinerary-timings-v1";
+
+    // Default flights (Melbourne <-> Queenstown). User can edit dates,
+    // times, flight numbers, route names — everything is editable.
+    const DEFAULT_FLIGHTS = [
+      {
+        id: "flight-out",
+        route: "Melbourne (MEL) → Queenstown (ZQN)",
+        date: "",
+        depart: "",
+        arrive: "",
+        notes: "",
+      },
+      {
+        id: "flight-return",
+        route: "Queenstown (ZQN) → Melbourne (MEL)",
+        date: "",
+        depart: "",
+        arrive: "",
+        notes: "",
+      },
+    ];
+
+    // Default inter-base drive legs: any itinerary day where the base
+    // changes from the previous day. Estimate is taken from the day's
+    // drive time so we can show it as a hint.
+    const DEFAULT_LEGS = (() => {
+      const out = [];
+      for (let i = 0; i < itinerary.length; i++) {
+        const d = itinerary[i];
+        const prev = itinerary[i - 1];
+        if (!prev || prev.base !== d.base) {
+          // Skip the very first day (arrival, no inter-base drive)
+          if (i === 0) continue;
+          out.push({
+            id: `leg-d${d.day}`,
+            day: d.day,
+            route: d.route,
+            estimate: d.drive,
+            date: "",
+            depart: "",
+            arrive: "",
+            notes: "",
+          });
+        }
+      }
+      return out;
+    })();
+
+    function defaultTimingsState() {
+      return {
+        flights: DEFAULT_FLIGHTS.map((f) => ({ ...f })),
+        legs: DEFAULT_LEGS.map((l) => ({ ...l })),
+      };
+    }
+
+    function loadTimings() {
+      try {
+        const raw = localStorage.getItem(TIMINGS_KEY);
+        if (!raw) return defaultTimingsState();
+        const parsed = JSON.parse(raw);
+        // Merge with defaults to keep new default rows when added in
+        // future versions; preserve any edits the user made by id.
+        const def = defaultTimingsState();
+        const mergeById = (defaults, saved) => {
+          const savedMap = new Map((saved || []).map((r) => [r.id, r]));
+          const merged = defaults.map((d) =>
+            savedMap.has(d.id) ? { ...d, ...savedMap.get(d.id) } : d
+          );
+          // Append any user-added rows not in defaults
+          (saved || []).forEach((r) => {
+            if (!merged.find((m) => m.id === r.id)) merged.push(r);
+          });
+          return merged;
+        };
+        return {
+          flights: mergeById(def.flights, parsed.flights),
+          legs: mergeById(def.legs, parsed.legs),
+        };
+      } catch {
+        return defaultTimingsState();
+      }
+    }
+
+    function saveTimings() {
+      try {
+        localStorage.setItem(TIMINGS_KEY, JSON.stringify(timings));
+      } catch {
+        /* ignore */
+      }
+    }
+
+    let timings = loadTimings();
+
+    function computeDuration(depart, arrive) {
+      if (!depart || !arrive) return "";
+      const [dh, dm] = depart.split(":").map(Number);
+      const [ah, am] = arrive.split(":").map(Number);
+      if ([dh, dm, ah, am].some((n) => Number.isNaN(n))) return "";
+      let mins = ah * 60 + am - (dh * 60 + dm);
+      if (mins < 0) mins += 24 * 60; // overnight / next-day
+      const h = Math.floor(mins / 60);
+      const m = mins % 60;
+      if (!h && !m) return "";
+      if (!m) return `${h}h`;
+      if (!h) return `${m}m`;
+      return `${h}h ${m}m`;
+    }
+
+    function buildTimingRow(row, kind) {
+      const el = document.createElement("div");
+      el.className = "timing-row";
+      el.dataset.id = row.id;
+      el.dataset.kind = kind;
+
+      const head = document.createElement("div");
+      head.className = "timing-row-head";
+
+      const route = document.createElement("div");
+      route.className = "route";
+      route.contentEditable = "true";
+      route.spellcheck = false;
+      route.textContent = row.route || "New leg";
+      route.title = "Click to edit route";
+      route.addEventListener("blur", () => {
+        const v = route.textContent.trim();
+        row.route = v || (kind === "flight" ? "New flight" : "New leg");
+        if (!v) route.textContent = row.route;
+        saveTimings();
+      });
+      route.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") { e.preventDefault(); route.blur(); }
+      });
+      head.appendChild(route);
+
+      // Estimate badge for drive legs
+      if (row.estimate) {
+        const est = document.createElement("span");
+        est.className = "est";
+        est.title = "Estimated drive time";
+        est.textContent = `~${row.estimate}`;
+        head.appendChild(est);
+      }
+
+      // Computed duration badge
+      const dur = document.createElement("span");
+      dur.className = "duration";
+      dur.dataset.duration = "";
+      dur.textContent = computeDuration(row.depart, row.arrive) || "—";
+      head.appendChild(dur);
+
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.className = "remove";
+      remove.title = "Remove";
+      remove.textContent = "×";
+      remove.addEventListener("click", () => {
+        const arr = kind === "flight" ? timings.flights : timings.legs;
+        const idx = arr.findIndex((r) => r.id === row.id);
+        if (idx >= 0) arr.splice(idx, 1);
+        saveTimings();
+        renderTimings();
+      });
+      head.appendChild(remove);
+      el.appendChild(head);
+
+      const body = document.createElement("div");
+      body.className = "timing-row-body";
+
+      const fields = [
+        { key: "date",   label: "Date",   type: "date" },
+        { key: "depart", label: "Depart", type: "time" },
+        { key: "arrive", label: "Arrive", type: "time" },
+        {
+          key: "notes",
+          label: kind === "flight" ? "Flight # / notes" : "Notes",
+          type: "text",
+        },
+      ];
+
+      fields.forEach((f) => {
+        const lbl = document.createElement("label");
+        lbl.textContent = f.label;
+        const input = document.createElement("input");
+        input.type = f.type;
+        input.dataset.field = f.key;
+        input.value = row[f.key] || "";
+        if (f.type === "text") {
+          input.placeholder =
+            kind === "flight" ? "e.g. JQ123, via Auckland" : "e.g. lunch stop in Wanaka";
+        }
+        input.addEventListener("input", () => {
+          row[f.key] = input.value;
+          if (f.key === "depart" || f.key === "arrive") {
+            dur.textContent = computeDuration(row.depart, row.arrive) || "—";
+          }
+          saveTimings();
+        });
+        lbl.appendChild(input);
+        body.appendChild(lbl);
+      });
+
+      el.appendChild(body);
+      return el;
+    }
+
+    function renderTimings() {
+      const flightWrap = document.getElementById("flight-rows");
+      const legWrap = document.getElementById("leg-rows");
+      flightWrap.innerHTML = "";
+      legWrap.innerHTML = "";
+      timings.flights.forEach((f) =>
+        flightWrap.appendChild(buildTimingRow(f, "flight"))
+      );
+      timings.legs.forEach((l) =>
+        legWrap.appendChild(buildTimingRow(l, "leg"))
+      );
+    }
+
+    document.getElementById("add-flight").addEventListener("click", () => {
+      const id = `flight-custom-${Date.now()}-${Math.random()
+        .toString(36)
+        .slice(2, 6)}`;
+      timings.flights.push({
+        id,
+        route: "New flight",
+        date: "",
+        depart: "",
+        arrive: "",
+        notes: "",
+      });
+      saveTimings();
+      renderTimings();
+      requestAnimationFrame(() => {
+        const el = document.querySelector(`[data-id="${id}"] .route`);
+        if (el) {
+          el.focus();
+          const r = document.createRange();
+          r.selectNodeContents(el);
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(r);
+        }
+      });
+    });
+
+    document.getElementById("add-leg").addEventListener("click", () => {
+      const id = `leg-custom-${Date.now()}-${Math.random()
+        .toString(36)
+        .slice(2, 6)}`;
+      timings.legs.push({
+        id,
+        route: "New leg",
+        date: "",
+        depart: "",
+        arrive: "",
+        notes: "",
+      });
+      saveTimings();
+      renderTimings();
+      requestAnimationFrame(() => {
+        const el = document.querySelector(`[data-id="${id}"] .route`);
+        if (el) {
+          el.focus();
+          const r = document.createRange();
+          r.selectNodeContents(el);
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(r);
+        }
+      });
+    });
+
+    renderTimings();
 
     // ===========================================================
     // COSTS SECTION
