@@ -509,9 +509,276 @@
       font-size: 0.85rem;
     }
 
+    /* COSTS */
+    .cost-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 22px;
+      padding: 14px 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .cost-controls label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .cost-controls select,
+    .cost-controls input[type="number"] {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      min-width: 70px;
+    }
+
+    .cost-controls select:focus,
+    .cost-controls input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(0, 194, 168, 0.25);
+    }
+
+    .cost-controls .spacer { flex: 1; }
+
+    .btn {
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      transition: background 0.15s ease, transform 0.1s ease;
+    }
+
+    .btn:hover { background: rgba(255, 255, 255, 0.12); }
+    .btn:active { transform: translateY(1px); }
+
+    .btn.primary {
+      background: var(--accent);
+      color: #062b25;
+      border-color: transparent;
+    }
+
+    .btn.primary:hover { background: #2dd4bf; }
+
+    .btn.danger {
+      background: rgba(255, 107, 107, 0.15);
+      color: #ffaaaa;
+      border-color: rgba(255, 107, 107, 0.4);
+    }
+
+    .btn.danger:hover { background: rgba(255, 107, 107, 0.25); }
+
+    .cost-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 18px;
+    }
+
+    .cost-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 18px 14px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cost-card h3 {
+      margin: 0 0 12px;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cost-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .cost-row {
+      display: grid;
+      grid-template-columns: 1fr 110px auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .cost-row .label {
+      color: var(--text);
+      font-size: 0.92rem;
+      padding: 8px 10px;
+      background: rgba(0, 0, 0, 0.18);
+      border: 1px solid transparent;
+      border-radius: 8px;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .cost-row .label[contenteditable="true"]:focus,
+    .cost-row .label.custom:focus {
+      outline: none;
+      background: rgba(0, 0, 0, 0.35);
+      border-color: var(--accent);
+      white-space: normal;
+    }
+
+    .cost-row input.amount {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      text-align: right;
+      width: 100%;
+      -moz-appearance: textfield;
+    }
+
+    .cost-row input.amount::-webkit-outer-spin-button,
+    .cost-row input.amount::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .cost-row input.amount:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(0, 194, 168, 0.25);
+    }
+
+    .cost-row .remove {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 1.1rem;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .cost-row .remove:hover {
+      background: rgba(255, 107, 107, 0.15);
+      color: #ffaaaa;
+    }
+
+    .cost-row .remove.placeholder {
+      visibility: hidden;
+    }
+
+    .cost-card .add-row {
+      margin-top: 12px;
+      align-self: flex-start;
+      font-size: 0.85rem;
+      color: var(--accent);
+      background: transparent;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .cost-card .add-row:hover {
+      background: rgba(0, 194, 168, 0.08);
+      border-color: var(--accent);
+    }
+
+    .cost-card .subtotal {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+    }
+
+    .cost-card .subtotal .val {
+      color: var(--accent);
+      font-size: 1.05rem;
+    }
+
+    .totals {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 14px;
+    }
+
+    .totals .total-card {
+      background: linear-gradient(
+        135deg,
+        rgba(0, 194, 168, 0.18) 0%,
+        rgba(255, 184, 77, 0.12) 100%
+      );
+      border: 1px solid rgba(0, 194, 168, 0.4);
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    .totals .total-card .label {
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 0.78rem;
+      margin-bottom: 6px;
+    }
+
+    .totals .total-card .val {
+      font-size: 2.1rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+
+    .totals .total-card.alt {
+      background: var(--card);
+      border-color: var(--border);
+    }
+
+    .totals .total-card.alt .val {
+      font-size: 1.5rem;
+      color: var(--accent-2);
+    }
+
+    @media (max-width: 720px) {
+      .totals { grid-template-columns: 1fr; }
+      .cost-row { grid-template-columns: 1fr 100px auto; }
+    }
+
     @media (max-width: 640px) {
       #map { height: 420px; }
       .hero { padding: 40px 16px 28px; }
+    }
+
+    @media print {
+      body { background: #fff; color: #000; }
+      .map-wrap, .cost-controls .btn { display: none; }
     }
   </style>
 </head>
@@ -567,6 +834,55 @@
         actually enjoy.
       </p>
       <div class="hotel-grid" id="hotel-grid"></div>
+    </section>
+
+    <!-- COSTS -->
+    <section id="costs">
+      <h2 class="section-title"><span class="dot"></span> Trip Costs</h2>
+      <p class="section-subtitle">
+        Fully editable budget. Click any amount or label to edit. Values
+        auto-save in your browser, so they'll be there next time you open this
+        page.
+      </p>
+
+      <div class="cost-controls">
+        <label>
+          Currency:
+          <select id="currency">
+            <option value="NZD">NZD ($)</option>
+            <option value="USD">USD ($)</option>
+            <option value="INR">INR (₹)</option>
+            <option value="AUD">AUD ($)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="GBP">GBP (£)</option>
+          </select>
+        </label>
+        <label>
+          Travelers:
+          <input type="number" id="travelers" min="1" max="20" value="4" />
+        </label>
+        <span class="spacer"></span>
+        <button class="btn" id="export-costs" type="button">⤓ Export JSON</button>
+        <button class="btn" id="print-costs" type="button">🖨️ Print</button>
+        <button class="btn danger" id="reset-costs" type="button">↺ Reset</button>
+      </div>
+
+      <div class="cost-grid" id="cost-grid"></div>
+
+      <div class="totals">
+        <div class="total-card">
+          <div class="label">Grand Total</div>
+          <div class="val" id="grand-total">—</div>
+        </div>
+        <div class="total-card alt">
+          <div class="label">Per Person</div>
+          <div class="val" id="per-person">—</div>
+        </div>
+        <div class="total-card alt">
+          <div class="label">Per Day</div>
+          <div class="val" id="per-day">—</div>
+        </div>
+      </div>
     </section>
 
     <!-- FINAL DAY -->
@@ -938,6 +1254,390 @@
     // Fit map to bounds
     const allCoords = Object.values(POINTS).map((p) => p.coord);
     map.fitBounds(allCoords, { padding: [40, 40] });
+
+    // ===========================================================
+    // COSTS SECTION
+    // ===========================================================
+    const STORAGE_KEY = "nz-itinerary-costs-v1";
+
+    const CURRENCIES = {
+      NZD: { symbol: "$",  locale: "en-NZ", code: "NZD" },
+      USD: { symbol: "$",  locale: "en-US", code: "USD" },
+      INR: { symbol: "₹",  locale: "en-IN", code: "INR" },
+      AUD: { symbol: "$",  locale: "en-AU", code: "AUD" },
+      EUR: { symbol: "€",  locale: "en-IE", code: "EUR" },
+      GBP: { symbol: "£",  locale: "en-GB", code: "GBP" },
+    };
+
+    // Default cost categories. Rows are seeded from the itinerary so
+    // there's a row per overnight stay, per day for food, and a sensible
+    // starter list of activities & transport.
+    const DEFAULT_CATEGORIES = [
+      {
+        id: "flights",
+        title: "✈️ Flight Tickets",
+        rows: [
+          { id: "flight-out",      label: "Outbound flights" },
+          { id: "flight-return",   label: "Return flights" },
+          { id: "flight-internal", label: "Internal / connecting" },
+        ],
+      },
+      {
+        id: "accommodation",
+        title: "🛏️ Accommodation (per night)",
+        rows: itinerary.map((d) => ({
+          id: `acc-d${d.day}`,
+          label: `Night ${d.day} — ${d.stay}`,
+        })),
+      },
+      {
+        id: "activities",
+        title: "🎢 Activities",
+        rows: [
+          { id: "act-skyline",   label: "Skyline Gondola (Day 1)" },
+          { id: "act-jet-luge",  label: "Jet boating / Luge (Day 2)" },
+          { id: "act-milford",   label: "Milford Sound cruise (Day 3)" },
+          { id: "act-puzzling",  label: "Puzzling World, Wanaka (Day 4)" },
+          { id: "act-glenorchy", label: "Glenorchy LOTR tour (Day 5)" },
+          { id: "act-glacier",   label: "Glacier walk / heli (Day 7)" },
+          { id: "act-hotpools",  label: "Franz Josef hot pools (Day 7)" },
+          { id: "act-akaroa",    label: "Akaroa harbour cruise (Day 9)" },
+          { id: "act-tekapo",    label: "Tekapo dark sky tour (Day 10)" },
+        ],
+      },
+      {
+        id: "food",
+        title: "🍽️ Food (per day)",
+        rows: itinerary.map((d) => ({
+          id: `food-d${d.day}`,
+          label: `Day ${d.day} — ${d.base}`,
+        })),
+      },
+      {
+        id: "transport",
+        title: "🚗 Car Rental & Fuel",
+        rows: [
+          { id: "car-rental",    label: "Car rental (11 days)" },
+          { id: "car-insurance", label: "Insurance / extras" },
+          { id: "car-fuel",      label: "Petrol / EV charging" },
+          { id: "car-parking",   label: "Parking & tolls" },
+        ],
+      },
+    ];
+
+    // ----- State -----
+    /**
+     * State shape:
+     * {
+     *   currency: "NZD",
+     *   travelers: 4,
+     *   amounts: { [rowId]: number },
+     *   labels:  { [rowId]: string }, // overrides for editable labels
+     *   custom:  { [categoryId]: [{id,label}] }  // user-added rows
+     *   removed: { [rowId]: true }  // user-removed default rows
+     * }
+     */
+    function defaultState() {
+      return {
+        currency: "NZD",
+        travelers: 4,
+        amounts: {},
+        labels: {},
+        custom: {},
+        removed: {},
+      };
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return defaultState();
+        const parsed = JSON.parse(raw);
+        return Object.assign(defaultState(), parsed);
+      } catch {
+        return defaultState();
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch {
+        /* storage may be unavailable (private mode); ignore */
+      }
+    }
+
+    let state = loadState();
+
+    // ----- Formatting -----
+    function fmt(amount) {
+      const cur = CURRENCIES[state.currency] || CURRENCIES.NZD;
+      try {
+        return new Intl.NumberFormat(cur.locale, {
+          style: "currency",
+          currency: cur.code,
+          maximumFractionDigits: 0,
+        }).format(amount || 0);
+      } catch {
+        return cur.symbol + Math.round(amount || 0).toLocaleString();
+      }
+    }
+
+    // Build the merged row list for a category, respecting removals
+    // and adding any user-defined custom rows.
+    function rowsForCategory(cat) {
+      const base = cat.rows.filter((r) => !state.removed[r.id]);
+      const customs = state.custom[cat.id] || [];
+      return [...base, ...customs];
+    }
+
+    function isCustomRow(catId, rowId) {
+      return (state.custom[catId] || []).some((r) => r.id === rowId);
+    }
+
+    // ----- Render -----
+    const grid = document.getElementById("cost-grid");
+
+    function render() {
+      grid.innerHTML = "";
+
+      DEFAULT_CATEGORIES.forEach((cat) => {
+        const card = document.createElement("div");
+        card.className = "cost-card";
+        card.dataset.cat = cat.id;
+
+        const h3 = document.createElement("h3");
+        h3.textContent = cat.title;
+        card.appendChild(h3);
+
+        const rowsWrap = document.createElement("div");
+        rowsWrap.className = "cost-rows";
+        card.appendChild(rowsWrap);
+
+        const rows = rowsForCategory(cat);
+        rows.forEach((r) => {
+          rowsWrap.appendChild(buildRow(cat, r));
+        });
+
+        const addBtn = document.createElement("button");
+        addBtn.type = "button";
+        addBtn.className = "add-row";
+        addBtn.textContent = "＋ Add line item";
+        addBtn.addEventListener("click", () => addCustomRow(cat));
+        card.appendChild(addBtn);
+
+        const sub = document.createElement("div");
+        sub.className = "subtotal";
+        sub.innerHTML = `<span>Subtotal</span><span class="val" data-subtotal="${cat.id}">—</span>`;
+        card.appendChild(sub);
+
+        grid.appendChild(card);
+      });
+
+      // Sync controls
+      document.getElementById("currency").value = state.currency;
+      document.getElementById("travelers").value = state.travelers;
+
+      recompute();
+    }
+
+    function buildRow(cat, r) {
+      const row = document.createElement("div");
+      row.className = "cost-row";
+      row.dataset.row = r.id;
+
+      const labelEl = document.createElement("div");
+      labelEl.className = "label";
+      labelEl.contentEditable = "true";
+      labelEl.spellcheck = false;
+      labelEl.textContent = state.labels[r.id] || r.label;
+      labelEl.title = "Click to edit name";
+      labelEl.addEventListener("blur", () => {
+        const newLabel = labelEl.textContent.trim();
+        if (!newLabel) {
+          labelEl.textContent = state.labels[r.id] || r.label;
+          return;
+        }
+        if (newLabel !== r.label) {
+          state.labels[r.id] = newLabel;
+        } else {
+          delete state.labels[r.id];
+        }
+        // For custom rows, update the stored object too
+        if (isCustomRow(cat.id, r.id)) {
+          const arr = state.custom[cat.id] || [];
+          const idx = arr.findIndex((x) => x.id === r.id);
+          if (idx >= 0) arr[idx].label = newLabel;
+        }
+        saveState();
+      });
+      labelEl.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") { e.preventDefault(); labelEl.blur(); }
+      });
+      row.appendChild(labelEl);
+
+      const amount = document.createElement("input");
+      amount.type = "number";
+      amount.className = "amount";
+      amount.min = "0";
+      amount.step = "any";
+      amount.placeholder = "0";
+      amount.inputMode = "decimal";
+      const cur = state.amounts[r.id];
+      if (typeof cur === "number" && !Number.isNaN(cur)) {
+        amount.value = cur;
+      }
+      amount.addEventListener("input", () => {
+        const v = parseFloat(amount.value);
+        if (Number.isFinite(v) && v > 0) {
+          state.amounts[r.id] = v;
+        } else {
+          delete state.amounts[r.id];
+        }
+        saveState();
+        recompute();
+      });
+      row.appendChild(amount);
+
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.className = "remove";
+      remove.title = "Remove this line";
+      remove.textContent = "×";
+      remove.addEventListener("click", () => removeRow(cat, r));
+      row.appendChild(remove);
+
+      return row;
+    }
+
+    function addCustomRow(cat) {
+      const id = `custom-${cat.id}-${Date.now()}-${Math.random()
+        .toString(36)
+        .slice(2, 6)}`;
+      const newRow = { id, label: "New item" };
+      state.custom[cat.id] = state.custom[cat.id] || [];
+      state.custom[cat.id].push(newRow);
+      saveState();
+      render();
+      // Focus the newly added label for immediate edit
+      requestAnimationFrame(() => {
+        const el = document.querySelector(`[data-row="${id}"] .label`);
+        if (el) {
+          el.focus();
+          // Select text for quick replacement
+          const range = document.createRange();
+          range.selectNodeContents(el);
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }
+      });
+    }
+
+    function removeRow(cat, r) {
+      delete state.amounts[r.id];
+      delete state.labels[r.id];
+      if (isCustomRow(cat.id, r.id)) {
+        state.custom[cat.id] = (state.custom[cat.id] || []).filter(
+          (x) => x.id !== r.id
+        );
+      } else {
+        state.removed[r.id] = true;
+      }
+      saveState();
+      render();
+    }
+
+    function recompute() {
+      let grand = 0;
+      DEFAULT_CATEGORIES.forEach((cat) => {
+        const rows = rowsForCategory(cat);
+        let sub = 0;
+        rows.forEach((r) => {
+          const v = state.amounts[r.id];
+          if (typeof v === "number" && Number.isFinite(v)) sub += v;
+        });
+        grand += sub;
+        const el = document.querySelector(`[data-subtotal="${cat.id}"]`);
+        if (el) el.textContent = fmt(sub);
+      });
+
+      document.getElementById("grand-total").textContent = fmt(grand);
+      const travelers = Math.max(1, parseInt(state.travelers, 10) || 1);
+      document.getElementById("per-person").textContent =
+        fmt(grand / travelers) + " / person";
+      document.getElementById("per-day").textContent =
+        fmt(grand / 11) + " / day";
+    }
+
+    // ----- Controls -----
+    document.getElementById("currency").addEventListener("change", (e) => {
+      state.currency = e.target.value;
+      saveState();
+      recompute();
+    });
+
+    document.getElementById("travelers").addEventListener("input", (e) => {
+      const v = parseInt(e.target.value, 10);
+      state.travelers = Number.isFinite(v) && v > 0 ? v : 1;
+      saveState();
+      recompute();
+    });
+
+    document.getElementById("reset-costs").addEventListener("click", () => {
+      if (
+        confirm(
+          "Reset all amounts, custom items, and labels?\nThis cannot be undone."
+        )
+      ) {
+        state = defaultState();
+        saveState();
+        render();
+      }
+    });
+
+    document.getElementById("export-costs").addEventListener("click", () => {
+      const exportObj = {
+        exportedAt: new Date().toISOString(),
+        currency: state.currency,
+        travelers: state.travelers,
+        categories: DEFAULT_CATEGORIES.map((cat) => ({
+          id: cat.id,
+          title: cat.title,
+          subtotal: rowsForCategory(cat).reduce(
+            (s, r) => s + (state.amounts[r.id] || 0),
+            0
+          ),
+          rows: rowsForCategory(cat).map((r) => ({
+            id: r.id,
+            label: state.labels[r.id] || r.label,
+            amount: state.amounts[r.id] || 0,
+          })),
+        })),
+      };
+      exportObj.grandTotal = exportObj.categories.reduce(
+        (s, c) => s + c.subtotal,
+        0
+      );
+      const blob = new Blob([JSON.stringify(exportObj, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "nz-trip-costs.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    document
+      .getElementById("print-costs")
+      .addEventListener("click", () => window.print());
+
+    // First render
+    render();
   </script>
 </body>
 </html>
