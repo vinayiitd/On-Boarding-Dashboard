@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>New Zealand South Island — 11 Day Family Itinerary</title>
+  <title>New Zealand South Island — 11 Day / 10 Night Family Itinerary</title>
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -26,6 +26,7 @@
       --franz: #f97316;
       --christchurch: #3b82f6;
       --tekapo: #10b981;
+      --cromwell: #ec4899;
     }
 
     * { box-sizing: border-box; }
@@ -219,12 +220,16 @@
       background: linear-gradient(
         180deg,
         var(--queenstown) 0%,
-        var(--queenstown) 45%,
-        var(--franz) 50%,
-        var(--franz) 60%,
-        var(--christchurch) 65%,
-        var(--christchurch) 80%,
-        var(--tekapo) 85%,
+        var(--queenstown) 36%,
+        var(--franz) 40%,
+        var(--franz) 54%,
+        var(--christchurch) 58%,
+        var(--christchurch) 72%,
+        var(--tekapo) 76%,
+        var(--tekapo) 82%,
+        var(--cromwell) 84%,
+        var(--cromwell) 90%,
+        var(--queenstown) 92%,
         var(--queenstown) 100%
       );
       border-radius: 2px;
@@ -766,9 +771,166 @@
       color: var(--accent-2);
     }
 
+    /* TIMINGS */
+    .timings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 18px;
+    }
+
+    .timing-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 18px 14px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .timing-card h3 {
+      margin: 0 0 12px;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .timing-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .timing-row {
+      background: rgba(0, 0, 0, 0.18);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+
+    .timing-row-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .timing-row .route {
+      flex: 1;
+      font-weight: 600;
+      color: var(--text);
+      padding: 4px 6px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      cursor: text;
+      min-width: 0;
+    }
+
+    .timing-row .route:focus {
+      outline: none;
+      background: rgba(0, 0, 0, 0.3);
+      border-color: var(--accent);
+    }
+
+    .timing-row .est {
+      font-size: 0.78rem;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 2px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .timing-row .duration {
+      font-size: 0.78rem;
+      color: var(--accent);
+      background: rgba(0, 194, 168, 0.1);
+      padding: 2px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+      font-weight: 600;
+    }
+
+    .timing-row-body {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
+    }
+
+    .timing-row-body label {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      gap: 4px;
+    }
+
+    .timing-row-body input {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 7px 9px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      color-scheme: dark;
+    }
+
+    .timing-row-body input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(0, 194, 168, 0.2);
+    }
+
+    .timing-row-body input[data-field="notes"] {
+      grid-column: 1 / -1;
+    }
+
+    .timing-row .remove {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 1.05rem;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .timing-row .remove:hover {
+      background: rgba(255, 107, 107, 0.15);
+      color: #ffaaaa;
+    }
+
+    .timing-card .add-row {
+      margin-top: 12px;
+      align-self: flex-start;
+      font-size: 0.85rem;
+      color: var(--accent);
+      background: transparent;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .timing-card .add-row:hover {
+      background: rgba(0, 194, 168, 0.08);
+      border-color: var(--accent);
+    }
+
     @media (max-width: 720px) {
       .totals { grid-template-columns: 1fr; }
       .cost-row { grid-template-columns: 1fr 100px auto; }
+      .timings-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 640px) {
@@ -786,15 +948,17 @@
   <header class="hero">
     <h1>New Zealand South Island</h1>
     <p class="subtitle">
-      An 11-day family loop through Queenstown, the West Coast glaciers,
-      Christchurch, and the dark skies of Lake Tekapo. No backtracking, balanced
-      driving days, plenty of "wow" moments for the kids.
+      An 11-day, 10-night family loop through Queenstown, the West Coast
+      glaciers, Christchurch, the dark skies of Lake Tekapo, and a final
+      stop in Cromwell — the "Fruit Bowl of the South" — before flying
+      out. No backtracking, balanced driving days, plenty of "wow"
+      moments for the kids.
     </p>
     <div class="stats">
       <div class="stat"><div class="num">11</div><div class="label">Days</div></div>
-      <div class="stat"><div class="num">4</div><div class="label">Bases</div></div>
+      <div class="stat"><div class="num">10</div><div class="label">Nights</div></div>
+      <div class="stat"><div class="num">5</div><div class="label">Bases</div></div>
       <div class="stat"><div class="num">~1,400 km</div><div class="label">Total Drive</div></div>
-      <div class="stat"><div class="num">Loop</div><div class="label">No Backtrack</div></div>
     </div>
   </header>
 
@@ -808,10 +972,11 @@
       </p>
       <div class="map-wrap"><div id="map"></div></div>
       <div class="legend">
-        <span class="pill"><span class="swatch" style="background: var(--queenstown)"></span> Queenstown base (5 nights)</span>
+        <span class="pill"><span class="swatch" style="background: var(--queenstown)"></span> Queenstown base (4 nights)</span>
         <span class="pill"><span class="swatch" style="background: var(--franz)"></span> Franz Josef base (2 nights)</span>
         <span class="pill"><span class="swatch" style="background: var(--christchurch)"></span> Christchurch base (2 nights)</span>
         <span class="pill"><span class="swatch" style="background: var(--tekapo)"></span> Lake Tekapo (1 night)</span>
+        <span class="pill"><span class="swatch" style="background: var(--cromwell)"></span> Cromwell (1 night)</span>
         <span class="pill"><span class="swatch" style="background:#ffffff"></span> Day trip / scenic stop</span>
       </div>
     </section>
@@ -834,6 +999,29 @@
         actually enjoy.
       </p>
       <div class="hotel-grid" id="hotel-grid"></div>
+    </section>
+
+    <!-- TIMINGS -->
+    <section id="timings">
+      <h2 class="section-title"><span class="dot"></span> Timings</h2>
+      <p class="section-subtitle">
+        Add your flight and inter-base drive times. Click any field to edit;
+        values auto-save in your browser. Duration is computed automatically
+        from departure and arrival.
+      </p>
+      <div class="timings-grid">
+        <div class="timing-card">
+          <h3>✈️ Flight Timings</h3>
+          <div class="timing-rows" id="flight-rows"></div>
+          <button class="add-row" id="add-flight" type="button">＋ Add flight</button>
+        </div>
+
+        <div class="timing-card">
+          <h3>🚗 Travel Between Stays</h3>
+          <div class="timing-rows" id="leg-rows"></div>
+          <button class="add-row" id="add-leg" type="button">＋ Add leg</button>
+        </div>
+      </div>
     </section>
 
     <!-- COSTS -->
@@ -885,33 +1073,34 @@
       </div>
     </section>
 
-    <!-- FINAL DAY -->
+    <!-- FINAL LEG -->
     <section id="final-day">
-      <h2 class="section-title"><span class="dot"></span> Final Day Options</h2>
+      <h2 class="section-title"><span class="dot"></span> Final Leg — Tekapo → Cromwell → Queenstown Airport</h2>
       <p class="section-subtitle">
-        Two ways to handle the last leg back to Queenstown Airport.
+        The journey home is split over two relaxed days, with Cromwell as
+        the last overnight stop before flying out.
       </p>
       <div class="options">
         <div class="option recommended">
-          <h3>Option A <span class="tag rec">Recommended</span></h3>
+          <h3>Day 10 <span class="tag rec">Tekapo → Cromwell</span></h3>
           <p style="color: var(--muted); margin: 0 0 6px;">
-            Relaxed pace, no airport stress.
+            Scenic ~2.5–3 hr drive over Lindis Pass.
           </p>
           <ol>
-            <li>Drive Tekapo → Queenstown</li>
-            <li>Stay one final night in Queenstown</li>
-            <li>Fly out the next day</li>
+            <li>Stop at fruit stalls along the way</li>
+            <li>Lake Dunstan views &amp; Bannockburn vineyards</li>
+            <li>Overnight in Cromwell</li>
           </ol>
         </div>
         <div class="option">
-          <h3>Option B <span class="tag alt">Time Saver</span></h3>
+          <h3>Day 11 <span class="tag alt">Cromwell → Queenstown Airport</span></h3>
           <p style="color: var(--muted); margin: 0 0 6px;">
-            Best if flights align well.
+            Short ~1 hr drive along Lake Dunstan & the Kawarau Gorge.
           </p>
           <ol>
-            <li>Drive Tekapo → Queenstown Airport</li>
-            <li>Drop off the rental car</li>
-            <li>Fly out the same day</li>
+            <li>Optional photo stop at Roaring Meg or the Gibbston wineries</li>
+            <li>Drop off the rental car at Queenstown Airport</li>
+            <li>Fly out</li>
           </ol>
         </div>
       </div>
@@ -935,9 +1124,12 @@
       franz: "#f97316",
       christchurch: "#3b82f6",
       tekapo: "#10b981",
+      cromwell: "#ec4899",
       stop: "#ffffff",
     };
 
+    // 10 days / 9 nights. Day 10 is the fly-out drive (no overnight stay).
+    // `mapPoints` lists the marker IDs each day touches on the map.
     const itinerary = [
       {
         day: 1, base: "Queenstown", baseKey: "queenstown",
@@ -945,6 +1137,7 @@
         activities: "Skyline Gondola, lake walk, town exploration",
         drive: "Local",
         stay: "Queenstown",
+        mapPoints: ["queenstown"],
       },
       {
         day: 2, base: "Queenstown", baseKey: "queenstown",
@@ -952,6 +1145,7 @@
         activities: "Jet boating, Luge, adventure activities",
         drive: "Local",
         stay: "Queenstown",
+        mapPoints: ["queenstown"],
       },
       {
         day: 3, base: "Queenstown", baseKey: "queenstown",
@@ -959,69 +1153,87 @@
         activities: "Cruise, fjords, waterfalls, wildlife",
         drive: "12–13 hrs return",
         stay: "Queenstown",
+        mapPoints: ["milford"],
       },
       {
         day: 4, base: "Queenstown", baseKey: "queenstown",
-        route: "Wanaka",
-        activities: "Puzzling World, lake walk, scenic stops",
-        drive: "3–4 hrs return",
+        route: "Glenorchy + Wanaka",
+        activities:
+          "Glenorchy scenic drive & LOTR sites, then Puzzling World and Wanaka lake walk",
+        drive: "5–6 hrs",
         stay: "Queenstown",
+        mapPoints: ["glenorchy", "wanaka"],
       },
       {
-        day: 5, base: "Queenstown", baseKey: "queenstown",
-        route: "Glenorchy",
-        activities: "Scenic drive, short walks, LOTR sites",
-        drive: "2–3 hrs",
-        stay: "Queenstown",
-      },
-      {
-        day: 6, base: "Franz Josef", baseKey: "franz",
+        day: 5, base: "Franz Josef", baseKey: "franz",
         route: "Queenstown → Haast Pass → Franz Josef",
         activities: "Lakes, waterfalls, West Coast drive",
         drive: "5.5–6.5 hrs",
         stay: "Franz Josef",
+        mapPoints: ["franz"],
       },
       {
-        day: 7, base: "Franz Josef", baseKey: "franz",
+        day: 6, base: "Franz Josef", baseKey: "franz",
         route: "Glacier region",
         activities: "Glacier walks, optional helicopter, hot pools",
         drive: "Local",
         stay: "Franz Josef",
+        mapPoints: ["franz"],
       },
       {
-        day: 8, base: "Christchurch", baseKey: "christchurch",
+        day: 7, base: "Christchurch", baseKey: "christchurch",
         route: "Franz Josef → Arthur's Pass → Christchurch",
         activities: "Alpine drive, kea spotting, waterfalls",
         drive: "5–6 hrs",
         stay: "Christchurch",
+        mapPoints: ["christchurch"],
       },
       {
-        day: 9, base: "Christchurch", baseKey: "christchurch",
+        day: 8, base: "Christchurch", baseKey: "christchurch",
         route: "Akaroa",
         activities: "Harbour cruise, dolphins, French village",
         drive: "2.5 hrs return",
         stay: "Christchurch",
+        mapPoints: ["akaroa"],
       },
       {
-        day: 10, base: "Lake Tekapo", baseKey: "tekapo",
+        day: 9, base: "Lake Tekapo", baseKey: "tekapo",
         route: "Christchurch → Lake Tekapo",
-        activities: "Scenic drive, Church of the Good Shepherd, lake views, dark sky",
+        activities:
+          "Scenic drive, Church of the Good Shepherd, lake views, dark sky",
         drive: "3 hrs",
         stay: "Lake Tekapo",
+        mapPoints: ["tekapo"],
+      },
+      {
+        day: 10, base: "Cromwell", baseKey: "cromwell",
+        route: "Tekapo → Lindis Pass → Cromwell",
+        activities:
+          "Scenic drive, fruit stalls, lake views, vineyards in Bannockburn",
+        drive: "2.5–3 hrs",
+        stay: "Cromwell",
+        mapPoints: ["cromwell"],
       },
       {
         day: 11, base: "Queenstown", baseKey: "queenstown",
-        route: "Tekapo → Queenstown (fly out prep)",
-        activities: "Relax, scenic stop, return rental or fly",
-        drive: "3 hrs",
-        stay: "Queenstown",
+        route: "Cromwell → Queenstown Airport (fly out)",
+        activities:
+          "Short scenic drive along Lake Dunstan & Kawarau Gorge, return rental, fly out",
+        drive: "1 hr",
+        stay: "Fly out (no overnight)",
+        mapPoints: ["queenstown"],
       },
     ];
+
+    const TRIP_DAYS = itinerary.length;          // 10
+    const TRIP_NIGHTS = itinerary.filter(        // 9
+      (d) => d.stay && !/fly out/i.test(d.stay)
+    ).length;
 
     const hotels = [
       {
         place: "Queenstown",
-        nights: "5 nights total",
+        nights: "4 nights total",
         color: COLORS.queenstown,
         list: [
           { name: "Novotel Queenstown Lakeside", desc: "Best location, easy lake access" },
@@ -1065,6 +1277,18 @@
         ],
         tip: "Why this stop matters: dark sky reserve at night = a 'wow' moment kids never forget.",
       },
+      {
+        place: "Cromwell",
+        nights: "1 night (last night before fly-out)",
+        color: COLORS.cromwell,
+        list: [
+          { name: "Heritage Gateway Hotel Cromwell", desc: "Solid family-friendly choice, central" },
+          { name: "The Gate Boutique Hotel Cromwell", desc: "Comfortable rooms, easy access" },
+          { name: "Cromwell Top 10 Holiday Park", desc: "Cabins + pool — fun for kids" },
+          { name: "Wooing Tree Estate Cottages", desc: "Boutique vineyard stay (premium)" },
+        ],
+        tip: "Cromwell is the 'Fruit Bowl of the South' — giant fruit sculpture, stone-fruit stalls, Lake Dunstan walks, and Bannockburn vineyards just minutes away.",
+      },
     ];
 
     // Geographic points used in the map (lat, lng)
@@ -1079,6 +1303,8 @@
       christchurch: { coord: [-43.5320, 172.6362], name: "Christchurch",    key: "christchurch" },
       akaroa:       { coord: [-43.8050, 172.9669], name: "Akaroa",          key: "stop"         },
       tekapo:       { coord: [-44.0044, 170.4769], name: "Lake Tekapo",     key: "tekapo"       },
+      lindis:       { coord: [-44.5853, 169.7028], name: "Lindis Pass",     key: "stop"         },
+      cromwell:     { coord: [-45.0376, 169.2014], name: "Cromwell",        key: "cromwell"     },
     };
 
     // The route segments (for drawing the polyline loop, in order travelled)
@@ -1088,15 +1314,17 @@
       { from: "franz",       to: "arthurs",      color: COLORS.christchurch, dashed: false },
       { from: "arthurs",     to: "christchurch", color: COLORS.christchurch, dashed: false },
       { from: "christchurch",to: "tekapo",       color: COLORS.tekapo,       dashed: false },
-      { from: "tekapo",      to: "queenstown",   color: COLORS.queenstown,   dashed: false },
+      { from: "tekapo",      to: "lindis",       color: COLORS.cromwell,     dashed: false },
+      { from: "lindis",      to: "cromwell",     color: COLORS.cromwell,     dashed: false },
+      { from: "cromwell",    to: "queenstown",   color: COLORS.queenstown,   dashed: false },
     ];
 
-    // Day-trip arcs from Queenstown (dashed)
+    // Day-trip arcs from each base (dashed)
     const DAY_TRIPS = [
-      { from: "queenstown", to: "milford",   day: 3 },
-      { from: "queenstown", to: "wanaka",    day: 4 },
-      { from: "queenstown", to: "glenorchy", day: 5 },
-      { from: "christchurch", to: "akaroa",  day: 9 },
+      { from: "queenstown",   to: "milford",   day: 3 },
+      { from: "queenstown",   to: "glenorchy", day: 4 },
+      { from: "queenstown",   to: "wanaka",    day: 4 },
+      { from: "christchurch", to: "akaroa",    day: 8 },
     ];
 
     // ---------- RENDER TIMELINE ----------
@@ -1191,17 +1419,15 @@
       }).addTo(map);
     });
 
-    // Build a quick lookup: which days happen at each point
-    const daysByPoint = {
-      queenstown: [1, 2, 11],
-      milford: [3],
-      wanaka: [4],
-      glenorchy: [5],
-      franz: [6, 7],
-      christchurch: [8],
-      akaroa: [9],
-      tekapo: [10],
-    };
+    // Build a lookup: which itinerary days touch each map point.
+    // Derived from the `mapPoints` field on each itinerary day so that
+    // any future schedule changes flow through automatically.
+    const daysByPoint = {};
+    itinerary.forEach((d) => {
+      (d.mapPoints || []).forEach((pid) => {
+        (daysByPoint[pid] = daysByPoint[pid] || []).push(d.day);
+      });
+    });
 
     // Add markers
     Object.entries(POINTS).forEach(([id, p]) => {
@@ -1224,18 +1450,9 @@
 
       const marker = L.marker(p.coord, { icon }).addTo(map);
 
-      // Build popup with the relevant day rows
+      // Build popup with the relevant day rows (derived from mapPoints)
       const dayRows = itinerary
-        .filter((d) =>
-          (id === "queenstown" && (d.day === 1 || d.day === 2 || d.day === 11)) ||
-          (id === "milford" && d.day === 3) ||
-          (id === "wanaka" && d.day === 4) ||
-          (id === "glenorchy" && d.day === 5) ||
-          (id === "franz" && (d.day === 6 || d.day === 7)) ||
-          (id === "christchurch" && d.day === 8) ||
-          (id === "akaroa" && d.day === 9) ||
-          (id === "tekapo" && d.day === 10)
-        )
+        .filter((d) => (d.mapPoints || []).includes(id))
         .map(
           (d) =>
             `<div style="margin-top:6px;"><b>Day ${d.day}</b> — ${d.activities}<br><span style="color:#a9bccd;font-size:0.82rem;">🕒 ${d.drive} · 🛏️ ${d.stay}</span></div>`
@@ -1256,9 +1473,293 @@
     map.fitBounds(allCoords, { padding: [40, 40] });
 
     // ===========================================================
+    // TIMINGS SECTION
+    // ===========================================================
+    // v2: Day 10 changed from "Tekapo → Queenstown Airport" to
+    // "Tekapo → Cromwell" (with a new Day 11 fly-out from Cromwell).
+    // Bumping the key prevents stale saved routes from overriding the
+    // new defaults via the merge-by-id load logic.
+    const TIMINGS_KEY = "nz-itinerary-timings-v2";
+
+    // Default flights (Melbourne <-> Queenstown). User can edit dates,
+    // times, flight numbers, route names — everything is editable.
+    const DEFAULT_FLIGHTS = [
+      {
+        id: "flight-out",
+        route: "Melbourne (MEL) → Queenstown (ZQN)",
+        date: "",
+        depart: "",
+        arrive: "",
+        notes: "",
+      },
+      {
+        id: "flight-return",
+        route: "Queenstown (ZQN) → Melbourne (MEL)",
+        date: "",
+        depart: "",
+        arrive: "",
+        notes: "",
+      },
+    ];
+
+    // Default inter-base drive legs: any itinerary day where the base
+    // changes from the previous day. Estimate is taken from the day's
+    // drive time so we can show it as a hint.
+    const DEFAULT_LEGS = (() => {
+      const out = [];
+      for (let i = 0; i < itinerary.length; i++) {
+        const d = itinerary[i];
+        const prev = itinerary[i - 1];
+        if (!prev || prev.base !== d.base) {
+          // Skip the very first day (arrival, no inter-base drive)
+          if (i === 0) continue;
+          out.push({
+            id: `leg-d${d.day}`,
+            day: d.day,
+            route: d.route,
+            estimate: d.drive,
+            date: "",
+            depart: "",
+            arrive: "",
+            notes: "",
+          });
+        }
+      }
+      return out;
+    })();
+
+    function defaultTimingsState() {
+      return {
+        flights: DEFAULT_FLIGHTS.map((f) => ({ ...f })),
+        legs: DEFAULT_LEGS.map((l) => ({ ...l })),
+      };
+    }
+
+    function loadTimings() {
+      try {
+        const raw = localStorage.getItem(TIMINGS_KEY);
+        if (!raw) return defaultTimingsState();
+        const parsed = JSON.parse(raw);
+        // Merge with defaults to keep new default rows when added in
+        // future versions; preserve any edits the user made by id.
+        const def = defaultTimingsState();
+        const mergeById = (defaults, saved) => {
+          const savedMap = new Map((saved || []).map((r) => [r.id, r]));
+          const merged = defaults.map((d) =>
+            savedMap.has(d.id) ? { ...d, ...savedMap.get(d.id) } : d
+          );
+          // Append any user-added rows not in defaults
+          (saved || []).forEach((r) => {
+            if (!merged.find((m) => m.id === r.id)) merged.push(r);
+          });
+          return merged;
+        };
+        return {
+          flights: mergeById(def.flights, parsed.flights),
+          legs: mergeById(def.legs, parsed.legs),
+        };
+      } catch {
+        return defaultTimingsState();
+      }
+    }
+
+    function saveTimings() {
+      try {
+        localStorage.setItem(TIMINGS_KEY, JSON.stringify(timings));
+      } catch {
+        /* ignore */
+      }
+    }
+
+    let timings = loadTimings();
+
+    function computeDuration(depart, arrive) {
+      if (!depart || !arrive) return "";
+      const [dh, dm] = depart.split(":").map(Number);
+      const [ah, am] = arrive.split(":").map(Number);
+      if ([dh, dm, ah, am].some((n) => Number.isNaN(n))) return "";
+      let mins = ah * 60 + am - (dh * 60 + dm);
+      if (mins < 0) mins += 24 * 60; // overnight / next-day
+      const h = Math.floor(mins / 60);
+      const m = mins % 60;
+      if (!h && !m) return "";
+      if (!m) return `${h}h`;
+      if (!h) return `${m}m`;
+      return `${h}h ${m}m`;
+    }
+
+    function buildTimingRow(row, kind) {
+      const el = document.createElement("div");
+      el.className = "timing-row";
+      el.dataset.id = row.id;
+      el.dataset.kind = kind;
+
+      const head = document.createElement("div");
+      head.className = "timing-row-head";
+
+      const route = document.createElement("div");
+      route.className = "route";
+      route.contentEditable = "true";
+      route.spellcheck = false;
+      route.textContent = row.route || "New leg";
+      route.title = "Click to edit route";
+      route.addEventListener("blur", () => {
+        const v = route.textContent.trim();
+        row.route = v || (kind === "flight" ? "New flight" : "New leg");
+        if (!v) route.textContent = row.route;
+        saveTimings();
+      });
+      route.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") { e.preventDefault(); route.blur(); }
+      });
+      head.appendChild(route);
+
+      // Estimate badge for drive legs
+      if (row.estimate) {
+        const est = document.createElement("span");
+        est.className = "est";
+        est.title = "Estimated drive time";
+        est.textContent = `~${row.estimate}`;
+        head.appendChild(est);
+      }
+
+      // Computed duration badge
+      const dur = document.createElement("span");
+      dur.className = "duration";
+      dur.dataset.duration = "";
+      dur.textContent = computeDuration(row.depart, row.arrive) || "—";
+      head.appendChild(dur);
+
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.className = "remove";
+      remove.title = "Remove";
+      remove.textContent = "×";
+      remove.addEventListener("click", () => {
+        const arr = kind === "flight" ? timings.flights : timings.legs;
+        const idx = arr.findIndex((r) => r.id === row.id);
+        if (idx >= 0) arr.splice(idx, 1);
+        saveTimings();
+        renderTimings();
+      });
+      head.appendChild(remove);
+      el.appendChild(head);
+
+      const body = document.createElement("div");
+      body.className = "timing-row-body";
+
+      const fields = [
+        { key: "date",   label: "Date",   type: "date" },
+        { key: "depart", label: "Depart", type: "time" },
+        { key: "arrive", label: "Arrive", type: "time" },
+        {
+          key: "notes",
+          label: kind === "flight" ? "Flight # / notes" : "Notes",
+          type: "text",
+        },
+      ];
+
+      fields.forEach((f) => {
+        const lbl = document.createElement("label");
+        lbl.textContent = f.label;
+        const input = document.createElement("input");
+        input.type = f.type;
+        input.dataset.field = f.key;
+        input.value = row[f.key] || "";
+        if (f.type === "text") {
+          input.placeholder =
+            kind === "flight" ? "e.g. JQ123, via Auckland" : "e.g. lunch stop in Wanaka";
+        }
+        input.addEventListener("input", () => {
+          row[f.key] = input.value;
+          if (f.key === "depart" || f.key === "arrive") {
+            dur.textContent = computeDuration(row.depart, row.arrive) || "—";
+          }
+          saveTimings();
+        });
+        lbl.appendChild(input);
+        body.appendChild(lbl);
+      });
+
+      el.appendChild(body);
+      return el;
+    }
+
+    function renderTimings() {
+      const flightWrap = document.getElementById("flight-rows");
+      const legWrap = document.getElementById("leg-rows");
+      flightWrap.innerHTML = "";
+      legWrap.innerHTML = "";
+      timings.flights.forEach((f) =>
+        flightWrap.appendChild(buildTimingRow(f, "flight"))
+      );
+      timings.legs.forEach((l) =>
+        legWrap.appendChild(buildTimingRow(l, "leg"))
+      );
+    }
+
+    document.getElementById("add-flight").addEventListener("click", () => {
+      const id = `flight-custom-${Date.now()}-${Math.random()
+        .toString(36)
+        .slice(2, 6)}`;
+      timings.flights.push({
+        id,
+        route: "New flight",
+        date: "",
+        depart: "",
+        arrive: "",
+        notes: "",
+      });
+      saveTimings();
+      renderTimings();
+      requestAnimationFrame(() => {
+        const el = document.querySelector(`[data-id="${id}"] .route`);
+        if (el) {
+          el.focus();
+          const r = document.createRange();
+          r.selectNodeContents(el);
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(r);
+        }
+      });
+    });
+
+    document.getElementById("add-leg").addEventListener("click", () => {
+      const id = `leg-custom-${Date.now()}-${Math.random()
+        .toString(36)
+        .slice(2, 6)}`;
+      timings.legs.push({
+        id,
+        route: "New leg",
+        date: "",
+        depart: "",
+        arrive: "",
+        notes: "",
+      });
+      saveTimings();
+      renderTimings();
+      requestAnimationFrame(() => {
+        const el = document.querySelector(`[data-id="${id}"] .route`);
+        if (el) {
+          el.focus();
+          const r = document.createRange();
+          r.selectNodeContents(el);
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(r);
+        }
+      });
+    });
+
+    renderTimings();
+
+    // ===========================================================
     // COSTS SECTION
     // ===========================================================
-    const STORAGE_KEY = "nz-itinerary-costs-v1";
+    // Version bump (v2): 9-night plan changes day numbering, so we start
+    // fresh rather than risk mapping old amounts onto the wrong rows.
+    const STORAGE_KEY = "nz-itinerary-costs-v2";
 
     const CURRENCIES = {
       NZD: { symbol: "$",  locale: "en-NZ", code: "NZD" },
@@ -1284,11 +1785,14 @@
       },
       {
         id: "accommodation",
-        title: "🛏️ Accommodation (per night)",
-        rows: itinerary.map((d) => ({
-          id: `acc-d${d.day}`,
-          label: `Night ${d.day} — ${d.stay}`,
-        })),
+        title: `🛏️ Accommodation (${TRIP_NIGHTS} nights)`,
+        // Skip days with no overnight stay (e.g. final fly-out day)
+        rows: itinerary
+          .filter((d) => d.stay && !/fly out/i.test(d.stay))
+          .map((d, i) => ({
+            id: `acc-d${d.day}`,
+            label: `Night ${i + 1} (Day ${d.day}) — ${d.stay}`,
+          })),
       },
       {
         id: "activities",
@@ -1297,17 +1801,17 @@
           { id: "act-skyline",   label: "Skyline Gondola (Day 1)" },
           { id: "act-jet-luge",  label: "Jet boating / Luge (Day 2)" },
           { id: "act-milford",   label: "Milford Sound cruise (Day 3)" },
+          { id: "act-glenorchy", label: "Glenorchy LOTR sites (Day 4)" },
           { id: "act-puzzling",  label: "Puzzling World, Wanaka (Day 4)" },
-          { id: "act-glenorchy", label: "Glenorchy LOTR tour (Day 5)" },
-          { id: "act-glacier",   label: "Glacier walk / heli (Day 7)" },
-          { id: "act-hotpools",  label: "Franz Josef hot pools (Day 7)" },
-          { id: "act-akaroa",    label: "Akaroa harbour cruise (Day 9)" },
-          { id: "act-tekapo",    label: "Tekapo dark sky tour (Day 10)" },
+          { id: "act-glacier",   label: "Glacier walk / heli (Day 6)" },
+          { id: "act-hotpools",  label: "Franz Josef hot pools (Day 6)" },
+          { id: "act-akaroa",    label: "Akaroa harbour cruise (Day 8)" },
+          { id: "act-tekapo",    label: "Tekapo dark sky tour (Day 9)" },
         ],
       },
       {
         id: "food",
-        title: "🍽️ Food (per day)",
+        title: `🍽️ Food (${TRIP_DAYS} days)`,
         rows: itinerary.map((d) => ({
           id: `food-d${d.day}`,
           label: `Day ${d.day} — ${d.base}`,
@@ -1317,7 +1821,7 @@
         id: "transport",
         title: "🚗 Car Rental & Fuel",
         rows: [
-          { id: "car-rental",    label: "Car rental (11 days)" },
+          { id: "car-rental",    label: `Car rental (${TRIP_DAYS} days)` },
           { id: "car-insurance", label: "Insurance / extras" },
           { id: "car-fuel",      label: "Petrol / EV charging" },
           { id: "car-parking",   label: "Parking & tolls" },
@@ -1567,7 +2071,7 @@
       document.getElementById("per-person").textContent =
         fmt(grand / travelers) + " / person";
       document.getElementById("per-day").textContent =
-        fmt(grand / 11) + " / day";
+        fmt(grand / TRIP_DAYS) + " / day";
     }
 
     // ----- Controls -----
