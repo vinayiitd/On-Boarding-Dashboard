@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>New Zealand South Island — 10 Day / 9 Night Family Itinerary</title>
+  <title>New Zealand South Island — 11 Day / 10 Night Family Itinerary</title>
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -26,6 +26,7 @@
       --franz: #f97316;
       --christchurch: #3b82f6;
       --tekapo: #10b981;
+      --cromwell: #ec4899;
     }
 
     * { box-sizing: border-box; }
@@ -219,13 +220,15 @@
       background: linear-gradient(
         180deg,
         var(--queenstown) 0%,
-        var(--queenstown) 38%,
-        var(--franz) 42%,
-        var(--franz) 58%,
-        var(--christchurch) 62%,
-        var(--christchurch) 78%,
+        var(--queenstown) 36%,
+        var(--franz) 40%,
+        var(--franz) 54%,
+        var(--christchurch) 58%,
+        var(--christchurch) 72%,
+        var(--tekapo) 76%,
         var(--tekapo) 82%,
-        var(--tekapo) 88%,
+        var(--cromwell) 84%,
+        var(--cromwell) 90%,
         var(--queenstown) 92%,
         var(--queenstown) 100%
       );
@@ -945,15 +948,16 @@
   <header class="hero">
     <h1>New Zealand South Island</h1>
     <p class="subtitle">
-      A 10-day, 9-night family loop through Queenstown, the West Coast
-      glaciers, Christchurch, and the dark skies of Lake Tekapo. No
-      backtracking, balanced driving days, plenty of "wow" moments for the
-      kids.
+      An 11-day, 10-night family loop through Queenstown, the West Coast
+      glaciers, Christchurch, the dark skies of Lake Tekapo, and a final
+      stop in Cromwell — the "Fruit Bowl of the South" — before flying
+      out. No backtracking, balanced driving days, plenty of "wow"
+      moments for the kids.
     </p>
     <div class="stats">
-      <div class="stat"><div class="num">10</div><div class="label">Days</div></div>
-      <div class="stat"><div class="num">9</div><div class="label">Nights</div></div>
-      <div class="stat"><div class="num">4</div><div class="label">Bases</div></div>
+      <div class="stat"><div class="num">11</div><div class="label">Days</div></div>
+      <div class="stat"><div class="num">10</div><div class="label">Nights</div></div>
+      <div class="stat"><div class="num">5</div><div class="label">Bases</div></div>
       <div class="stat"><div class="num">~1,400 km</div><div class="label">Total Drive</div></div>
     </div>
   </header>
@@ -968,10 +972,11 @@
       </p>
       <div class="map-wrap"><div id="map"></div></div>
       <div class="legend">
-        <span class="pill"><span class="swatch" style="background: var(--queenstown)"></span> Queenstown base (5 nights)</span>
+        <span class="pill"><span class="swatch" style="background: var(--queenstown)"></span> Queenstown base (4 nights)</span>
         <span class="pill"><span class="swatch" style="background: var(--franz)"></span> Franz Josef base (2 nights)</span>
         <span class="pill"><span class="swatch" style="background: var(--christchurch)"></span> Christchurch base (2 nights)</span>
         <span class="pill"><span class="swatch" style="background: var(--tekapo)"></span> Lake Tekapo (1 night)</span>
+        <span class="pill"><span class="swatch" style="background: var(--cromwell)"></span> Cromwell (1 night)</span>
         <span class="pill"><span class="swatch" style="background:#ffffff"></span> Day trip / scenic stop</span>
       </div>
     </section>
@@ -1068,35 +1073,34 @@
       </div>
     </section>
 
-    <!-- FINAL DAY -->
+    <!-- FINAL LEG -->
     <section id="final-day">
-      <h2 class="section-title"><span class="dot"></span> Final Day Options</h2>
+      <h2 class="section-title"><span class="dot"></span> Final Leg — Tekapo → Cromwell → Queenstown Airport</h2>
       <p class="section-subtitle">
-        Two ways to handle the last leg back to Queenstown Airport. The
-        default 9-night plan above uses <strong>Option B</strong>; pick
-        Option A if you want to add an extra (10th) night.
+        The journey home is split over two relaxed days, with Cromwell as
+        the last overnight stop before flying out.
       </p>
       <div class="options">
         <div class="option recommended">
-          <h3>Option B <span class="tag rec">Default · 9 nights</span></h3>
+          <h3>Day 10 <span class="tag rec">Tekapo → Cromwell</span></h3>
           <p style="color: var(--muted); margin: 0 0 6px;">
-            Time-saver: fly out on Day 10 itself.
+            Scenic ~2.5–3 hr drive over Lindis Pass.
           </p>
           <ol>
-            <li>Drive Tekapo → Queenstown Airport</li>
-            <li>Drop off the rental car</li>
-            <li>Fly out the same day</li>
+            <li>Stop at fruit stalls along the way</li>
+            <li>Lake Dunstan views &amp; Bannockburn vineyards</li>
+            <li>Overnight in Cromwell</li>
           </ol>
         </div>
         <div class="option">
-          <h3>Option A <span class="tag alt">Adds a 10th night</span></h3>
+          <h3>Day 11 <span class="tag alt">Cromwell → Queenstown Airport</span></h3>
           <p style="color: var(--muted); margin: 0 0 6px;">
-            Relaxed pace, no airport stress — but adds one more hotel night.
+            Short ~1 hr drive along Lake Dunstan & the Kawarau Gorge.
           </p>
           <ol>
-            <li>Drive Tekapo → Queenstown</li>
-            <li>Stay one final night in Queenstown</li>
-            <li>Fly out the next day</li>
+            <li>Optional photo stop at Roaring Meg or the Gibbston wineries</li>
+            <li>Drop off the rental car at Queenstown Airport</li>
+            <li>Fly out</li>
           </ol>
         </div>
       </div>
@@ -1120,6 +1124,7 @@
       franz: "#f97316",
       christchurch: "#3b82f6",
       tekapo: "#10b981",
+      cromwell: "#ec4899",
       stop: "#ffffff",
     };
 
@@ -1201,10 +1206,20 @@
         mapPoints: ["tekapo"],
       },
       {
-        day: 10, base: "Queenstown", baseKey: "queenstown",
-        route: "Tekapo → Queenstown Airport (fly out)",
-        activities: "Scenic drive, return rental, fly out same day",
-        drive: "3 hrs",
+        day: 10, base: "Cromwell", baseKey: "cromwell",
+        route: "Tekapo → Lindis Pass → Cromwell",
+        activities:
+          "Scenic drive, fruit stalls, lake views, vineyards in Bannockburn",
+        drive: "2.5–3 hrs",
+        stay: "Cromwell",
+        mapPoints: ["cromwell"],
+      },
+      {
+        day: 11, base: "Queenstown", baseKey: "queenstown",
+        route: "Cromwell → Queenstown Airport (fly out)",
+        activities:
+          "Short scenic drive along Lake Dunstan & Kawarau Gorge, return rental, fly out",
+        drive: "1 hr",
         stay: "Fly out (no overnight)",
         mapPoints: ["queenstown"],
       },
@@ -1262,6 +1277,18 @@
         ],
         tip: "Why this stop matters: dark sky reserve at night = a 'wow' moment kids never forget.",
       },
+      {
+        place: "Cromwell",
+        nights: "1 night (last night before fly-out)",
+        color: COLORS.cromwell,
+        list: [
+          { name: "Heritage Gateway Hotel Cromwell", desc: "Solid family-friendly choice, central" },
+          { name: "The Gate Boutique Hotel Cromwell", desc: "Comfortable rooms, easy access" },
+          { name: "Cromwell Top 10 Holiday Park", desc: "Cabins + pool — fun for kids" },
+          { name: "Wooing Tree Estate Cottages", desc: "Boutique vineyard stay (premium)" },
+        ],
+        tip: "Cromwell is the 'Fruit Bowl of the South' — giant fruit sculpture, stone-fruit stalls, Lake Dunstan walks, and Bannockburn vineyards just minutes away.",
+      },
     ];
 
     // Geographic points used in the map (lat, lng)
@@ -1276,6 +1303,8 @@
       christchurch: { coord: [-43.5320, 172.6362], name: "Christchurch",    key: "christchurch" },
       akaroa:       { coord: [-43.8050, 172.9669], name: "Akaroa",          key: "stop"         },
       tekapo:       { coord: [-44.0044, 170.4769], name: "Lake Tekapo",     key: "tekapo"       },
+      lindis:       { coord: [-44.5853, 169.7028], name: "Lindis Pass",     key: "stop"         },
+      cromwell:     { coord: [-45.0376, 169.2014], name: "Cromwell",        key: "cromwell"     },
     };
 
     // The route segments (for drawing the polyline loop, in order travelled)
@@ -1285,7 +1314,9 @@
       { from: "franz",       to: "arthurs",      color: COLORS.christchurch, dashed: false },
       { from: "arthurs",     to: "christchurch", color: COLORS.christchurch, dashed: false },
       { from: "christchurch",to: "tekapo",       color: COLORS.tekapo,       dashed: false },
-      { from: "tekapo",      to: "queenstown",   color: COLORS.queenstown,   dashed: false },
+      { from: "tekapo",      to: "lindis",       color: COLORS.cromwell,     dashed: false },
+      { from: "lindis",      to: "cromwell",     color: COLORS.cromwell,     dashed: false },
+      { from: "cromwell",    to: "queenstown",   color: COLORS.queenstown,   dashed: false },
     ];
 
     // Day-trip arcs from each base (dashed)
@@ -1444,7 +1475,11 @@
     // ===========================================================
     // TIMINGS SECTION
     // ===========================================================
-    const TIMINGS_KEY = "nz-itinerary-timings-v1";
+    // v2: Day 10 changed from "Tekapo → Queenstown Airport" to
+    // "Tekapo → Cromwell" (with a new Day 11 fly-out from Cromwell).
+    // Bumping the key prevents stale saved routes from overriding the
+    // new defaults via the merge-by-id load logic.
+    const TIMINGS_KEY = "nz-itinerary-timings-v2";
 
     // Default flights (Melbourne <-> Queenstown). User can edit dates,
     // times, flight numbers, route names — everything is editable.
