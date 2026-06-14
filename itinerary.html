@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Zealand South Island — 11 Day Family Itinerary</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <style>
+    :root {
+      --bg-1: #0b1d2a;
+      --bg-2: #0f3a4a;
+      --accent: #00c2a8;
+      --accent-2: #ffb84d;
+      --accent-3: #ff6b6b;
+      --text: #f4f7fb;
+      --muted: #a9bccd;
+      --card: rgba(255, 255, 255, 0.06);
+      --card-strong: rgba(255, 255, 255, 0.1);
+      --border: rgba(255, 255, 255, 0.12);
+      --queenstown: #8b5cf6;
+      --franz: #f97316;
+      --christchurch: #3b82f6;
+      --tekapo: #10b981;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
+      color: var(--text);
+      background: linear-gradient(160deg, #07131c 0%, #0b1d2a 30%, #0a2a3a 100%);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--accent); }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      padding: 60px 24px 40px;
+      text-align: center;
+      background: radial-gradient(
+          ellipse at 20% 0%,
+          rgba(0, 194, 168, 0.25) 0%,
+          transparent 60%
+        ),
+        radial-gradient(
+          ellipse at 90% 20%,
+          rgba(255, 184, 77, 0.18) 0%,
+          transparent 55%
+        );
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(
+        180deg,
+        transparent 0%,
+        rgba(7, 19, 28, 0.4) 100%
+      );
+      pointer-events: none;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      margin: 0 0 12px;
+      letter-spacing: -0.02em;
+      font-weight: 800;
+      background: linear-gradient(
+        90deg,
+        #ffffff 0%,
+        var(--accent) 60%,
+        var(--accent-2) 100%
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero .subtitle {
+      color: var(--muted);
+      font-size: 1.1rem;
+      max-width: 720px;
+      margin: 0 auto 28px;
+      line-height: 1.55;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 14px;
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 14px;
+      backdrop-filter: blur(10px);
+    }
+
+    .stat .num {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .stat .label {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-top: 4px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    /* CONTAINER */
+    main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    section {
+      margin-bottom: 56px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.6rem;
+      margin: 0 0 20px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .section-title .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent);
+    }
+
+    .section-subtitle {
+      color: var(--muted);
+      margin: -10px 0 22px;
+      max-width: 720px;
+      line-height: 1.55;
+    }
+
+    /* MAP */
+    .map-wrap {
+      position: relative;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    #map {
+      height: 540px;
+      width: 100%;
+      background: #0d2230;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .legend .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+
+    .legend .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    /* TIMELINE */
+    .timeline {
+      position: relative;
+      padding-left: 28px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 11px;
+      top: 6px;
+      bottom: 6px;
+      width: 2px;
+      background: linear-gradient(
+        180deg,
+        var(--queenstown) 0%,
+        var(--queenstown) 45%,
+        var(--franz) 50%,
+        var(--franz) 60%,
+        var(--christchurch) 65%,
+        var(--christchurch) 80%,
+        var(--tekapo) 85%,
+        var(--queenstown) 100%
+      );
+      border-radius: 2px;
+    }
+
+    .day {
+      position: relative;
+      margin-bottom: 18px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 20px;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .day:hover {
+      background: var(--card-strong);
+      transform: translateY(-2px);
+    }
+
+    .day::before {
+      content: "";
+      position: absolute;
+      left: -22px;
+      top: 22px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--base-color, var(--accent));
+      box-shadow: 0 0 0 4px rgba(7, 19, 28, 1),
+        0 0 0 6px var(--base-color, var(--accent));
+    }
+
+    .day-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .day-num {
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--accent-2);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .day-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      flex: 1;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .badge.base {
+      background: var(--base-color, rgba(0, 194, 168, 0.2));
+      border-color: transparent;
+    }
+
+    .day-body {
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .day-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      margin-top: 10px;
+      font-size: 0.88rem;
+    }
+
+    .day-meta .item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+    }
+
+    .day-meta .item strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* HOTELS */
+    .hotel-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+    }
+
+    .hotel-card {
+      border-radius: 16px;
+      padding: 22px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hotel-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        var(--accent-color, var(--accent)) 0%,
+        transparent 50%
+      );
+      opacity: 0.18;
+      pointer-events: none;
+    }
+
+    .hotel-card h3 {
+      margin: 0 0 4px;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hotel-card .nights {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 14px;
+    }
+
+    .hotel-card ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 14px;
+    }
+
+    .hotel-card ul li {
+      padding: 8px 0;
+      border-bottom: 1px dashed var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .hotel-card ul li:last-child {
+      border-bottom: none;
+    }
+
+    .hotel-card ul li .name {
+      font-weight: 600;
+    }
+
+    .hotel-card ul li .desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .hotel-card .tip {
+      background: rgba(255, 184, 77, 0.12);
+      border: 1px solid rgba(255, 184, 77, 0.3);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.88rem;
+      color: #ffd9a1;
+    }
+
+    /* FINAL OPTIONS */
+    .options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+    }
+
+    .option {
+      padding: 22px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: var(--card);
+    }
+
+    .option.recommended {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    .option h3 {
+      margin: 0 0 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tag {
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+    }
+
+    .tag.rec {
+      background: var(--accent);
+      color: #062b25;
+    }
+
+    .tag.alt {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--muted);
+    }
+
+    .option ol {
+      padding-left: 20px;
+      margin: 10px 0 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 30px 16px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      border-top: 1px solid var(--border);
+      margin-top: 40px;
+    }
+
+    /* LEAFLET TWEAKS */
+    .leaflet-container {
+      background: #0d2230;
+      font-family: inherit;
+    }
+
+    .leaflet-popup-content-wrapper {
+      background: #0f2b3a;
+      color: var(--text);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .leaflet-popup-content {
+      margin: 14px 16px;
+      line-height: 1.45;
+    }
+
+    .leaflet-popup-content b {
+      color: var(--accent-2);
+    }
+
+    .leaflet-popup-tip {
+      background: #0f2b3a;
+      border: 1px solid var(--border);
+    }
+
+    .leaflet-popup-close-button {
+      color: var(--muted) !important;
+    }
+
+    .day-marker {
+      background: var(--accent);
+      color: #04141d;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      border: 3px solid #04141d;
+      box-shadow: 0 0 0 2px var(--accent);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 640px) {
+      #map { height: 420px; }
+      .hero { padding: 40px 16px 28px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <h1>New Zealand South Island</h1>
+    <p class="subtitle">
+      An 11-day family loop through Queenstown, the West Coast glaciers,
+      Christchurch, and the dark skies of Lake Tekapo. No backtracking, balanced
+      driving days, plenty of "wow" moments for the kids.
+    </p>
+    <div class="stats">
+      <div class="stat"><div class="num">11</div><div class="label">Days</div></div>
+      <div class="stat"><div class="num">4</div><div class="label">Bases</div></div>
+      <div class="stat"><div class="num">~1,400 km</div><div class="label">Total Drive</div></div>
+      <div class="stat"><div class="num">Loop</div><div class="label">No Backtrack</div></div>
+    </div>
+  </header>
+
+  <main>
+    <!-- MAP -->
+    <section id="map-section">
+      <h2 class="section-title"><span class="dot"></span> Journey Map</h2>
+      <p class="section-subtitle">
+        The loop: Queenstown → Franz Josef → Christchurch → Tekapo → Queenstown.
+        Click any marker for day details.
+      </p>
+      <div class="map-wrap"><div id="map"></div></div>
+      <div class="legend">
+        <span class="pill"><span class="swatch" style="background: var(--queenstown)"></span> Queenstown base (5 nights)</span>
+        <span class="pill"><span class="swatch" style="background: var(--franz)"></span> Franz Josef base (2 nights)</span>
+        <span class="pill"><span class="swatch" style="background: var(--christchurch)"></span> Christchurch base (2 nights)</span>
+        <span class="pill"><span class="swatch" style="background: var(--tekapo)"></span> Lake Tekapo (1 night)</span>
+        <span class="pill"><span class="swatch" style="background:#ffffff"></span> Day trip / scenic stop</span>
+      </div>
+    </section>
+
+    <!-- TIMELINE -->
+    <section id="itinerary">
+      <h2 class="section-title"><span class="dot"></span> Day-by-Day Itinerary</h2>
+      <p class="section-subtitle">
+        Each card lists the activities, drive time, and where you'll sleep that
+        night.
+      </p>
+      <div class="timeline" id="timeline"></div>
+    </section>
+
+    <!-- HOTELS -->
+    <section id="hotels">
+      <h2 class="section-title"><span class="dot"></span> Family-Friendly Hotels</h2>
+      <p class="section-subtitle">
+        Curated stays at each base — picked for space, location, and what kids
+        actually enjoy.
+      </p>
+      <div class="hotel-grid" id="hotel-grid"></div>
+    </section>
+
+    <!-- FINAL DAY -->
+    <section id="final-day">
+      <h2 class="section-title"><span class="dot"></span> Final Day Options</h2>
+      <p class="section-subtitle">
+        Two ways to handle the last leg back to Queenstown Airport.
+      </p>
+      <div class="options">
+        <div class="option recommended">
+          <h3>Option A <span class="tag rec">Recommended</span></h3>
+          <p style="color: var(--muted); margin: 0 0 6px;">
+            Relaxed pace, no airport stress.
+          </p>
+          <ol>
+            <li>Drive Tekapo → Queenstown</li>
+            <li>Stay one final night in Queenstown</li>
+            <li>Fly out the next day</li>
+          </ol>
+        </div>
+        <div class="option">
+          <h3>Option B <span class="tag alt">Time Saver</span></h3>
+          <p style="color: var(--muted); margin: 0 0 6px;">
+            Best if flights align well.
+          </p>
+          <ol>
+            <li>Drive Tekapo → Queenstown Airport</li>
+            <li>Drop off the rental car</li>
+            <li>Fly out the same day</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Crafted for a family adventure across Aotearoa.
+    Map data © OpenStreetMap contributors · Tiles © CARTO
+  </footer>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+  <script>
+    // ---------- DATA ----------
+    const COLORS = {
+      queenstown: "#8b5cf6",
+      franz: "#f97316",
+      christchurch: "#3b82f6",
+      tekapo: "#10b981",
+      stop: "#ffffff",
+    };
+
+    const itinerary = [
+      {
+        day: 1, base: "Queenstown", baseKey: "queenstown",
+        route: "Arrival",
+        activities: "Skyline Gondola, lake walk, town exploration",
+        drive: "Local",
+        stay: "Queenstown",
+      },
+      {
+        day: 2, base: "Queenstown", baseKey: "queenstown",
+        route: "Queenstown",
+        activities: "Jet boating, Luge, adventure activities",
+        drive: "Local",
+        stay: "Queenstown",
+      },
+      {
+        day: 3, base: "Queenstown", baseKey: "queenstown",
+        route: "Milford Sound",
+        activities: "Cruise, fjords, waterfalls, wildlife",
+        drive: "12–13 hrs return",
+        stay: "Queenstown",
+      },
+      {
+        day: 4, base: "Queenstown", baseKey: "queenstown",
+        route: "Wanaka",
+        activities: "Puzzling World, lake walk, scenic stops",
+        drive: "3–4 hrs return",
+        stay: "Queenstown",
+      },
+      {
+        day: 5, base: "Queenstown", baseKey: "queenstown",
+        route: "Glenorchy",
+        activities: "Scenic drive, short walks, LOTR sites",
+        drive: "2–3 hrs",
+        stay: "Queenstown",
+      },
+      {
+        day: 6, base: "Franz Josef", baseKey: "franz",
+        route: "Queenstown → Haast Pass → Franz Josef",
+        activities: "Lakes, waterfalls, West Coast drive",
+        drive: "5.5–6.5 hrs",
+        stay: "Franz Josef",
+      },
+      {
+        day: 7, base: "Franz Josef", baseKey: "franz",
+        route: "Glacier region",
+        activities: "Glacier walks, optional helicopter, hot pools",
+        drive: "Local",
+        stay: "Franz Josef",
+      },
+      {
+        day: 8, base: "Christchurch", baseKey: "christchurch",
+        route: "Franz Josef → Arthur's Pass → Christchurch",
+        activities: "Alpine drive, kea spotting, waterfalls",
+        drive: "5–6 hrs",
+        stay: "Christchurch",
+      },
+      {
+        day: 9, base: "Christchurch", baseKey: "christchurch",
+        route: "Akaroa",
+        activities: "Harbour cruise, dolphins, French village",
+        drive: "2.5 hrs return",
+        stay: "Christchurch",
+      },
+      {
+        day: 10, base: "Lake Tekapo", baseKey: "tekapo",
+        route: "Christchurch → Lake Tekapo",
+        activities: "Scenic drive, Church of the Good Shepherd, lake views, dark sky",
+        drive: "3 hrs",
+        stay: "Lake Tekapo",
+      },
+      {
+        day: 11, base: "Queenstown", baseKey: "queenstown",
+        route: "Tekapo → Queenstown (fly out prep)",
+        activities: "Relax, scenic stop, return rental or fly",
+        drive: "3 hrs",
+        stay: "Queenstown",
+      },
+    ];
+
+    const hotels = [
+      {
+        place: "Queenstown",
+        nights: "5 nights total",
+        color: COLORS.queenstown,
+        list: [
+          { name: "Novotel Queenstown Lakeside", desc: "Best location, easy lake access" },
+          { name: "Holiday Inn Express & Suites Queenstown", desc: "Modern, breakfast included" },
+          { name: "Copthorne Hotel & Apartments Queenstown Lakeview", desc: "Good family rooms" },
+          { name: "Ramada Queenstown Central", desc: "Newer, walkable to town" },
+        ],
+        tip: "Try to book lake-view rooms if possible — worth it for the kids.",
+      },
+      {
+        place: "Franz Josef",
+        nights: "2 nights",
+        color: COLORS.franz,
+        list: [
+          { name: "Scenic Hotel Franz Josef Glacier", desc: "Most reliable family option" },
+          { name: "Te Waonui Forest Retreat", desc: "Quieter, premium rainforest feel" },
+          { name: "Rainforest Retreat", desc: "Cabins + hot tubs (kids love this)" },
+        ],
+        tip: "Rainforest Retreat is best for kids — fun vibe, hot tubs, lots of space.",
+      },
+      {
+        place: "Christchurch",
+        nights: "2 nights",
+        color: COLORS.christchurch,
+        list: [
+          { name: "Novotel Christchurch Cathedral Square", desc: "Central, easy walking" },
+          { name: "Sudima Christchurch City", desc: "Modern, family-friendly" },
+          { name: "Distinction Christchurch Hotel", desc: "Larger rooms, good value" },
+          { name: "Rendezvous Heritage Hotel", desc: "Classic hotel, good space" },
+        ],
+        tip: "Cathedral Square area = best for walking with kids and finding food.",
+      },
+      {
+        place: "Lake Tekapo",
+        nights: "1 night stopover",
+        color: COLORS.tekapo,
+        list: [
+          { name: "Peppers Bluewater Resort", desc: "Best lake views" },
+          { name: "The Godley Hotel", desc: "Budget-friendly, central" },
+          { name: "Lake Tekapo Village Motel", desc: "Good family units" },
+        ],
+        tip: "Why this stop matters: dark sky reserve at night = a 'wow' moment kids never forget.",
+      },
+    ];
+
+    // Geographic points used in the map (lat, lng)
+    const POINTS = {
+      queenstown:   { coord: [-45.0312, 168.6626], name: "Queenstown",      key: "queenstown"   },
+      milford:      { coord: [-44.6717, 167.9256], name: "Milford Sound",   key: "stop"         },
+      wanaka:       { coord: [-44.6975, 169.1321], name: "Wanaka",          key: "stop"         },
+      glenorchy:    { coord: [-44.8508, 168.3878], name: "Glenorchy",       key: "stop"         },
+      haast:        { coord: [-44.1058, 169.3548], name: "Haast Pass",      key: "stop"         },
+      franz:        { coord: [-43.3870, 170.1838], name: "Franz Josef",     key: "franz"        },
+      arthurs:      { coord: [-42.9446, 171.5634], name: "Arthur's Pass",   key: "stop"         },
+      christchurch: { coord: [-43.5320, 172.6362], name: "Christchurch",    key: "christchurch" },
+      akaroa:       { coord: [-43.8050, 172.9669], name: "Akaroa",          key: "stop"         },
+      tekapo:       { coord: [-44.0044, 170.4769], name: "Lake Tekapo",     key: "tekapo"       },
+    };
+
+    // The route segments (for drawing the polyline loop, in order travelled)
+    const ROUTE_SEGMENTS = [
+      { from: "queenstown",  to: "haast",        color: COLORS.franz,        dashed: false },
+      { from: "haast",       to: "franz",        color: COLORS.franz,        dashed: false },
+      { from: "franz",       to: "arthurs",      color: COLORS.christchurch, dashed: false },
+      { from: "arthurs",     to: "christchurch", color: COLORS.christchurch, dashed: false },
+      { from: "christchurch",to: "tekapo",       color: COLORS.tekapo,       dashed: false },
+      { from: "tekapo",      to: "queenstown",   color: COLORS.queenstown,   dashed: false },
+    ];
+
+    // Day-trip arcs from Queenstown (dashed)
+    const DAY_TRIPS = [
+      { from: "queenstown", to: "milford",   day: 3 },
+      { from: "queenstown", to: "wanaka",    day: 4 },
+      { from: "queenstown", to: "glenorchy", day: 5 },
+      { from: "christchurch", to: "akaroa",  day: 9 },
+    ];
+
+    // ---------- RENDER TIMELINE ----------
+    const timelineEl = document.getElementById("timeline");
+    itinerary.forEach((d) => {
+      const color = COLORS[d.baseKey];
+      const card = document.createElement("article");
+      card.className = "day";
+      card.style.setProperty("--base-color", color);
+      card.innerHTML = `
+        <div class="day-head">
+          <span class="day-num">Day ${d.day}</span>
+          <span class="day-title">${d.route}</span>
+          <span class="badge base" style="--base-color:${color}33; color:#fff; border:1px solid ${color}66;">
+            Base: ${d.base}
+          </span>
+        </div>
+        <div class="day-body">${d.activities}</div>
+        <div class="day-meta">
+          <span class="item">🕒 <strong>Drive:</strong> ${d.drive}</span>
+          <span class="item">🛏️ <strong>Stay:</strong> ${d.stay}</span>
+        </div>
+      `;
+      timelineEl.appendChild(card);
+    });
+
+    // ---------- RENDER HOTELS ----------
+    const hotelGrid = document.getElementById("hotel-grid");
+    hotels.forEach((h) => {
+      const card = document.createElement("div");
+      card.className = "hotel-card";
+      card.style.setProperty("--accent-color", h.color);
+      card.innerHTML = `
+        <h3>
+          <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${h.color};box-shadow:0 0 10px ${h.color};"></span>
+          ${h.place}
+        </h3>
+        <div class="nights">${h.nights}</div>
+        <ul>
+          ${h.list
+            .map(
+              (l) =>
+                `<li><span class="name">${l.name}</span><span class="desc">${l.desc}</span></li>`
+            )
+            .join("")}
+        </ul>
+        <div class="tip">💡 ${h.tip}</div>
+      `;
+      hotelGrid.appendChild(card);
+    });
+
+    // ---------- MAP ----------
+    const map = L.map("map", {
+      center: [-44.0, 170.2],
+      zoom: 6,
+      scrollWheelZoom: false,
+      zoomControl: true,
+    });
+
+    L.tileLayer(
+      "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+      {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: "abcd",
+        maxZoom: 19,
+      }
+    ).addTo(map);
+
+    // Draw main loop polyline
+    ROUTE_SEGMENTS.forEach((seg) => {
+      const a = POINTS[seg.from].coord;
+      const b = POINTS[seg.to].coord;
+      L.polyline([a, b], {
+        color: seg.color,
+        weight: 4,
+        opacity: 0.85,
+        lineCap: "round",
+        lineJoin: "round",
+      }).addTo(map);
+    });
+
+    // Draw day trips dashed
+    DAY_TRIPS.forEach((trip) => {
+      const a = POINTS[trip.from].coord;
+      const b = POINTS[trip.to].coord;
+      L.polyline([a, b], {
+        color: "#ffffff",
+        weight: 2,
+        opacity: 0.55,
+        dashArray: "6 8",
+      }).addTo(map);
+    });
+
+    // Build a quick lookup: which days happen at each point
+    const daysByPoint = {
+      queenstown: [1, 2, 11],
+      milford: [3],
+      wanaka: [4],
+      glenorchy: [5],
+      franz: [6, 7],
+      christchurch: [8],
+      akaroa: [9],
+      tekapo: [10],
+    };
+
+    // Add markers
+    Object.entries(POINTS).forEach(([id, p]) => {
+      const color = COLORS[p.key] || COLORS.stop;
+      const days = daysByPoint[id] || [];
+      const dayLabel = days.length
+        ? days.map((d) => `Day ${d}`).join(", ")
+        : "";
+
+      const icon = L.divIcon({
+        className: "",
+        html: `<div class="day-marker" style="background:${color}; color:${
+          p.key === "stop" ? "#04141d" : "#04141d"
+        }; box-shadow:0 0 0 2px ${color};">${
+          days.length ? days[0] : "•"
+        }</div>`,
+        iconSize: [30, 30],
+        iconAnchor: [15, 15],
+      });
+
+      const marker = L.marker(p.coord, { icon }).addTo(map);
+
+      // Build popup with the relevant day rows
+      const dayRows = itinerary
+        .filter((d) =>
+          (id === "queenstown" && (d.day === 1 || d.day === 2 || d.day === 11)) ||
+          (id === "milford" && d.day === 3) ||
+          (id === "wanaka" && d.day === 4) ||
+          (id === "glenorchy" && d.day === 5) ||
+          (id === "franz" && (d.day === 6 || d.day === 7)) ||
+          (id === "christchurch" && d.day === 8) ||
+          (id === "akaroa" && d.day === 9) ||
+          (id === "tekapo" && d.day === 10)
+        )
+        .map(
+          (d) =>
+            `<div style="margin-top:6px;"><b>Day ${d.day}</b> — ${d.activities}<br><span style="color:#a9bccd;font-size:0.82rem;">🕒 ${d.drive} · 🛏️ ${d.stay}</span></div>`
+        )
+        .join("");
+
+      marker.bindPopup(
+        `<div style="min-width:220px;">
+          <div style="font-weight:700;font-size:1.05rem;color:#fff;">${p.name}</div>
+          ${dayLabel ? `<div style="color:#a9bccd;font-size:0.82rem;margin-top:2px;">${dayLabel}</div>` : ""}
+          ${dayRows}
+        </div>`
+      );
+    });
+
+    // Fit map to bounds
+    const allCoords = Object.values(POINTS).map((p) => p.coord);
+    map.fitBounds(allCoords, { padding: [40, 40] });
+  </script>
+</body>
+</html>
