@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>New Zealand South Island — 11 Day Family Itinerary</title>
+  <title>New Zealand South Island — 10 Day / 9 Night Family Itinerary</title>
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -219,12 +219,14 @@
       background: linear-gradient(
         180deg,
         var(--queenstown) 0%,
-        var(--queenstown) 45%,
-        var(--franz) 50%,
-        var(--franz) 60%,
-        var(--christchurch) 65%,
-        var(--christchurch) 80%,
-        var(--tekapo) 85%,
+        var(--queenstown) 38%,
+        var(--franz) 42%,
+        var(--franz) 58%,
+        var(--christchurch) 62%,
+        var(--christchurch) 78%,
+        var(--tekapo) 82%,
+        var(--tekapo) 88%,
+        var(--queenstown) 92%,
         var(--queenstown) 100%
       );
       border-radius: 2px;
@@ -786,15 +788,16 @@
   <header class="hero">
     <h1>New Zealand South Island</h1>
     <p class="subtitle">
-      An 11-day family loop through Queenstown, the West Coast glaciers,
-      Christchurch, and the dark skies of Lake Tekapo. No backtracking, balanced
-      driving days, plenty of "wow" moments for the kids.
+      A 10-day, 9-night family loop through Queenstown, the West Coast
+      glaciers, Christchurch, and the dark skies of Lake Tekapo. No
+      backtracking, balanced driving days, plenty of "wow" moments for the
+      kids.
     </p>
     <div class="stats">
-      <div class="stat"><div class="num">11</div><div class="label">Days</div></div>
+      <div class="stat"><div class="num">10</div><div class="label">Days</div></div>
+      <div class="stat"><div class="num">9</div><div class="label">Nights</div></div>
       <div class="stat"><div class="num">4</div><div class="label">Bases</div></div>
       <div class="stat"><div class="num">~1,400 km</div><div class="label">Total Drive</div></div>
-      <div class="stat"><div class="num">Loop</div><div class="label">No Backtrack</div></div>
     </div>
   </header>
 
@@ -889,29 +892,31 @@
     <section id="final-day">
       <h2 class="section-title"><span class="dot"></span> Final Day Options</h2>
       <p class="section-subtitle">
-        Two ways to handle the last leg back to Queenstown Airport.
+        Two ways to handle the last leg back to Queenstown Airport. The
+        default 9-night plan above uses <strong>Option B</strong>; pick
+        Option A if you want to add an extra (10th) night.
       </p>
       <div class="options">
         <div class="option recommended">
-          <h3>Option A <span class="tag rec">Recommended</span></h3>
+          <h3>Option B <span class="tag rec">Default · 9 nights</span></h3>
           <p style="color: var(--muted); margin: 0 0 6px;">
-            Relaxed pace, no airport stress.
-          </p>
-          <ol>
-            <li>Drive Tekapo → Queenstown</li>
-            <li>Stay one final night in Queenstown</li>
-            <li>Fly out the next day</li>
-          </ol>
-        </div>
-        <div class="option">
-          <h3>Option B <span class="tag alt">Time Saver</span></h3>
-          <p style="color: var(--muted); margin: 0 0 6px;">
-            Best if flights align well.
+            Time-saver: fly out on Day 10 itself.
           </p>
           <ol>
             <li>Drive Tekapo → Queenstown Airport</li>
             <li>Drop off the rental car</li>
             <li>Fly out the same day</li>
+          </ol>
+        </div>
+        <div class="option">
+          <h3>Option A <span class="tag alt">Adds a 10th night</span></h3>
+          <p style="color: var(--muted); margin: 0 0 6px;">
+            Relaxed pace, no airport stress — but adds one more hotel night.
+          </p>
+          <ol>
+            <li>Drive Tekapo → Queenstown</li>
+            <li>Stay one final night in Queenstown</li>
+            <li>Fly out the next day</li>
           </ol>
         </div>
       </div>
@@ -938,6 +943,8 @@
       stop: "#ffffff",
     };
 
+    // 10 days / 9 nights. Day 10 is the fly-out drive (no overnight stay).
+    // `mapPoints` lists the marker IDs each day touches on the map.
     const itinerary = [
       {
         day: 1, base: "Queenstown", baseKey: "queenstown",
@@ -945,6 +952,7 @@
         activities: "Skyline Gondola, lake walk, town exploration",
         drive: "Local",
         stay: "Queenstown",
+        mapPoints: ["queenstown"],
       },
       {
         day: 2, base: "Queenstown", baseKey: "queenstown",
@@ -952,6 +960,7 @@
         activities: "Jet boating, Luge, adventure activities",
         drive: "Local",
         stay: "Queenstown",
+        mapPoints: ["queenstown"],
       },
       {
         day: 3, base: "Queenstown", baseKey: "queenstown",
@@ -959,69 +968,77 @@
         activities: "Cruise, fjords, waterfalls, wildlife",
         drive: "12–13 hrs return",
         stay: "Queenstown",
+        mapPoints: ["milford"],
       },
       {
         day: 4, base: "Queenstown", baseKey: "queenstown",
-        route: "Wanaka",
-        activities: "Puzzling World, lake walk, scenic stops",
-        drive: "3–4 hrs return",
+        route: "Glenorchy + Wanaka",
+        activities:
+          "Glenorchy scenic drive & LOTR sites, then Puzzling World and Wanaka lake walk",
+        drive: "5–6 hrs",
         stay: "Queenstown",
+        mapPoints: ["glenorchy", "wanaka"],
       },
       {
-        day: 5, base: "Queenstown", baseKey: "queenstown",
-        route: "Glenorchy",
-        activities: "Scenic drive, short walks, LOTR sites",
-        drive: "2–3 hrs",
-        stay: "Queenstown",
-      },
-      {
-        day: 6, base: "Franz Josef", baseKey: "franz",
+        day: 5, base: "Franz Josef", baseKey: "franz",
         route: "Queenstown → Haast Pass → Franz Josef",
         activities: "Lakes, waterfalls, West Coast drive",
         drive: "5.5–6.5 hrs",
         stay: "Franz Josef",
+        mapPoints: ["franz"],
       },
       {
-        day: 7, base: "Franz Josef", baseKey: "franz",
+        day: 6, base: "Franz Josef", baseKey: "franz",
         route: "Glacier region",
         activities: "Glacier walks, optional helicopter, hot pools",
         drive: "Local",
         stay: "Franz Josef",
+        mapPoints: ["franz"],
       },
       {
-        day: 8, base: "Christchurch", baseKey: "christchurch",
+        day: 7, base: "Christchurch", baseKey: "christchurch",
         route: "Franz Josef → Arthur's Pass → Christchurch",
         activities: "Alpine drive, kea spotting, waterfalls",
         drive: "5–6 hrs",
         stay: "Christchurch",
+        mapPoints: ["christchurch"],
       },
       {
-        day: 9, base: "Christchurch", baseKey: "christchurch",
+        day: 8, base: "Christchurch", baseKey: "christchurch",
         route: "Akaroa",
         activities: "Harbour cruise, dolphins, French village",
         drive: "2.5 hrs return",
         stay: "Christchurch",
+        mapPoints: ["akaroa"],
       },
       {
-        day: 10, base: "Lake Tekapo", baseKey: "tekapo",
+        day: 9, base: "Lake Tekapo", baseKey: "tekapo",
         route: "Christchurch → Lake Tekapo",
-        activities: "Scenic drive, Church of the Good Shepherd, lake views, dark sky",
+        activities:
+          "Scenic drive, Church of the Good Shepherd, lake views, dark sky",
         drive: "3 hrs",
         stay: "Lake Tekapo",
+        mapPoints: ["tekapo"],
       },
       {
-        day: 11, base: "Queenstown", baseKey: "queenstown",
-        route: "Tekapo → Queenstown (fly out prep)",
-        activities: "Relax, scenic stop, return rental or fly",
+        day: 10, base: "Queenstown", baseKey: "queenstown",
+        route: "Tekapo → Queenstown Airport (fly out)",
+        activities: "Scenic drive, return rental, fly out same day",
         drive: "3 hrs",
-        stay: "Queenstown",
+        stay: "Fly out (no overnight)",
+        mapPoints: ["queenstown"],
       },
     ];
+
+    const TRIP_DAYS = itinerary.length;          // 10
+    const TRIP_NIGHTS = itinerary.filter(        // 9
+      (d) => d.stay && !/fly out/i.test(d.stay)
+    ).length;
 
     const hotels = [
       {
         place: "Queenstown",
-        nights: "5 nights total",
+        nights: "4 nights total",
         color: COLORS.queenstown,
         list: [
           { name: "Novotel Queenstown Lakeside", desc: "Best location, easy lake access" },
@@ -1091,12 +1108,12 @@
       { from: "tekapo",      to: "queenstown",   color: COLORS.queenstown,   dashed: false },
     ];
 
-    // Day-trip arcs from Queenstown (dashed)
+    // Day-trip arcs from each base (dashed)
     const DAY_TRIPS = [
-      { from: "queenstown", to: "milford",   day: 3 },
-      { from: "queenstown", to: "wanaka",    day: 4 },
-      { from: "queenstown", to: "glenorchy", day: 5 },
-      { from: "christchurch", to: "akaroa",  day: 9 },
+      { from: "queenstown",   to: "milford",   day: 3 },
+      { from: "queenstown",   to: "glenorchy", day: 4 },
+      { from: "queenstown",   to: "wanaka",    day: 4 },
+      { from: "christchurch", to: "akaroa",    day: 8 },
     ];
 
     // ---------- RENDER TIMELINE ----------
@@ -1191,17 +1208,15 @@
       }).addTo(map);
     });
 
-    // Build a quick lookup: which days happen at each point
-    const daysByPoint = {
-      queenstown: [1, 2, 11],
-      milford: [3],
-      wanaka: [4],
-      glenorchy: [5],
-      franz: [6, 7],
-      christchurch: [8],
-      akaroa: [9],
-      tekapo: [10],
-    };
+    // Build a lookup: which itinerary days touch each map point.
+    // Derived from the `mapPoints` field on each itinerary day so that
+    // any future schedule changes flow through automatically.
+    const daysByPoint = {};
+    itinerary.forEach((d) => {
+      (d.mapPoints || []).forEach((pid) => {
+        (daysByPoint[pid] = daysByPoint[pid] || []).push(d.day);
+      });
+    });
 
     // Add markers
     Object.entries(POINTS).forEach(([id, p]) => {
@@ -1224,18 +1239,9 @@
 
       const marker = L.marker(p.coord, { icon }).addTo(map);
 
-      // Build popup with the relevant day rows
+      // Build popup with the relevant day rows (derived from mapPoints)
       const dayRows = itinerary
-        .filter((d) =>
-          (id === "queenstown" && (d.day === 1 || d.day === 2 || d.day === 11)) ||
-          (id === "milford" && d.day === 3) ||
-          (id === "wanaka" && d.day === 4) ||
-          (id === "glenorchy" && d.day === 5) ||
-          (id === "franz" && (d.day === 6 || d.day === 7)) ||
-          (id === "christchurch" && d.day === 8) ||
-          (id === "akaroa" && d.day === 9) ||
-          (id === "tekapo" && d.day === 10)
-        )
+        .filter((d) => (d.mapPoints || []).includes(id))
         .map(
           (d) =>
             `<div style="margin-top:6px;"><b>Day ${d.day}</b> — ${d.activities}<br><span style="color:#a9bccd;font-size:0.82rem;">🕒 ${d.drive} · 🛏️ ${d.stay}</span></div>`
@@ -1258,7 +1264,9 @@
     // ===========================================================
     // COSTS SECTION
     // ===========================================================
-    const STORAGE_KEY = "nz-itinerary-costs-v1";
+    // Version bump (v2): 9-night plan changes day numbering, so we start
+    // fresh rather than risk mapping old amounts onto the wrong rows.
+    const STORAGE_KEY = "nz-itinerary-costs-v2";
 
     const CURRENCIES = {
       NZD: { symbol: "$",  locale: "en-NZ", code: "NZD" },
@@ -1284,11 +1292,14 @@
       },
       {
         id: "accommodation",
-        title: "🛏️ Accommodation (per night)",
-        rows: itinerary.map((d) => ({
-          id: `acc-d${d.day}`,
-          label: `Night ${d.day} — ${d.stay}`,
-        })),
+        title: `🛏️ Accommodation (${TRIP_NIGHTS} nights)`,
+        // Skip days with no overnight stay (e.g. final fly-out day)
+        rows: itinerary
+          .filter((d) => d.stay && !/fly out/i.test(d.stay))
+          .map((d, i) => ({
+            id: `acc-d${d.day}`,
+            label: `Night ${i + 1} (Day ${d.day}) — ${d.stay}`,
+          })),
       },
       {
         id: "activities",
@@ -1297,17 +1308,17 @@
           { id: "act-skyline",   label: "Skyline Gondola (Day 1)" },
           { id: "act-jet-luge",  label: "Jet boating / Luge (Day 2)" },
           { id: "act-milford",   label: "Milford Sound cruise (Day 3)" },
+          { id: "act-glenorchy", label: "Glenorchy LOTR sites (Day 4)" },
           { id: "act-puzzling",  label: "Puzzling World, Wanaka (Day 4)" },
-          { id: "act-glenorchy", label: "Glenorchy LOTR tour (Day 5)" },
-          { id: "act-glacier",   label: "Glacier walk / heli (Day 7)" },
-          { id: "act-hotpools",  label: "Franz Josef hot pools (Day 7)" },
-          { id: "act-akaroa",    label: "Akaroa harbour cruise (Day 9)" },
-          { id: "act-tekapo",    label: "Tekapo dark sky tour (Day 10)" },
+          { id: "act-glacier",   label: "Glacier walk / heli (Day 6)" },
+          { id: "act-hotpools",  label: "Franz Josef hot pools (Day 6)" },
+          { id: "act-akaroa",    label: "Akaroa harbour cruise (Day 8)" },
+          { id: "act-tekapo",    label: "Tekapo dark sky tour (Day 9)" },
         ],
       },
       {
         id: "food",
-        title: "🍽️ Food (per day)",
+        title: `🍽️ Food (${TRIP_DAYS} days)`,
         rows: itinerary.map((d) => ({
           id: `food-d${d.day}`,
           label: `Day ${d.day} — ${d.base}`,
@@ -1317,7 +1328,7 @@
         id: "transport",
         title: "🚗 Car Rental & Fuel",
         rows: [
-          { id: "car-rental",    label: "Car rental (11 days)" },
+          { id: "car-rental",    label: `Car rental (${TRIP_DAYS} days)` },
           { id: "car-insurance", label: "Insurance / extras" },
           { id: "car-fuel",      label: "Petrol / EV charging" },
           { id: "car-parking",   label: "Parking & tolls" },
@@ -1567,7 +1578,7 @@
       document.getElementById("per-person").textContent =
         fmt(grand / travelers) + " / person";
       document.getElementById("per-day").textContent =
-        fmt(grand / 11) + " / day";
+        fmt(grand / TRIP_DAYS) + " / day";
     }
 
     // ----- Controls -----

@@ -3,7 +3,7 @@
 ## Dashboards
 
 - [`index.html`](./index.html) — Onboarding analytics dashboard.
-- [`itinerary.html`](./itinerary.html) — New Zealand South Island 11-day family itinerary dashboard with an interactive route map, day-by-day timeline, and family-friendly hotel picks.
+- [`itinerary.html`](./itinerary.html) — New Zealand South Island 10-day / 9-night family itinerary dashboard with an interactive route map, day-by-day timeline, family-friendly hotel picks, and an editable cost tracker.
 
 ### NZ Itinerary Dashboard
 
