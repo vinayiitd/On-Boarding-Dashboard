@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Sentinel — AI Compliance Officer
+GenericName=KYC Platform
+Comment=Launch the Sentinel KYC platform (starts local server at http://localhost:3000)
+Exec={{LAUNCHER}}
+Icon={{ICON}}
+Terminal=true
+Categories=Office;
+StartupNotify=true
+Keywords=KYC;AML;Compliance;AUSTRAC;Sentinel;
