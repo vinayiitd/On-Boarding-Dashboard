@@ -8,8 +8,10 @@
 
 $ErrorActionPreference = "Stop"
 
-$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$RepoDir   = Resolve-Path (Join-Path $ScriptDir "..")
+$ScriptDir   = Split-Path -Parent $MyInvocation.MyCommand.Path
+# Resolve-Path returns a PathInfo object; force to string so the COM
+# shortcut API (which is strict-typed) accepts it.
+$RepoDir     = (Resolve-Path (Join-Path $ScriptDir "..")).Path
 $LauncherSrc = Join-Path $ScriptDir "launchers\Launch Sentinel.bat"
 $IconSrc     = Join-Path $ScriptDir "sentinel-icon.svg"
 
@@ -37,15 +39,22 @@ Set-Content -Path $LauncherDst -Value $WrappedBat -Encoding ASCII
 Write-Host "Installed launcher: $LauncherDst" -ForegroundColor Green
 
 # 2. Create a proper Windows .lnk that points at the launcher.
-$WScriptShell = New-Object -ComObject WScript.Shell
-$Shortcut = $WScriptShell.CreateShortcut($ShortcutDst)
-$Shortcut.TargetPath       = "cmd.exe"
-$Shortcut.Arguments        = "/c `"`"$LauncherDst`"`""
-$Shortcut.WorkingDirectory = $RepoDir
-$Shortcut.Description      = "Sentinel - AI Compliance Officer"
-$Shortcut.WindowStyle      = 1
-$Shortcut.Save()
-Write-Host "Installed shortcut: $ShortcutDst" -ForegroundColor Green
+# Every assignment is cast to [string] because the WScript.Shell COM API
+# is strict-typed and rejects PathInfo / other rich types.
+try {
+    $WScriptShell = New-Object -ComObject WScript.Shell
+    $Shortcut = $WScriptShell.CreateShortcut([string]$ShortcutDst)
+    $Shortcut.TargetPath       = "cmd.exe"
+    $Shortcut.Arguments        = "/c `"`"$LauncherDst`"`""
+    $Shortcut.WorkingDirectory = [string]$RepoDir
+    $Shortcut.Description      = "Sentinel - AI Compliance Officer"
+    $Shortcut.WindowStyle      = 1
+    $Shortcut.Save()
+    Write-Host "Installed shortcut: $ShortcutDst" -ForegroundColor Green
+} catch {
+    Write-Host "WARNING: Could not create Sentinel.lnk ($($_.Exception.Message))." -ForegroundColor Yellow
+    Write-Host "         The 'Launch Sentinel.bat' file on your Desktop still works — double-click it to launch." -ForegroundColor Yellow
+}
 
 Write-Host ""
 Write-Host "Double-click 'Sentinel' on your Desktop to launch."
