@@ -62,9 +62,23 @@ npm run dev
 Open http://localhost:3000. The homepage auto-hydrates with seed data — hit
 "New client" to walk through the entire flow.
 
+### One-click desktop shortcut
+
+Prefer a double-click? An installer that drops a launcher on your Desktop
+ships with the app. See [`desktop-shortcut/README.md`](./desktop-shortcut/README.md).
+
+```bash
+# macOS + Linux
+bash kyc-platform/desktop-shortcut/install-desktop-shortcut.sh
+
+# Windows
+powershell -ExecutionPolicy Bypass -File kyc-platform\desktop-shortcut\install-desktop-shortcut.ps1
+```
+
 ## Project structure
 
 ```
+desktop-shortcut/                     # One-click launchers for macOS, Windows, Linux
 src/
 ├── app/
 │   ├── (app)/                       # Authenticated app shell (sidebar + topbar)
