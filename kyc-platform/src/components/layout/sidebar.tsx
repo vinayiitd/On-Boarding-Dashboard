@@ -2,15 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 import {
   BarChart3,
   BookOpenCheck,
+  ChevronsUpDown,
   FileSearch,
   LayoutDashboard,
   LifeBuoy,
   Plus,
   Settings,
-  ShieldCheck,
   Sparkles,
   Users,
 } from "lucide-react";
@@ -53,24 +54,35 @@ function NavLink({ item }: { item: NavItem }) {
     <Link
       href={item.href}
       className={cn(
-        "group relative flex items-center gap-3 rounded-[10px] px-3 py-2 text-sm font-medium transition-colors",
+        "group relative flex items-center gap-3 rounded-[10px] px-2.5 py-1.5 text-[13.5px] font-medium transition-colors",
         active
-          ? "bg-[var(--surface-muted)] text-[var(--foreground)]"
-          : "text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-muted)]",
+          ? "text-[var(--foreground)]"
+          : "text-[var(--foreground-muted)] hover:text-[var(--foreground)]",
       )}
     >
       {active ? (
-        <span className="absolute left-0 top-1/2 h-5 w-[2.5px] -translate-y-1/2 rounded-r bg-[var(--primary)]" />
-      ) : null}
-      <Icon
-        className={cn(
-          "h-4 w-4 transition-colors",
-          active ? "text-[var(--primary)]" : "text-[var(--foreground-subtle)] group-hover:text-[var(--foreground)]",
-        )}
-      />
-      <span className="flex-1 truncate">{item.label}</span>
+        <motion.span
+          layoutId="side-nav-active"
+          transition={{ type: "spring", stiffness: 500, damping: 40 }}
+          className="absolute inset-0 rounded-[10px] bg-[var(--surface-muted)]"
+        />
+      ) : (
+        <span className="absolute inset-0 rounded-[10px] transition-colors group-hover:bg-[var(--surface-muted)]/70" />
+      )}
+      <span className="relative flex h-5 w-5 items-center justify-center">
+        <Icon
+          className={cn(
+            "h-[15px] w-[15px] transition-colors",
+            active
+              ? "text-[var(--primary)]"
+              : "text-[var(--foreground-subtle)] group-hover:text-[var(--foreground)]",
+          )}
+          strokeWidth={active ? 2.25 : 1.85}
+        />
+      </span>
+      <span className="relative flex-1 truncate">{item.label}</span>
       {item.badge ? (
-        <Badge variant="brand" size="sm">
+        <Badge variant="brand" size="sm" className="relative">
           {item.badge}
         </Badge>
       ) : null}
@@ -83,19 +95,35 @@ export function Sidebar() {
     <aside
       className={cn(
         "hidden lg:flex lg:flex-col",
-        "sticky top-0 h-dvh w-64 shrink-0 border-r border-[var(--border)] bg-[var(--surface)]/60",
-        "backdrop-blur-sm",
+        "sticky top-0 h-dvh w-[248px] shrink-0 border-r border-[var(--border)]",
+        "bg-[color-mix(in_srgb,var(--surface)_60%,var(--background))] backdrop-blur-sm",
       )}
     >
-      <div className="flex h-16 items-center gap-2 px-5 border-b border-[var(--border)]">
-        <Link href="/" className="flex items-center gap-2.5">
-          <Logo size={28} />
-        </Link>
+      {/* Workspace switcher */}
+      <div className="flex h-16 items-center gap-2 px-3 border-b border-[var(--border)]">
+        <button
+          type="button"
+          className={cn(
+            "group flex flex-1 items-center gap-2.5 rounded-[10px] px-2 py-1.5",
+            "transition-colors hover:bg-[var(--surface-muted)]",
+          )}
+        >
+          <Logo size={26} showWordmark={false} />
+          <div className="min-w-0 flex-1 text-left">
+            <p className="truncate text-[13.5px] font-semibold leading-tight">
+              Sentinel
+            </p>
+            <p className="truncate text-[11px] text-[var(--foreground-subtle)] leading-tight">
+              Whitmore & Partners
+            </p>
+          </div>
+          <ChevronsUpDown className="h-3.5 w-3.5 text-[var(--foreground-subtle)] group-hover:text-[var(--foreground)]" />
+        </button>
       </div>
 
-      <div className="flex flex-1 flex-col gap-6 overflow-y-auto p-3">
-        <nav className="flex flex-col gap-1">
-          <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--foreground-subtle)]">
+      <div className="flex flex-1 flex-col gap-5 overflow-y-auto p-3">
+        <nav className="flex flex-col gap-0.5">
+          <p className="px-3 pb-1.5 text-[10.5px] font-semibold uppercase tracking-[0.09em] text-[var(--foreground-subtle)]">
             Workspace
           </p>
           {primaryNav.map((item) => (
@@ -103,8 +131,8 @@ export function Sidebar() {
           ))}
         </nav>
 
-        <nav className="flex flex-col gap-1">
-          <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--foreground-subtle)]">
+        <nav className="flex flex-col gap-0.5">
+          <p className="px-3 pb-1.5 text-[10.5px] font-semibold uppercase tracking-[0.09em] text-[var(--foreground-subtle)]">
             Account
           </p>
           {secondaryNav.map((item) => (
@@ -112,23 +140,30 @@ export function Sidebar() {
           ))}
         </nav>
 
+        {/* Live AI copilot promo */}
         <div className="mt-auto">
           <div
             className={cn(
-              "relative overflow-hidden rounded-2xl border border-[var(--border)] p-4",
-              "bg-gradient-to-br from-[color-mix(in_srgb,var(--primary)_10%,var(--surface))] to-[color-mix(in_srgb,var(--accent)_12%,var(--surface))]",
+              "gradient-ring relative overflow-hidden rounded-2xl p-4",
+              "bg-[color-mix(in_srgb,var(--primary)_5%,var(--surface))]",
             )}
           >
             <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-[var(--primary)]" />
-              <p className="text-sm font-semibold">AI copilot</p>
+              <div className="relative flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--primary)] text-white shadow-[0_2px_8px_-2px_var(--primary)]">
+                <Sparkles className="h-3.5 w-3.5" />
+                <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-[var(--accent)] ring-2 ring-[var(--surface)]" />
+              </div>
+              <p className="text-[13px] font-semibold">Sentinel is live</p>
             </div>
-            <p className="mt-1.5 text-xs leading-relaxed text-[var(--foreground-muted)]">
-              Sentinel reads every document you upload and drafts a compliance decision in under 4 seconds.
+            <p className="mt-2 text-[11.5px] leading-relaxed text-[var(--foreground-muted)]">
+              Watching every uploaded document. Averages a decision in 3.8s.
             </p>
-            <div className="mt-3 flex items-center gap-2 text-[11px] text-[var(--foreground-muted)]">
-              <ShieldCheck className="h-3.5 w-3.5 text-[var(--success)]" />
-              AUSTRAC-ready
+            <div className="mt-3 flex items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--surface)]/80 px-2 py-1 font-mono text-[10px] text-[var(--foreground-subtle)]">
+              <span className="flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)] animate-[pulseSlow_2s_infinite]" />
+                AUSTRAC ready
+              </span>
+              <span>v1.2</span>
             </div>
           </div>
         </div>

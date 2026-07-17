@@ -17,8 +17,12 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default:
-          "bg-[var(--primary)] text-[var(--primary-foreground)] shadow-[0_1px_0_rgba(255,255,255,0.15)_inset,0_1px_2px_rgba(15,23,42,0.12)] hover:brightness-[1.05]",
+        default: [
+          "text-[var(--primary-foreground)]",
+          "bg-[linear-gradient(180deg,color-mix(in_srgb,var(--primary)_100%,white_6%),var(--primary))]",
+          "shadow-[0_1px_0_rgba(255,255,255,0.16)_inset,0_1px_2px_rgba(15,23,42,0.16),0_2px_10px_-4px_color-mix(in_srgb,var(--primary)_60%,transparent)]",
+          "hover:brightness-[1.03] hover:shadow-[0_1px_0_rgba(255,255,255,0.16)_inset,0_1px_2px_rgba(15,23,42,0.18),0_6px_18px_-6px_color-mix(in_srgb,var(--primary)_70%,transparent)]",
+        ].join(" "),
         subtle:
           "bg-[var(--surface-muted)] text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--foreground)_6%,var(--surface-muted))]",
         outline:

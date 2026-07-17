@@ -14,6 +14,7 @@ interface PageHeaderProps {
   breadcrumbs?: Crumb[];
   actions?: React.ReactNode;
   className?: string;
+  size?: "default" | "hero";
 }
 
 /**
@@ -27,13 +28,14 @@ export function PageHeader({
   breadcrumbs,
   actions,
   className,
+  size = "default",
 }: PageHeaderProps) {
   return (
     <div className={cn("flex flex-col gap-4", className)}>
       {breadcrumbs && breadcrumbs.length ? (
         <nav
           aria-label="Breadcrumb"
-          className="flex items-center gap-1 text-xs text-[var(--foreground-subtle)]"
+          className="flex items-center gap-1 text-[11.5px] text-[var(--foreground-subtle)]"
         >
           {breadcrumbs.map((crumb, i) => (
             <span key={i} className="flex items-center gap-1">
@@ -48,24 +50,31 @@ export function PageHeader({
                 <span className="text-[var(--foreground-muted)]">{crumb.label}</span>
               )}
               {i < breadcrumbs.length - 1 ? (
-                <ChevronRight className="h-3 w-3" />
+                <ChevronRight className="h-3 w-3 text-[var(--foreground-subtle)]/60" />
               ) : null}
             </span>
           ))}
         </nav>
       ) : null}
       <div className="flex flex-col-reverse gap-4 md:flex-row md:items-end md:justify-between">
-        <div className="max-w-2xl">
+        <div className="max-w-3xl">
           {eyebrow ? (
-            <div className="mb-2 text-xs font-medium uppercase tracking-wider text-[var(--primary)]">
+            <div className="mb-3 text-[11.5px] font-medium uppercase tracking-[0.09em] text-[var(--foreground-subtle)]">
               {eyebrow}
             </div>
           ) : null}
-          <h1 className="text-3xl font-semibold tracking-tight text-[var(--foreground)] md:text-[34px]">
+          <h1
+            className={cn(
+              "font-display text-[var(--foreground)] text-balance",
+              size === "hero"
+                ? "text-[40px] md:text-[52px] leading-[1.02] font-medium"
+                : "text-[30px] md:text-[38px] leading-[1.08] font-medium",
+            )}
+          >
             {title}
           </h1>
           {description ? (
-            <p className="mt-2 text-[15px] leading-relaxed text-[var(--foreground-muted)]">
+            <p className="mt-3 text-[15px] leading-relaxed text-[var(--foreground-muted)] text-pretty">
               {description}
             </p>
           ) : null}
