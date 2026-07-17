@@ -1,0 +1,297 @@
+@import "tailwindcss";
+@plugin "tailwindcss-animate";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+  Sentinel — AI Compliance Officer
+  Design tokens. Inspired by Stripe, Linear, Mercury, Notion.
+  Light + dark, tuned for premium SaaS.
+*/
+@theme {
+  --font-sans:
+    "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-display:
+    "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono:
+    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+
+  --shadow-soft:
+    0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.06);
+  --shadow-card:
+    0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px -12px rgba(15, 23, 42, 0.08);
+  --shadow-elevated:
+    0 10px 32px -12px rgba(15, 23, 42, 0.18),
+    0 4px 12px -6px rgba(15, 23, 42, 0.08);
+
+  --color-brand-50: #eff5ff;
+  --color-brand-100: #dbe7fe;
+  --color-brand-200: #bfd4fe;
+  --color-brand-300: #93b6fd;
+  --color-brand-400: #608efa;
+  --color-brand-500: #3b6bf6;
+  --color-brand-600: #2563eb;
+  --color-brand-700: #1d4fd3;
+  --color-brand-800: #1e42ab;
+  --color-brand-900: #1e3a86;
+
+  --color-accent-500: #14b8a6;
+  --color-accent-600: #0f9c8c;
+  --color-warning-500: #f59e0b;
+  --color-danger-500: #ef4444;
+  --color-success-500: #22c55e;
+
+  --animate-shimmer: shimmer 2s linear infinite;
+  --animate-pulse-slow: pulseSlow 3s ease-in-out infinite;
+  --animate-fade-up: fadeUp 0.5s ease-out both;
+  --animate-fade-in: fadeIn 0.3s ease-out both;
+  --animate-scan: scan 2.2s linear infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+@keyframes pulseSlow {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes scan {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+/* Semantic tokens — light */
+:root {
+  --background: #fafafa;
+  --surface: #ffffff;
+  --surface-muted: #f5f6f8;
+  --surface-elevated: #ffffff;
+  --border: #e6e8ec;
+  --border-strong: #d5d8de;
+  --foreground: #0b1220;
+  --foreground-muted: #5a6172;
+  --foreground-subtle: #8a91a1;
+  --ring: rgba(37, 99, 235, 0.35);
+
+  --primary: #2563eb;
+  --primary-foreground: #ffffff;
+  --accent: #14b8a6;
+  --accent-foreground: #ffffff;
+  --warning: #f59e0b;
+  --warning-foreground: #ffffff;
+  --danger: #ef4444;
+  --danger-foreground: #ffffff;
+  --success: #22c55e;
+  --success-foreground: #ffffff;
+
+  --chip-bg: #f2f4f8;
+  --chip-fg: #0b1220;
+}
+
+.dark {
+  --background: #0a0d14;
+  --surface: #0f131c;
+  --surface-muted: #131826;
+  --surface-elevated: #141a27;
+  --border: #1e2536;
+  --border-strong: #2a3346;
+  --foreground: #edf1f7;
+  --foreground-muted: #9aa3b5;
+  --foreground-subtle: #6b7488;
+  --ring: rgba(96, 142, 250, 0.4);
+
+  --primary: #608efa;
+  --primary-foreground: #0a0d14;
+  --accent: #2dd4bf;
+  --accent-foreground: #0a0d14;
+  --warning: #fbbf24;
+  --warning-foreground: #0a0d14;
+  --danger: #f87171;
+  --danger-foreground: #0a0d14;
+  --success: #4ade80;
+  --success-foreground: #0a0d14;
+
+  --chip-bg: #1a2233;
+  --chip-fg: #edf1f7;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-foreground-subtle: var(--foreground-subtle);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-chip-bg: var(--chip-bg);
+  --color-chip-fg: var(--chip-fg);
+  --color-ring: var(--ring);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-feature-settings:
+      "cv02", "cv03", "cv04", "cv11", "ss01";
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--primary) 24%, transparent);
+    color: var(--foreground);
+  }
+  h1, h2, h3, h4, h5 {
+    letter-spacing: -0.015em;
+  }
+  h1 {
+    letter-spacing: -0.03em;
+  }
+  button {
+    cursor: pointer;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .grid-bg {
+    background-image:
+      linear-gradient(
+        to right,
+        color-mix(in srgb, var(--border) 60%, transparent) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--border) 60%, transparent) 1px,
+        transparent 1px
+      );
+    background-size: 40px 40px;
+  }
+  .radial-fade {
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  }
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--foreground) 8%, transparent),
+      transparent
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.6s infinite;
+  }
+  .glass {
+    background: color-mix(in srgb, var(--surface) 70%, transparent);
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+  }
+}
+
+/* Print styling for compliance report */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+  html, body {
+    background: #ffffff !important;
+    color: #0b1220 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-page {
+    box-shadow: none !important;
+    border: none !important;
+  }
+  .print-break {
+    break-before: page;
+  }
+}
