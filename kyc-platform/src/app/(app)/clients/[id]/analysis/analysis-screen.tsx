@@ -23,8 +23,23 @@ import { Progress } from "@/components/ui/progress";
 import { RiskPill } from "@/components/risk-pill";
 import { AI_PROGRESS_MESSAGES } from "@/lib/ai";
 import { useStore } from "@/lib/store";
-import { cn, sleep } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import type { AIAnalysis, AnalysisFinding } from "@/lib/types";
+
+/**
+ * How long the AI-analysis animation runs, in ms.
+ * Wall-clock driven so the animation always completes in about this long
+ * regardless of frame rate, tab throttling, or slow machines.
+ */
+const ANALYSIS_MS = 3800;
+
+/**
+ * Hard safety cap. If for any reason the animation loop doesn't finish
+ * (browser suspended the tab, dev-mode HMR interrupted the RAF, etc.)
+ * we force the transition to results after this many ms so the demo
+ * can never appear "stuck".
+ */
+const ANALYSIS_SAFETY_MS = 7000;
 
 type Phase = "idle" | "running" | "done";
 
@@ -41,30 +56,57 @@ export function AnalysisScreen({ clientId }: { clientId: string }) {
     client?.analysis ?? null,
   );
 
-  const start = React.useCallback(async () => {
+  // Tracks in-flight timers so we can cancel them if the user re-runs the
+  // analysis or navigates away mid-animation.
+  const rafRef = React.useRef<number | null>(null);
+  const safetyRef = React.useRef<number | null>(null);
+
+  const finish = React.useCallback(() => {
+    if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    if (safetyRef.current !== null) window.clearTimeout(safetyRef.current);
+    rafRef.current = null;
+    safetyRef.current = null;
+    setProgress(100);
+    setMessageIndex(AI_PROGRESS_MESSAGES.length - 1);
+    const analysis = runAnalysis(clientId);
+    if (analysis) setResult(analysis);
+    setPhase("done");
+  }, [clientId, runAnalysis]);
+
+  const start = React.useCallback(() => {
+    // Cancel any previous run in-flight so re-runs never stack.
+    if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    if (safetyRef.current !== null) window.clearTimeout(safetyRef.current);
+
     setPhase("running");
     setResult(null);
     setProgress(0);
     setMessageIndex(0);
 
-    const totalMs = 4500;
-    const ticks = 100;
-    const interval = totalMs / ticks;
-    const messagesEvery = Math.floor(ticks / AI_PROGRESS_MESSAGES.length);
+    const started = performance.now();
 
-    for (let i = 1; i <= ticks; i++) {
-      await sleep(interval);
-      setProgress(i);
-      if (i % messagesEvery === 0) {
-        setMessageIndex((m) =>
-          Math.min(m + 1, AI_PROGRESS_MESSAGES.length - 1),
-        );
+    // Safety net: no matter what happens with the RAF loop, results appear
+    // within ANALYSIS_SAFETY_MS. The demo is never allowed to hang.
+    safetyRef.current = window.setTimeout(finish, ANALYSIS_SAFETY_MS);
+
+    const tick = () => {
+      const elapsed = performance.now() - started;
+      const t = Math.min(1, elapsed / ANALYSIS_MS);
+      setProgress(Math.round(t * 100));
+      setMessageIndex(
+        Math.min(
+          AI_PROGRESS_MESSAGES.length - 1,
+          Math.floor(t * AI_PROGRESS_MESSAGES.length),
+        ),
+      );
+      if (t < 1) {
+        rafRef.current = requestAnimationFrame(tick);
+      } else {
+        finish();
       }
-    }
-    const analysis = runAnalysis(clientId);
-    if (analysis) setResult(analysis);
-    setPhase("done");
-  }, [clientId, runAnalysis]);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+  }, [finish]);
 
   const autoStarted = React.useRef(false);
   React.useEffect(() => {
@@ -72,11 +114,20 @@ export function AnalysisScreen({ clientId }: { clientId: string }) {
     if (phase === "idle" && !client?.analysis) {
       autoStarted.current = true;
       const id = window.setTimeout(() => {
-        void start();
+        start();
       }, 0);
       return () => window.clearTimeout(id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Clean up timers on unmount so the animation never leaks after the user
+  // navigates away.
+  React.useEffect(() => {
+    return () => {
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+      if (safetyRef.current !== null) window.clearTimeout(safetyRef.current);
+    };
   }, []);
 
   if (!client) {
