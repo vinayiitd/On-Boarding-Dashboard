@@ -124,33 +124,21 @@ export function ClientDetailScreen({ clientId }: { clientId: string }) {
             </CardContent>
           </Card>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <FlowCard
               href={`/clients/${clientId}/upload`}
               icon={UploadCloud}
-              title="Upload documents"
-              description={`${client.documents.length} document${client.documents.length === 1 ? "" : "s"} on file. Add or replace anything you need.`}
-              cta="Manage documents"
-            />
-            <FlowCard
-              href={`/clients/${clientId}/analysis`}
-              icon={Sparkles}
-              title="Verify identity"
+              title="Documents & identity"
               description={(() => {
                 const total = client.documents.length;
-                const verified = client.documents.filter(
-                  (d) => d.status === "verified",
-                ).length;
-                if (total === 0) return "Upload documents first to capture their fields.";
-                if (verified === total)
-                  return `All ${total} document${total === 1 ? "" : "s"} verified. Edit fields any time.`;
-                return `${verified} of ${total} document${total === 1 ? "" : "s"} verified — capture the rest.`;
+                if (total === 0)
+                  return "Pick document types, upload each file, capture the fields.";
+                return `${total} document${total === 1 ? "" : "s"} on file. Add more or edit any time.`;
               })()}
               cta={
-                client.documents.length > 0 &&
-                client.documents.every((d) => d.status === "verified")
-                  ? "Review captured fields"
-                  : "Capture document details"
+                client.documents.length === 0
+                  ? "Add documents"
+                  : "Manage documents"
               }
             />
             <FlowCard
@@ -160,7 +148,7 @@ export function ClientDetailScreen({ clientId }: { clientId: string }) {
               description={
                 analysis
                   ? `Recommendation drafted with ${analysis.confidence}% confidence. Review before sign-off.`
-                  : "Verify all identity documents to unlock the recommendation."
+                  : "Confirm the customer to unlock the recommendation."
               }
               cta="Open officer view"
               disabled={!analysis}
@@ -168,8 +156,8 @@ export function ClientDetailScreen({ clientId }: { clientId: string }) {
             <FlowCard
               href={`/clients/${clientId}/report`}
               icon={FileDown}
-              title="Generate report"
-              description="Beautiful, printable compliance report with full audit trail."
+              title="Compliance report"
+              description="Printable A4 report with the full audit trail."
               cta="Generate report"
               disabled={!analysis}
             />

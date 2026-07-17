@@ -167,7 +167,7 @@ export function CreateClientScreen() {
           { href: "/clients", label: "Clients" },
           { label: "New" },
         ]}
-        eyebrow="Onboarding · Step 1 of 4"
+        eyebrow="Onboarding · Step 1 of 3"
         title="Create a new client"
         description="Tell Sentinel who you're onboarding. We'll draft the KYC pack and request the right documents automatically."
         actions={

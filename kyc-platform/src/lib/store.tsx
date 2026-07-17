@@ -28,6 +28,7 @@ type Action =
   | { type: "addDocuments"; payload: { clientId: string; documents: UploadedDocument[] } }
   | { type: "removeDocument"; payload: { clientId: string; documentId: string } }
   | { type: "verifyDocument"; payload: { clientId: string; documentId: string; data: Record<string, string> } }
+  | { type: "attachFile"; payload: { clientId: string; documentId: string; name: string; sizeKb: number } }
   | { type: "runAnalysis"; payload: { clientId: string; analysis: AIAnalysis } }
   | { type: "recordDecision"; payload: { clientId: string; decision: NonNullable<Client["reviewerDecision"]>; complianceNotes?: string } };
 
@@ -82,6 +83,23 @@ function reducer(state: StoreState, action: Action): StoreState {
             updatedAt: new Date().toISOString(),
           };
         }),
+      };
+    case "attachFile":
+      return {
+        ...state,
+        clients: state.clients.map((c) =>
+          c.id !== action.payload.clientId
+            ? c
+            : {
+                ...c,
+                documents: c.documents.map((d) =>
+                  d.id === action.payload.documentId
+                    ? { ...d, name: action.payload.name, sizeKb: action.payload.sizeKb }
+                    : d,
+                ),
+                updatedAt: new Date().toISOString(),
+              },
+        ),
       };
     case "verifyDocument": {
       const now = new Date().toISOString();
@@ -195,6 +213,15 @@ interface StoreContextValue {
   createClient: (data: Omit<Client, "id" | "reference" | "createdAt" | "updatedAt" | "documents" | "analysis" | "audit" | "outstandingItems" | "risk" | "status">) => Client;
   updateClient: (id: string, patch: Partial<Client>) => void;
   addDocuments: (clientId: string, files: File[]) => UploadedDocument[];
+  addTypedDocument: (
+    clientId: string,
+    input: { name: string; sizeKb: number; type: string; category: UploadedDocument["category"] },
+  ) => UploadedDocument;
+  attachFile: (
+    clientId: string,
+    documentId: string,
+    input: { name: string; sizeKb: number },
+  ) => void;
   removeDocument: (clientId: string, documentId: string) => void;
   verifyDocument: (
     clientId: string,
@@ -315,6 +342,41 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
+  const addTypedDocument = React.useCallback<StoreContextValue["addTypedDocument"]>(
+    (clientId, input) => {
+      const doc: UploadedDocument = {
+        id: nanoid(10),
+        name: input.name,
+        category: input.category,
+        sizeKb: input.sizeKb,
+        uploadedAt: new Date().toISOString(),
+        status: "pending",
+        // Stash the picked type inside verifiedData under a reserved
+        // '__type' key so schemaFor() always resolves to the picker choice
+        // even if the filename looks like something else.
+        verifiedData: { __type: input.type },
+      };
+      dispatch({ type: "addDocuments", payload: { clientId, documents: [doc] } });
+      return doc;
+    },
+    [],
+  );
+
+  const attachFile = React.useCallback<StoreContextValue["attachFile"]>(
+    (clientId, documentId, input) => {
+      dispatch({
+        type: "attachFile",
+        payload: {
+          clientId,
+          documentId,
+          name: input.name,
+          sizeKb: input.sizeKb,
+        },
+      });
+    },
+    [],
+  );
+
   const removeDocument = React.useCallback(
     (clientId: string, documentId: string) => {
       dispatch({ type: "removeDocument", payload: { clientId, documentId } });
@@ -366,6 +428,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       createClient,
       updateClient,
       addDocuments,
+      addTypedDocument,
+      attachFile,
       removeDocument,
       verifyDocument,
       runAnalysis,
@@ -373,7 +437,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       getClient,
       resetDemo,
     }),
-    [state, createClient, updateClient, addDocuments, removeDocument, verifyDocument, runAnalysis, recordDecision, getClient, resetDemo],
+    [state, createClient, updateClient, addDocuments, addTypedDocument, attachFile, removeDocument, verifyDocument, runAnalysis, recordDecision, getClient, resetDemo],
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

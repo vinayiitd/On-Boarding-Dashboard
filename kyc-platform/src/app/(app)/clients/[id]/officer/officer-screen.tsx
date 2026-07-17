@@ -118,7 +118,7 @@ export function OfficerScreen({ clientId }: { clientId: string }) {
       />
 
       <div className="mt-6">
-        <StepIndicator current={4} />
+        <StepIndicator current={3} />
       </div>
 
       {!analysis ? (
@@ -129,16 +129,16 @@ export function OfficerScreen({ clientId }: { clientId: string }) {
             </div>
             <div>
               <p className="text-lg font-semibold">
-                Identity verification isn&apos;t complete yet.
+                Documents & identity aren&apos;t confirmed yet.
               </p>
               <p className="mt-1 text-sm text-[var(--foreground-muted)]">
-                Capture the fields from each uploaded document so Sentinel
-                can draft the compliance recommendation.
+                Pick your document types, upload the files and capture the
+                fields — then confirm the customer to draft the recommendation.
               </p>
             </div>
             <Button asChild>
-              <Link href={`/clients/${clientId}/analysis`}>
-                Continue to Verify identity
+              <Link href={`/clients/${clientId}/upload`}>
+                Continue to Documents & identity
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>

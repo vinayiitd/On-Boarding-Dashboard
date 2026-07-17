@@ -3,9 +3,8 @@ import { cn } from "@/lib/utils";
 
 const steps = [
   { label: "Client details", key: "client" },
-  { label: "Documents", key: "docs" },
-  { label: "Verify identity", key: "verify" },
-  { label: "Report", key: "report" },
+  { label: "Documents & identity", key: "docs" },
+  { label: "Compliance review", key: "review" },
 ];
 
 /**
@@ -13,7 +12,7 @@ const steps = [
  * like a single guided journey. Connector fills using a real
  * gradient; the current step gets a soft glow.
  */
-export function StepIndicator({ current }: { current: 1 | 2 | 3 | 4 }) {
+export function StepIndicator({ current }: { current: 1 | 2 | 3 }) {
   return (
     <div className="surface-card rounded-2xl p-3">
       <ol className="relative flex items-center gap-3">

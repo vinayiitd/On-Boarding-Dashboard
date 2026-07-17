@@ -92,6 +92,20 @@ const DRIVERS_LICENCE: DocumentSchema = {
   summary: (d) => `${d.fullName ?? "—"} · ${d.stateOfIssue ?? "—"} ${d.licenceNumber ?? ""}`.trim(),
 };
 
+const MEDICARE_CARD: DocumentSchema = {
+  displayName: "Medicare card",
+  purpose: "Secondary identity proof",
+  section: "Identity",
+  fields: [
+    { key: "medicareNumber", label: "Medicare number", type: "text", required: true, inputMode: "numeric", placeholder: "10-digit number", hint: "The number printed above your name" },
+    { key: "irn", label: "IRN", type: "text", required: true, inputMode: "numeric", placeholder: "1", hint: "Individual reference number, left of your name" },
+    { key: "fullName", label: "Full name (as printed)", type: "text", required: true },
+    { key: "cardColour", label: "Card colour", type: "select", options: ["Green", "Blue", "Yellow"], required: true, hint: "Green = resident; Blue = interim resident; Yellow = reciprocal" },
+    { key: "expiryDate", label: "Valid to", type: "date", required: true, hint: "The date on the front of the card (must be in the future)" },
+  ],
+  summary: (d) => `${d.fullName ?? "—"} · Medicare ${d.medicareNumber ?? "—"}`,
+};
+
 const UTILITY_BILL: DocumentSchema = {
   displayName: "Utility bill",
   purpose: "Proof of residential address",
@@ -188,36 +202,116 @@ const GENERIC: DocumentSchema = {
   summary: (d) => d.reference ?? "Supporting document",
 };
 
+/* ---------------- Document types ---------------- */
+
+/**
+ * Stable identifier stored on each document. Drives the type-picker UI and
+ * lets us look up the right schema without pattern-matching filenames.
+ */
+export type DocumentType =
+  | "drivers_licence"
+  | "passport"
+  | "medicare_card"
+  | "utility_bill"
+  | "asic_extract"
+  | "trust_deed"
+  | "beneficial_owner"
+  | "source_of_funds"
+  | "generic";
+
+export const SCHEMAS: Record<DocumentType, DocumentSchema> = {
+  drivers_licence: DRIVERS_LICENCE,
+  passport: PASSPORT,
+  medicare_card: MEDICARE_CARD,
+  utility_bill: UTILITY_BILL,
+  asic_extract: ASIC_EXTRACT,
+  trust_deed: TRUST_DEED,
+  beneficial_owner: BENEFICIAL_OWNER,
+  source_of_funds: SOURCE_OF_FUNDS,
+  generic: GENERIC,
+};
+
+/** Categorises a document type into the finding-section it satisfies. */
+export const TYPE_TO_CATEGORY: Record<DocumentType, UploadedDocument["category"]> = {
+  drivers_licence: "Identity",
+  passport: "Identity",
+  medicare_card: "Identity",
+  utility_bill: "Address",
+  asic_extract: "Business",
+  trust_deed: "Trust",
+  beneficial_owner: "Ownership",
+  source_of_funds: "Financial",
+  generic: "Other",
+};
+
+/** Document types presented as headline tiles on the type picker. */
+export const PRIMARY_TYPES: DocumentType[] = [
+  "drivers_licence",
+  "passport",
+  "medicare_card",
+  "utility_bill",
+];
+
+/** Document types shown under "More types". */
+export const SECONDARY_TYPES: DocumentType[] = [
+  "asic_extract",
+  "trust_deed",
+  "beneficial_owner",
+  "source_of_funds",
+  "generic",
+];
+
 /* ---------------- Dispatch ---------------- */
 
 export function schemaFor(doc: UploadedDocument): DocumentSchema {
-  const n = doc.name.toLowerCase();
-  if (n.includes("passport")) return PASSPORT;
-  if (n.includes("licence") || n.includes("license") || n.includes("driver")) return DRIVERS_LICENCE;
-  if (n.includes("utility") || n.includes("bill") || n.includes("electric") || n.includes("water"))
-    return UTILITY_BILL;
-  if (n.includes("asic") || n.includes("extract") || n.includes("abn")) return ASIC_EXTRACT;
-  if (n.includes("trust") || n.includes("deed")) return TRUST_DEED;
-  if (n.includes("beneficial") || n.includes("ubo") || n.includes("ownership") || n.includes("declaration"))
-    return BENEFICIAL_OWNER;
-  if (n.includes("source") || n.includes("funds") || n.includes("sof") || n.includes("bank"))
-    return SOURCE_OF_FUNDS;
+  // If the document has been tagged with a stable type, prefer that.
+  const typed = doc.verifiedData?.__type as DocumentType | undefined;
+  if (typed && SCHEMAS[typed]) return SCHEMAS[typed];
 
-  // Fall back to category if the filename didn't match anything specific.
-  switch (doc.category) {
+  const inferred = inferType(doc.name, doc.category);
+  return SCHEMAS[inferred];
+}
+
+/** Best-effort inference for legacy documents that weren't tagged. */
+export function inferType(
+  name: string,
+  category: UploadedDocument["category"],
+): DocumentType {
+  const n = name.toLowerCase();
+  if (n.includes("passport")) return "passport";
+  if (n.includes("licence") || n.includes("license") || n.includes("driver"))
+    return "drivers_licence";
+  if (n.includes("medicare")) return "medicare_card";
+  if (
+    n.includes("utility") ||
+    n.includes("bill") ||
+    n.includes("electric") ||
+    n.includes("water") ||
+    n.includes("gas")
+  )
+    return "utility_bill";
+  if (n.includes("asic") || n.includes("extract") || n.includes("abn"))
+    return "asic_extract";
+  if (n.includes("trust") || n.includes("deed")) return "trust_deed";
+  if (n.includes("beneficial") || n.includes("ubo") || n.includes("ownership"))
+    return "beneficial_owner";
+  if (n.includes("source") || n.includes("funds") || n.includes("sof"))
+    return "source_of_funds";
+
+  switch (category) {
     case "Identity":
-      return PASSPORT;
+      return "passport";
     case "Address":
-      return UTILITY_BILL;
+      return "utility_bill";
     case "Business":
-      return ASIC_EXTRACT;
+      return "asic_extract";
     case "Trust":
-      return TRUST_DEED;
+      return "trust_deed";
     case "Ownership":
-      return BENEFICIAL_OWNER;
+      return "beneficial_owner";
     case "Financial":
-      return SOURCE_OF_FUNDS;
+      return "source_of_funds";
     default:
-      return GENERIC;
+      return "generic";
   }
 }

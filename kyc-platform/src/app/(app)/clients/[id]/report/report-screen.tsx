@@ -53,7 +53,7 @@ export function ReportScreen({ clientId }: { clientId: string }) {
       <div className="no-print mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-[11.5px] font-medium uppercase tracking-[0.09em] text-[var(--foreground-subtle)]">
-            Onboarding · Step 4 of 4
+            Onboarding · Compliance report
           </p>
           <h1 className="mt-1 font-display text-[28px] font-medium tracking-tight">
             Compliance report
