@@ -55,8 +55,14 @@ export interface UploadedDocument {
   category: DocumentCategory;
   sizeKb: number;
   uploadedAt: string;
-  status: "verified" | "flagged" | "processing";
+  status: "verified" | "flagged" | "processing" | "pending";
   pages?: number;
+  /**
+   * Fields captured from the document by the reviewer.
+   * Present once the document has been verified via the verify-identity flow.
+   */
+  verifiedData?: Record<string, string>;
+  verifiedAt?: string;
 }
 
 export type DocumentCategory =

@@ -27,6 +27,7 @@ type Action =
   | { type: "updateClient"; payload: { id: string; patch: Partial<Client> } }
   | { type: "addDocuments"; payload: { clientId: string; documents: UploadedDocument[] } }
   | { type: "removeDocument"; payload: { clientId: string; documentId: string } }
+  | { type: "verifyDocument"; payload: { clientId: string; documentId: string; data: Record<string, string> } }
   | { type: "runAnalysis"; payload: { clientId: string; analysis: AIAnalysis } }
   | { type: "recordDecision"; payload: { clientId: string; decision: NonNullable<Client["reviewerDecision"]>; complianceNotes?: string } };
 
@@ -82,6 +83,45 @@ function reducer(state: StoreState, action: Action): StoreState {
           };
         }),
       };
+    case "verifyDocument": {
+      const now = new Date().toISOString();
+      return {
+        ...state,
+        clients: state.clients.map((c) => {
+          if (c.id !== action.payload.clientId) return c;
+          const doc = c.documents.find((d) => d.id === action.payload.documentId);
+          return {
+            ...c,
+            documents: c.documents.map((d) =>
+              d.id === action.payload.documentId
+                ? {
+                    ...d,
+                    status: "verified",
+                    verifiedData: action.payload.data,
+                    verifiedAt: now,
+                  }
+                : d,
+            ),
+            updatedAt: now,
+            audit: [
+              {
+                id: nanoid(8),
+                timestamp: now,
+                actor: "Reviewer",
+                actorRole: "Reviewer",
+                action: `Verified ${doc?.name ?? "document"}`,
+                detail: Object.entries(action.payload.data)
+                  .filter(([, v]) => v && v.length)
+                  .slice(0, 2)
+                  .map(([k, v]) => `${k}: ${v}`)
+                  .join(" · "),
+              },
+              ...c.audit,
+            ],
+          };
+        }),
+      };
+    }
     case "runAnalysis":
       return {
         ...state,
@@ -156,6 +196,11 @@ interface StoreContextValue {
   updateClient: (id: string, patch: Partial<Client>) => void;
   addDocuments: (clientId: string, files: File[]) => UploadedDocument[];
   removeDocument: (clientId: string, documentId: string) => void;
+  verifyDocument: (
+    clientId: string,
+    documentId: string,
+    data: Record<string, string>,
+  ) => void;
   runAnalysis: (clientId: string) => AIAnalysis | null;
   recordDecision: (
     clientId: string,
@@ -259,7 +304,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         category: categoriseFile(f.name),
         sizeKb: Math.max(80, Math.round(f.size / 1024)),
         uploadedAt: new Date().toISOString(),
-        status: "verified",
+        // Newly uploaded documents start as pending until the reviewer
+        // captures their fields on the Verify identity screen.
+        status: "pending",
         pages: undefined,
       }));
       dispatch({ type: "addDocuments", payload: { clientId, documents } });
@@ -271,6 +318,13 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const removeDocument = React.useCallback(
     (clientId: string, documentId: string) => {
       dispatch({ type: "removeDocument", payload: { clientId, documentId } });
+    },
+    [],
+  );
+
+  const verifyDocument = React.useCallback(
+    (clientId: string, documentId: string, data: Record<string, string>) => {
+      dispatch({ type: "verifyDocument", payload: { clientId, documentId, data } });
     },
     [],
   );
@@ -313,12 +367,13 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       updateClient,
       addDocuments,
       removeDocument,
+      verifyDocument,
       runAnalysis,
       recordDecision,
       getClient,
       resetDemo,
     }),
-    [state, createClient, updateClient, addDocuments, removeDocument, runAnalysis, recordDecision, getClient, resetDemo],
+    [state, createClient, updateClient, addDocuments, removeDocument, verifyDocument, runAnalysis, recordDecision, getClient, resetDemo],
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
