@@ -51,7 +51,14 @@ export function ClientDetailScreen({ clientId }: { clientId: string }) {
           { href: "/clients", label: "Clients" },
           { label: client.name },
         ]}
-        eyebrow={`Case ${client.reference}`}
+        eyebrow={
+          <span className="inline-flex items-center gap-1.5">
+            <span className="font-mono tabular text-[var(--primary)]">
+              {client.reference}
+            </span>
+            · Case file
+          </span>
+        }
         title={client.name}
         description={client.purpose}
         actions={

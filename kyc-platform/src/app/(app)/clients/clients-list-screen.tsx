@@ -169,25 +169,31 @@ function Row({ client, index }: { client: Client; index: number }) {
       initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.025, duration: 0.3 }}
-      className="group border-b border-[var(--border)] last:border-b-0 transition-colors hover:bg-[var(--surface-muted)]/50"
+      className="group relative border-b border-[var(--border)] last:border-b-0 transition-colors hover:bg-[var(--surface-muted)]/60"
     >
       <td className="py-3 pl-6 pr-3">
         <Link href={`/clients/${client.id}`} className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--primary)_8%,var(--surface-muted))] text-xs font-semibold text-[var(--primary)]">
+          <span
+            aria-hidden
+            className="absolute left-0 top-1/2 h-8 w-[3px] -translate-y-1/2 rounded-r bg-[var(--primary)] opacity-0 transition-opacity group-hover:opacity-100"
+          />
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--primary)_8%,var(--surface-muted))] text-[12px] font-semibold text-[var(--primary)] font-display">
             {initials(client.name)}
           </div>
           <div className="min-w-0">
-            <p className="truncate text-sm font-medium">{client.name}</p>
-            <p className="text-xs text-[var(--foreground-subtle)]">
+            <p className="truncate text-[13.5px] font-medium tracking-tight">
+              {client.name}
+            </p>
+            <p className="text-[11.5px] tabular text-[var(--foreground-subtle)]">
               {client.reference}
             </p>
           </div>
         </Link>
       </td>
       <td className="py-3 pr-3 text-[var(--foreground-muted)]">
-        <span className="text-sm">{client.entityType}</span>
+        <span className="text-[13px]">{client.entityType}</span>
         <span className="mx-1 text-[var(--foreground-subtle)]">·</span>
-        <span className="text-xs">{client.industry}</span>
+        <span className="text-[11.5px]">{client.industry}</span>
       </td>
       <td className="py-3 pr-3">
         <RiskPill risk={client.risk} size="sm" />
@@ -195,7 +201,7 @@ function Row({ client, index }: { client: Client; index: number }) {
       <td className="py-3 pr-3">
         <StatusPill status={client.status} />
       </td>
-      <td className="py-3 pr-3 tabular-nums text-[var(--foreground-muted)]">
+      <td className="py-3 pr-3 tabular text-[13px] text-[var(--foreground-muted)]">
         {formatCurrency(client.expectedTransactionAmount)}
       </td>
       <td className="py-3 pr-3">
@@ -205,18 +211,18 @@ function Row({ client, index }: { client: Client; index: number }) {
               {reviewer.initials}
             </AvatarFallback>
           </Avatar>
-          <span className="text-xs text-[var(--foreground-muted)]">
+          <span className="text-[11.5px] text-[var(--foreground-muted)]">
             {reviewer.name.split(" ")[0]}
           </span>
         </div>
       </td>
-      <td className="py-3 pr-3 text-xs text-[var(--foreground-subtle)] whitespace-nowrap">
+      <td className="py-3 pr-3 text-[11.5px] text-[var(--foreground-subtle)] whitespace-nowrap tabular">
         {formatRelative(client.updatedAt)}
       </td>
       <td className="py-3 pr-6 text-right">
         <Link
           href={`/clients/${client.id}`}
-          className="inline-flex items-center gap-1 text-xs font-medium text-[var(--primary)] opacity-0 transition-opacity group-hover:opacity-100"
+          className="inline-flex items-center gap-1 text-[11.5px] font-medium text-[var(--primary)] opacity-0 translate-x-1 transition-all group-hover:opacity-100 group-hover:translate-x-0"
         >
           Open <ArrowUpRight className="h-3.5 w-3.5" />
         </Link>
