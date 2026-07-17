@@ -347,24 +347,56 @@ export function CreateClientScreen() {
                 error={errors.expectedTransactionAmount?.message}
                 helper="Estimated annual transaction volume in AUD."
               >
-                <div className="relative">
-                  <DollarSign className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--foreground-subtle)]" />
-                  <Input
-                    type="number"
-                    inputMode="numeric"
-                    min={0}
-                    step={1000}
-                    className="pl-9 tabular-nums"
-                    {...register("expectedTransactionAmount", {
-                      valueAsNumber: true,
-                      required: "Expected amount is required",
-                      min: {
-                        value: 0,
-                        message: "Amount must be non-negative",
-                      },
-                    })}
-                  />
-                </div>
+                <Controller
+                  control={control}
+                  name="expectedTransactionAmount"
+                  rules={{
+                    required: "Expected amount is required",
+                    min: { value: 0, message: "Amount must be non-negative" },
+                  }}
+                  render={({ field }) => (
+                    <div className="flex flex-col gap-2">
+                      <div className="relative">
+                        <DollarSign className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--foreground-subtle)]" />
+                        <Input
+                          type="number"
+                          inputMode="numeric"
+                          min={0}
+                          step={1000}
+                          className="pl-9 tabular font-medium"
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                          onBlur={field.onBlur}
+                        />
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {[
+                          { label: "$100k", value: 100_000 },
+                          { label: "$500k", value: 500_000 },
+                          { label: "$1M", value: 1_000_000 },
+                          { label: "$5M", value: 5_000_000 },
+                        ].map((preset) => {
+                          const active = Number(field.value) === preset.value;
+                          return (
+                            <button
+                              key={preset.value}
+                              type="button"
+                              onClick={() => field.onChange(preset.value)}
+                              className={cn(
+                                "inline-flex items-center rounded-full border px-2.5 py-1 text-[11.5px] font-medium tabular transition-colors",
+                                active
+                                  ? "border-[var(--primary)] bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] text-[var(--primary)]"
+                                  : "border-[var(--border)] bg-[var(--surface)] text-[var(--foreground-muted)] hover:border-[var(--border-strong)] hover:text-[var(--foreground)]",
+                              )}
+                            >
+                              {preset.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                />
               </Field>
             </CardContent>
           </Card>
@@ -443,43 +475,73 @@ export function CreateClientScreen() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="relative overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5"
+            className="gradient-ring relative overflow-hidden rounded-2xl p-5 bg-[color-mix(in_srgb,var(--primary)_3%,var(--surface))]"
           >
             <div
               aria-hidden
-              className="absolute -right-10 -top-16 h-40 w-40 rounded-full blur-3xl"
+              className="pointer-events-none absolute -right-10 -top-16 h-40 w-40 rounded-full blur-3xl"
               style={{
                 background:
                   "radial-gradient(circle, color-mix(in srgb, var(--primary) 22%, transparent), transparent 70%)",
               }}
             />
-            <div className="relative flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--primary)_12%,transparent)] text-[var(--primary)]">
-                <Sparkles className="h-4 w-4" />
+            <div className="relative flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--primary)] text-white shadow-[0_4px_12px_-4px_var(--primary)]">
+                  <Sparkles className="h-4 w-4" />
+                </div>
+                <p className="text-[13px] font-semibold">
+                  What Sentinel will do
+                </p>
               </div>
-              <p className="text-sm font-semibold">What Sentinel will do next</p>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface)] px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-[var(--foreground-subtle)]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)] animate-[pulseSlow_2s_infinite]" />
+                ready
+              </span>
             </div>
-            <ol className="relative mt-4 flex flex-col gap-3 text-sm text-[var(--foreground-muted)]">
+            <ol className="relative mt-4 flex flex-col gap-3">
               {[
-                `Draft the KYC pack for a ${entityType.toLowerCase()}`,
-                "Request the right documents from your client",
-                "Screen against sanctions & PEP lists",
-                "Draft a compliance recommendation for you",
+                {
+                  label: `Draft the KYC pack for a ${entityType.toLowerCase()}`,
+                  meta: "~0.4s",
+                },
+                {
+                  label: "Request the right documents from your client",
+                  meta: "auto-email",
+                },
+                {
+                  label: "Screen against sanctions & PEP lists",
+                  meta: "42 checks",
+                },
+                {
+                  label: "Draft a compliance recommendation for you",
+                  meta: "AUSTRAC-cited",
+                },
               ].map((step, i) => (
-                <li key={i} className="flex gap-3">
-                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--surface-muted)] text-[10px] font-semibold text-[var(--foreground-muted)]">
-                    {i + 1}
+                <li
+                  key={i}
+                  className="flex items-start justify-between gap-3 text-[13px]"
+                >
+                  <div className="flex items-start gap-2.5 min-w-0">
+                    <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--primary)_12%,transparent)] text-[9.5px] font-semibold text-[var(--primary)]">
+                      {i + 1}
+                    </span>
+                    <span className="text-[var(--foreground)] leading-snug">
+                      {step.label}
+                    </span>
+                  </div>
+                  <span className="shrink-0 rounded border border-[var(--border)] bg-[var(--surface)] px-1.5 py-0.5 text-[10px] font-mono text-[var(--foreground-subtle)]">
+                    {step.meta}
                   </span>
-                  <span className="text-pretty">{step}</span>
                 </li>
               ))}
             </ol>
           </motion.div>
           <div className="rounded-2xl border border-dashed border-[var(--border-strong)] bg-[var(--surface)] p-4">
-            <p className="text-xs uppercase tracking-wider text-[var(--foreground-subtle)] font-semibold">
+            <p className="text-[10.5px] uppercase tracking-[0.09em] text-[var(--foreground-subtle)] font-semibold">
               Regulatory context
             </p>
-            <p className="mt-2 text-sm text-[var(--foreground-muted)] leading-relaxed">
+            <p className="mt-2 text-[13px] text-[var(--foreground-muted)] leading-relaxed">
               Tranche 2 brings Australian accountants, lawyers and real estate
               agencies under the AML/CTF Act. Sentinel keeps you aligned with
               AUSTRAC guidance for customer identification, ongoing due

@@ -125,21 +125,38 @@ export function DocumentDropzone({
         }}
         onDrop={onDrop}
         className={cn(
-          "relative flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed",
-          "px-6 py-14 text-center transition-all cursor-pointer overflow-hidden",
+          "group relative flex flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed",
+          "px-6 py-16 text-center transition-all cursor-pointer overflow-hidden",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]",
           isDragging
             ? "border-[var(--primary)] bg-[color-mix(in_srgb,var(--primary)_6%,var(--surface))]"
-            : "border-[var(--border-strong)] bg-[var(--surface)] hover:border-[color-mix(in_srgb,var(--primary)_35%,var(--border-strong))] hover:bg-[color-mix(in_srgb,var(--primary)_3%,var(--surface))]",
+            : "border-[var(--border-strong)] bg-[var(--surface)] hover:border-[color-mix(in_srgb,var(--primary)_35%,var(--border-strong))] hover:bg-[color-mix(in_srgb,var(--primary)_2.5%,var(--surface))]",
         )}
       >
+        {/* Ambient dot texture + radial fade */}
         <div
           aria-hidden
           className={cn(
-            "absolute inset-0 opacity-40 grid-bg radial-fade transition-opacity",
-            isDragging ? "opacity-100" : "opacity-30",
+            "absolute inset-0 dot-bg radial-fade transition-opacity",
+            isDragging ? "opacity-100" : "opacity-40",
           )}
         />
+        {/* Magnetic ring on hover / drag */}
+        <div
+          aria-hidden
+          className={cn(
+            "pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity",
+            isDragging ? "opacity-100" : "opacity-0",
+          )}
+        >
+          <span
+            className="h-40 w-40 rounded-full blur-2xl"
+            style={{
+              background:
+                "radial-gradient(circle, color-mix(in srgb, var(--primary) 30%, transparent), transparent 70%)",
+            }}
+          />
+        </div>
         <input
           ref={inputRef}
           type="file"
@@ -148,28 +165,61 @@ export function DocumentDropzone({
           className="hidden"
           onChange={onInputChange}
         />
-        <motion.div
-          animate={{
-            y: isDragging ? -4 : 0,
-            scale: isDragging ? 1.05 : 1,
-          }}
-          transition={{ type: "spring", stiffness: 260, damping: 20 }}
-          className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-[color-mix(in_srgb,var(--primary)_10%,var(--surface))] text-[var(--primary)]"
-        >
-          <UploadCloud className="h-6 w-6" />
-        </motion.div>
+
+        {/* Floating stacked document icons */}
+        <div className="relative flex h-16 w-24 items-center justify-center">
+          <motion.div
+            aria-hidden
+            animate={{
+              rotate: isDragging ? -18 : -8,
+              x: isDragging ? -18 : -14,
+              y: isDragging ? -4 : 2,
+            }}
+            transition={{ type: "spring", stiffness: 200, damping: 18 }}
+            className="absolute h-14 w-11 rounded-lg border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-soft)]"
+          >
+            <div className="mt-2 mx-2 h-1 rounded bg-[var(--border-strong)]" />
+            <div className="mt-1.5 mx-2 h-1 rounded bg-[var(--border-strong)]/70" />
+            <div className="mt-1.5 mx-2 h-1 rounded bg-[var(--border-strong)]/50" />
+          </motion.div>
+          <motion.div
+            aria-hidden
+            animate={{
+              rotate: isDragging ? 18 : 8,
+              x: isDragging ? 18 : 14,
+              y: isDragging ? -4 : 2,
+            }}
+            transition={{ type: "spring", stiffness: 200, damping: 18 }}
+            className="absolute h-14 w-11 rounded-lg border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-soft)]"
+          >
+            <div className="mt-2 mx-2 h-1 rounded bg-[var(--border-strong)]" />
+            <div className="mt-1.5 mx-2 h-1 rounded bg-[var(--border-strong)]/70" />
+            <div className="mt-1.5 mx-2 h-1 rounded bg-[var(--border-strong)]/50" />
+          </motion.div>
+          <motion.div
+            animate={{
+              y: isDragging ? -8 : 0,
+              scale: isDragging ? 1.06 : 1,
+            }}
+            transition={{ type: "spring", stiffness: 260, damping: 20 }}
+            className="relative flex h-14 w-14 items-center justify-center rounded-xl bg-[var(--primary)] text-white shadow-[0_10px_30px_-8px_var(--primary)]"
+          >
+            <UploadCloud className="h-6 w-6" strokeWidth={2} />
+          </motion.div>
+        </div>
+
         <div className="relative">
-          <p className="text-[15px] font-medium">
+          <p className="text-[16px] font-medium tracking-tight">
             {isDragging ? "Drop to upload" : "Drag & drop documents here"}
           </p>
-          <p className="mt-1 text-sm text-[var(--foreground-muted)]">
+          <p className="mt-1 text-[13.5px] text-[var(--foreground-muted)]">
             or{" "}
-            <span className="text-[var(--primary)] underline underline-offset-4">
+            <span className="text-[var(--primary)] font-medium underline underline-offset-4 decoration-[var(--primary)]/40">
               browse from your computer
             </span>
           </p>
-          <p className="mt-3 text-xs text-[var(--foreground-subtle)]">
-            PDF, JPG, PNG · up to 25MB each · multiple files supported
+          <p className="mt-3 text-[11.5px] text-[var(--foreground-subtle)] font-mono">
+            PDF · JPG · PNG · HEIC · up to 25 MB each · multi-file supported
           </p>
         </div>
       </div>
