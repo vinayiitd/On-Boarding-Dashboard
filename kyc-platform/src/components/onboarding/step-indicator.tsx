@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 const steps = [
   { label: "Client details", key: "client" },
   { label: "Documents", key: "docs" },
-  { label: "AI analysis", key: "analysis" },
+  { label: "Verify identity", key: "verify" },
   { label: "Report", key: "report" },
 ];
 

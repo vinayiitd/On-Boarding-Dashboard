@@ -129,16 +129,16 @@ export function OfficerScreen({ clientId }: { clientId: string }) {
             </div>
             <div>
               <p className="text-lg font-semibold">
-                No analysis on file yet.
+                Identity verification isn&apos;t complete yet.
               </p>
               <p className="mt-1 text-sm text-[var(--foreground-muted)]">
-                Run Sentinel across this client&apos;s documents to see the
-                recommendation.
+                Capture the fields from each uploaded document so Sentinel
+                can draft the compliance recommendation.
               </p>
             </div>
             <Button asChild>
               <Link href={`/clients/${clientId}/analysis`}>
-                Analyse with Sentinel
+                Continue to Verify identity
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>

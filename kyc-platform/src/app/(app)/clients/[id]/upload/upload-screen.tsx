@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, MoreHorizontal, Sparkles, Trash2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, ClipboardCheck, MoreHorizontal, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/layout/page-header";
 import { StepIndicator } from "@/components/onboarding/step-indicator";
@@ -86,7 +86,7 @@ export function UploadScreen({ clientId }: { clientId: string }) {
         ]}
         eyebrow="Onboarding · Step 2 of 4"
         title="Upload documents"
-        description="Add every document you have for this client. Sentinel automatically classifies each file — passports, ASIC extracts, trust deeds and more."
+        description="Add every document you have for this client. Sentinel classifies each file automatically — you'll capture the details on the next step."
         actions={
           <Button variant="outline" size="md" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4" />
@@ -176,11 +176,13 @@ export function UploadScreen({ clientId }: { clientId: string }) {
                                     ? "success"
                                     : d.status === "flagged"
                                       ? "warning"
-                                      : "brand"
+                                      : d.status === "pending"
+                                        ? "outline"
+                                        : "brand"
                                 }
                                 size="sm"
                               >
-                                {d.status}
+                                {d.status === "pending" ? "awaiting details" : d.status}
                               </Badge>
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -225,8 +227,8 @@ export function UploadScreen({ clientId }: { clientId: string }) {
               disabled={client.documents.length === 0}
               onClick={() => router.push(`/clients/${clientId}/analysis`)}
             >
-              <Sparkles className="h-4 w-4" />
-              Analyse with Sentinel
+              <ClipboardCheck className="h-4 w-4" />
+              Verify identity
               <ArrowRight className="h-4 w-4" />
             </Button>
           </div>

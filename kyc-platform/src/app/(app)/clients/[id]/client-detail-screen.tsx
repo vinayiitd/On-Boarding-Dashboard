@@ -135,13 +135,23 @@ export function ClientDetailScreen({ clientId }: { clientId: string }) {
             <FlowCard
               href={`/clients/${clientId}/analysis`}
               icon={Sparkles}
-              title="Run AI analysis"
-              description={
-                analysis
-                  ? `Last analysed ${formatRelative(analysis.generatedAt)}. Re-run to update.`
-                  : "Sentinel will read every document in under 4 seconds."
+              title="Verify identity"
+              description={(() => {
+                const total = client.documents.length;
+                const verified = client.documents.filter(
+                  (d) => d.status === "verified",
+                ).length;
+                if (total === 0) return "Upload documents first to capture their fields.";
+                if (verified === total)
+                  return `All ${total} document${total === 1 ? "" : "s"} verified. Edit fields any time.`;
+                return `${verified} of ${total} document${total === 1 ? "" : "s"} verified — capture the rest.`;
+              })()}
+              cta={
+                client.documents.length > 0 &&
+                client.documents.every((d) => d.status === "verified")
+                  ? "Review captured fields"
+                  : "Capture document details"
               }
-              cta={analysis ? "Re-run analysis" : "Analyse now"}
             />
             <FlowCard
               href={`/clients/${clientId}/officer`}
@@ -150,7 +160,7 @@ export function ClientDetailScreen({ clientId }: { clientId: string }) {
               description={
                 analysis
                   ? `Recommendation drafted with ${analysis.confidence}% confidence. Review before sign-off.`
-                  : "Once you analyse, the officer view will draft your decision."
+                  : "Verify all identity documents to unlock the recommendation."
               }
               cta="Open officer view"
               disabled={!analysis}
@@ -196,11 +206,13 @@ export function ClientDetailScreen({ clientId }: { clientId: string }) {
                             ? "success"
                             : d.status === "flagged"
                               ? "warning"
-                              : "brand"
+                              : d.status === "pending"
+                                ? "outline"
+                                : "brand"
                         }
                         size="sm"
                       >
-                        {d.status}
+                        {d.status === "pending" ? "awaiting details" : d.status}
                       </Badge>
                     </li>
                   ))}

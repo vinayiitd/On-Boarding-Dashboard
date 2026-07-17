@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AnalysisScreen } from "./analysis-screen";
 
 export const metadata: Metadata = {
-  title: "AI analysis · Sentinel",
+  title: "Verify identity · Sentinel",
 };
 
 export default async function AnalysisPage({
