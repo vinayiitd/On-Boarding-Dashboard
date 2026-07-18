@@ -2,7 +2,7 @@
 FastAPI dependency-injection callables.
 
 Endpoints declare their needs via `Depends(...)` from this module so nothing
-in `application/` or `domain/` has to import FastAPI.
+in `application/` has to import FastAPI.
 """
 
 from __future__ import annotations
