@@ -67,6 +67,17 @@ uv run alembic revision --autogenerate -m "add users table"
 3. Depend on `@easyid/config` for TS + ESLint presets.
 4. `pnpm install` from the repo root — pnpm links it into every consumer
    automatically.
+5. If the new package changes a layer boundary or a public contract, add
+   an ADR in [`docs/adr/`](./adr/README.md). Copy
+   [`docs/adr/template.md`](./adr/template.md) and increment the number.
+
+## Architecture Decision Records
+
+Architectural decisions — layer boundaries, package boundaries, framework
+choices, dependency additions — are recorded as ADRs in
+[`docs/adr/`](./adr/README.md). Read them before proposing changes to any
+of the above, and add one when you make a change that a future contributor
+might reasonably want to revisit.
 
 ## Adding an API endpoint
 
