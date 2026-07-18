@@ -17,6 +17,6 @@ NAMING_CONVENTION = {
 
 
 class Base(DeclarativeBase):
-    """Base for every ORM model. Models live in `infrastructure/db/models/`."""
+    """Base for every ORM model. Models live in `infrastructure/persistence/models/`."""
 
     metadata = MetaData(naming_convention=NAMING_CONVENTION)
