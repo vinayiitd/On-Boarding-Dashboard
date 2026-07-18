@@ -53,20 +53,21 @@ utilities), `@easyid/config` (TS + ESLint presets).
 | **Testing**    | Pytest · Vitest · Playwright                                                                  |
 | **Tooling**    | ESLint · Prettier · Ruff · mypy · Husky · lint-staged · EditorConfig                          |
 
-Persistence (SQLAlchemy / Alembic / PostgreSQL) is intentionally deferred past
-FND-002.
+Persistence foundation (FND-003): SQLAlchemy 2.x async + asyncpg + Alembic.
+No business mappings yet.
 
 ## Folder structure
 
 ```
 easyid/
 ├── apps/
-│   ├── api/                    # FastAPI bootstrap (FND-002) — consumes packages/domain
+│   ├── api/                    # FastAPI API — consumes packages/domain
 │   │   ├── src/easyid_api/
 │   │   │   ├── api/            # HTTP surface (routers, RFC 7807 errors)
-│   │   │   ├── application/    # Use cases, ports (empty in FND-002)
+│   │   │   ├── application/    # Use cases + ports (UoW, repositories, health)
 │   │   │   ├── bootstrap/      # logging, lifespan, DI, request context
-│   │   │   └── infrastructure/ # adapters (empty in FND-002)
+│   │   │   └── infrastructure/ # persistence/ + adapter stubs
+│   │   ├── alembic/            # Deterministic migrations
 │   │   ├── tests/              # Pytest + httpx
 │   │   ├── Dockerfile
 │   │   └── pyproject.toml
@@ -175,7 +176,6 @@ iterations:
 
 - Business entities (Customer / Party / Client / etc.)
 - Authentication and authorisation
-- Persistence (SQLAlchemy, Alembic, PostgreSQL connectivity)
 - Tenant resolution
 - AI / LLM integration
 - Business use cases in the application layer

@@ -50,6 +50,23 @@ class Settings(BaseSettings):
         alias="OPENAPI_CONTACT_EMAIL",
     )
 
+    # --- Persistence (PostgreSQL via asyncpg) ---------------------------------
+    database_url: str = Field(
+        default="postgresql+asyncpg://easyid:easyid@127.0.0.1:5432/easyid",
+        alias="DATABASE_URL",
+    )
+    """Async SQLAlchemy URL. Must use the `postgresql+asyncpg://` scheme."""
+
+    database_pool_size: int = Field(default=5, alias="DATABASE_POOL_SIZE", ge=1)
+    database_max_overflow: int = Field(default=10, alias="DATABASE_MAX_OVERFLOW", ge=0)
+    database_pool_recycle_seconds: int = Field(
+        default=1800,
+        alias="DATABASE_POOL_RECYCLE_SECONDS",
+        ge=0,
+    )
+    database_echo: bool = Field(default=False, alias="DATABASE_ECHO")
+    """Log SQL statements when True — useful locally, never in production."""
+
     @property
     def cors_origins_list(self) -> list[str]:
         """Parse the comma-separated CORS origin list."""

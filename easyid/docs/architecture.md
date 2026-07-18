@@ -68,26 +68,29 @@ Enforced rules:
 - **No web-tier import of `easyid_domain`.** The browser talks to the domain
   only through HTTP.
 - **`bootstrap/` contains no business logic** — only process wiring.
-- **FND-002 ships no persistence.** Infrastructure adapters land in later
-  foundations.
+- **Only `infrastructure/persistence/` may import SQLAlchemy.** Domain and
+  application depend on ports (`UnitOfWork`, repositories, health).
+- **Persistence mappings live under `mappings/`** — never a package named
+  `models`, and never inside `packages/domain`.
 
 CI enforces these boundaries with an import-linter pass (arriving in a follow-up
 iteration).
 
-## API bootstrap (FND-002)
+## API bootstrap + persistence (FND-002 / FND-003)
 
 ```
 apps/api/src/easyid_api/
 ├── bootstrap/          # logging, lifespan, DI container, RequestContext
 ├── api/                # HTTP surface — RFC 7807 errors, /api/v1 routes
-├── application/        # commands/ + queries/ shelves (empty in FND-002)
-└── infrastructure/     # identity/messaging/storage/observability stubs
-                        # (no persistence or tenancy in FND-002)
+├── application/        # ports/ (UoW, repos, health) + commands/queries shelves
+└── infrastructure/
+    ├── persistence/    # SQLAlchemy async engine, session, UoW, mappings/
+    └── identity|messaging|storage|observability/  # stubs
 ```
 
 Errors use RFC 7807 Problem Details (`application/problem+json`). Every
-response carries `X-Request-ID` and `X-Correlation-ID`. See
-[ADR-0005](./adr/0005-fnd-002-bootstrap-without-persistence-tenancy.md).
+response carries `X-Request-ID` and `X-Correlation-ID`. Persistence: see
+[ADR-0006](./adr/0006-persistence-foundation.md).
 
 ## Frontend architecture
 

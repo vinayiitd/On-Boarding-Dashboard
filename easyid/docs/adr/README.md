@@ -51,3 +51,4 @@ Small refactors, bug fixes, and dependency bumps do not need an ADR.
 | 0003 | [The domain package is Python, not TypeScript](./0003-domain-is-a-python-package.md)                      | Accepted |
 | 0004 | [Bootstrap layer, infrastructure adapters, and TenantContext](./0004-bootstrap-tenancy-infrastructure-shape.md) | Superseded by 0005 |
 | 0005 | [FND-002 bootstrap without persistence or tenancy](./0005-fnd-002-bootstrap-without-persistence-tenancy.md) | Accepted |
+| 0006 | [Persistence foundation (SQLAlchemy async + PostgreSQL)](./0006-persistence-foundation.md) | Accepted |

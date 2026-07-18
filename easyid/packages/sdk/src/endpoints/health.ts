@@ -2,7 +2,7 @@ import type { HealthStatus } from "@easyid/types";
 import { request, type HttpContext } from "../http";
 
 /**
- * `GET /api/v1/health` — liveness + version.
+ * `GET /api/v1/health` — liveness + database readiness.
  * Should never throw in normal operation; treat any thrown `ApiClientError`
  * as a hard failure worth surfacing to the user.
  */

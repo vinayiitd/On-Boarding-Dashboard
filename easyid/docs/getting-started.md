@@ -29,10 +29,13 @@ Stop with `pnpm docker:down`. Reset with `pnpm docker:reset`.
 
 ### API
 
+Postgres must be reachable (`docker compose up -d postgres` from `easyid/`).
+
 ```bash
 cd easyid/apps/api
 uv sync --dev
 cp .env.example .env
+uv run alembic upgrade head
 uv run uvicorn easyid_api.main:app --reload
 ```
 

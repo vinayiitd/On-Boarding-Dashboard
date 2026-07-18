@@ -1,9 +1,9 @@
 """
 FastAPI lifespan — process startup and shutdown.
 
-Owns process logging configuration. The composition root is attached in
-`create_app` so request dependencies resolve even when an ASGI test client
-does not run lifespan hooks.
+Owns process logging configuration and engine disposal. The composition
+root is attached in `create_app` so request dependencies resolve even when
+an ASGI test client does not run lifespan hooks.
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ def build_lifespan(settings: Settings) -> Lifespan:
     """Return a FastAPI lifespan context manager closed over `settings`."""
 
     @asynccontextmanager
-    async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         configure_logging(settings)
         logger.info(
             "application.startup environment=%s version=%s",
@@ -36,6 +36,11 @@ def build_lifespan(settings: Settings) -> Lifespan:
         try:
             yield
         finally:
+            container = getattr(app.state, "container", None)
+            engine = getattr(container, "engine", None)
+            if engine is not None:
+                await engine.dispose()
+                logger.info("database.engine_disposed")
             logger.info("application.shutdown")
 
     return lifespan

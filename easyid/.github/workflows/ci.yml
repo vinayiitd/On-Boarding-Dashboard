@@ -65,9 +65,24 @@ jobs:
     defaults:
       run:
         working-directory: easyid/apps/api
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: easyid
+          POSTGRES_PASSWORD: easyid
+          POSTGRES_DB: easyid
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U easyid -d easyid"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
     env:
       ENVIRONMENT: test
       API_LOG_LEVEL: warning
+      DATABASE_URL: postgresql+asyncpg://easyid:easyid@127.0.0.1:5432/easyid
     steps:
       - uses: actions/checkout@v4
 

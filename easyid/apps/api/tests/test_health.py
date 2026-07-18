@@ -12,7 +12,11 @@ async def test_health_returns_200(client: AsyncClient) -> None:
 
 async def test_health_returns_expected_contract(client: AsyncClient) -> None:
     response = await client.get("/api/v1/health")
-    assert response.json() == {"status": "healthy", "version": "0.1.0"}
+    assert response.json() == {
+        "status": "healthy",
+        "version": "0.1.0",
+        "database": "up",
+    }
 
 
 async def test_health_echoes_request_and_correlation_ids(client: AsyncClient) -> None:

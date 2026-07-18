@@ -7,10 +7,13 @@ in `application/` has to import FastAPI.
 
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
 from typing import Annotated
 
 from fastapi import Depends, Request
 
+from easyid_api.application.ports.health import DatabaseHealth
+from easyid_api.application.ports.unit_of_work import UnitOfWork
 from easyid_api.bootstrap.container import AppContainer
 from easyid_api.bootstrap.request_context import RequestContext
 from easyid_api.config import Settings
@@ -30,6 +33,13 @@ def get_container(request: Request) -> AppContainer:
 def get_settings(container: Annotated[AppContainer, Depends(get_container)]) -> Settings:
     """Return the Settings instance owned by the composition root."""
     return container.settings
+
+
+def get_database_health(
+    container: Annotated[AppContainer, Depends(get_container)],
+) -> DatabaseHealth:
+    """Return the database health port from the composition root."""
+    return container.database_health
 
 
 def get_request_context(request: Request) -> RequestContext:
@@ -54,8 +64,23 @@ def get_correlation_id(
     return context.correlation_id
 
 
+async def get_unit_of_work(
+    container: Annotated[AppContainer, Depends(get_container)],
+) -> AsyncIterator[UnitOfWork]:
+    """
+    Yield a request-scoped Unit of Work.
+
+    The caller (command/query handler) must `commit()` explicitly. Exiting
+    without a commit — or with an exception — rolls back.
+    """
+    async with container.unit_of_work() as uow:
+        yield uow
+
+
 ContainerDep = Annotated[AppContainer, Depends(get_container)]
 SettingsDep = Annotated[Settings, Depends(get_settings)]
+DatabaseHealthDep = Annotated[DatabaseHealth, Depends(get_database_health)]
 RequestContextDep = Annotated[RequestContext, Depends(get_request_context)]
 RequestIdDep = Annotated[str, Depends(get_request_id)]
 CorrelationIdDep = Annotated[str, Depends(get_correlation_id)]
+UnitOfWorkDep = Annotated[UnitOfWork, Depends(get_unit_of_work)]
