@@ -52,3 +52,4 @@ Small refactors, bug fixes, and dependency bumps do not need an ADR.
 | 0004 | [Bootstrap layer, infrastructure adapters, and TenantContext](./0004-bootstrap-tenancy-infrastructure-shape.md) | Superseded by 0005 |
 | 0005 | [FND-002 bootstrap without persistence or tenancy](./0005-fnd-002-bootstrap-without-persistence-tenancy.md) | Accepted |
 | 0006 | [Persistence foundation (SQLAlchemy async + PostgreSQL)](./0006-persistence-foundation.md) | Accepted |
+| 0007 | [Domain kernel primitives in `easyid_domain`](./0007-domain-kernel.md) | Accepted |

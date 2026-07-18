@@ -13,7 +13,55 @@ Rules
   boundary in `apps/api` (and are mirrored for the web in `@easyid/types`).
 - Every function must be trivially unit-testable.
 
-See docs/adr/0003-domain-is-a-python-package.md for the rationale.
+FND-004 ships the domain kernel (`easyid_domain.kernel`) — reusable DDD
+primitives with no business concepts. See
+`docs/adr/0007-domain-kernel.md`.
 """
 
-__all__: list[str] = []
+from easyid_domain.kernel import (
+    AggregateRoot,
+    Clock,
+    ConflictError,
+    DomainError,
+    DomainEvent,
+    Entity,
+    Err,
+    FixedClock,
+    Identifier,
+    InvariantViolationError,
+    NotFoundError,
+    Ok,
+    Result,
+    Specification,
+    SystemClock,
+    ValidationError,
+    ValueObject,
+    err,
+    new_id,
+    ok,
+    parse_id,
+)
+
+__all__ = [
+    "AggregateRoot",
+    "Clock",
+    "ConflictError",
+    "DomainError",
+    "DomainEvent",
+    "Entity",
+    "Err",
+    "FixedClock",
+    "Identifier",
+    "InvariantViolationError",
+    "NotFoundError",
+    "Ok",
+    "Result",
+    "Specification",
+    "SystemClock",
+    "ValidationError",
+    "ValueObject",
+    "err",
+    "new_id",
+    "ok",
+    "parse_id",
+]

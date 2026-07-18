@@ -30,11 +30,37 @@ worse, skipped) on the server. See
 
 ```
 packages/domain/
-├── pyproject.toml          # hatchling + ruff + mypy + pytest
-├── src/easyid_domain/      # the importable package
-│   └── __init__.py
+├── pyproject.toml
+├── src/easyid_domain/
+│   ├── __init__.py          # re-exports kernel
+│   └── kernel/              # FND-004 domain primitives (no business concepts)
+│       ├── entity.py
+│       ├── aggregate.py
+│       ├── value_object.py
+│       ├── domain_event.py
+│       ├── result.py
+│       ├── errors.py
+│       ├── specification.py
+│       ├── clock.py
+│       └── identity.py
 └── tests/
 ```
+
+## Kernel (FND-004)
+
+| Symbol | Notes |
+| ------ | ----- |
+| `Entity` | ABC; identity-based `==` / `hash`; immutable `id` |
+| `AggregateRoot` | Pending domain events (`raise_event` / `collect_events`) |
+| `ValueObject` | Frozen, value-based equality; `_validate()` hook |
+| `DomainEvent` | Immutable; `kw_only` metadata (`event_id`, `occurred_at`) |
+| `Result` / `ok` / `err` | Expected success/failure without exceptions |
+| `DomainError` (+ subclasses) | `validation_error`, `not_found`, `conflict`, `invariant_violation` |
+| `Specification` | Composable with `&` / `|` / `~` |
+| `Clock` / `SystemClock` / `FixedClock` | Testable time |
+| `Identifier` / `new_id` / `parse_id` | UUID seam (ready for UUIDv7) |
+
+See [`docs/adr/0007-domain-kernel.md`](../../docs/adr/0007-domain-kernel.md).
 
 ## Local setup
 
@@ -46,12 +72,12 @@ uv run ruff check .
 uv run mypy
 ```
 
-The API pulls this package in as an editable path dependency
-(`easyid-domain = { path = "../../packages/domain", editable = true }`),
-so a normal `uv sync` from `apps/api/` also installs it.
+The API pulls this package in as a path dependency
+(`easyid-domain = { path = "../../packages/domain" }`), so a normal
+`uv sync` from `apps/api/` also installs it.
 
 ## Contents
 
-Currently empty by design. Business entities land in follow-up iterations
+The kernel is in place. Business entities land in follow-up iterations
 alongside their HTTP contracts in `@easyid/types` and the matching Pydantic
 models under `apps/api/src/easyid_api/api/v1/`.

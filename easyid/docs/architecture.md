@@ -109,7 +109,7 @@ the domain:
 
 ## Read the code in this order
 
-1. `packages/domain/` — the Python domain package (empty today).
+1. `packages/domain/` — the Python domain package (`kernel/` primitives; no business entities yet).
 2. `apps/api/src/easyid_api/main.py` — how the FastAPI app is composed.
 3. `apps/api/src/easyid_api/bootstrap/` — lifespan, logging, container, middleware.
 4. `apps/api/src/easyid_api/api/v1/health.py` — the reference endpoint.
