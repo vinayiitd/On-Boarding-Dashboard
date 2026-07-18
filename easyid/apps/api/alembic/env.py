@@ -16,14 +16,14 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from easyid_api.config import get_settings
-from easyid_api.infrastructure.db.base import Base
+from easyid_api.infrastructure.persistence.base import Base
 
 # ---- ORM model imports ----
 # Every model that should participate in autogeneration must be imported
 # somewhere before `target_metadata` is read. As new models are added, import
-# them here (or in `infrastructure/db/models/__init__.py`) so Alembic sees
-# them. Deliberately no models yet.
-# import easyid_api.infrastructure.db.models  # noqa: F401
+# them here (or in `infrastructure/persistence/models/__init__.py`) so Alembic
+# sees them. Deliberately no models yet.
+# import easyid_api.infrastructure.persistence.models  # noqa: F401
 
 config = context.config
 

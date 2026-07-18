@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from easyid_api.infrastructure.db.engine import get_sessionmaker
+from easyid_api.infrastructure.persistence.engine import get_sessionmaker
 
 
 @asynccontextmanager
