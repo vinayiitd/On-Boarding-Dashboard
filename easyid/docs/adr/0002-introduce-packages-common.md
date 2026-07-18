@@ -6,6 +6,12 @@
 - **Supersedes:** —
 - **Superseded by:** —
 
+> Note: references below to `@easyid/domain` as a TypeScript package
+> describe the state at the time this ADR was written. That package was
+> later removed and replaced by the Python package `easyid-domain` — see
+> [ADR-0003](./0003-domain-is-a-python-package.md). The scoping rationale
+> for `@easyid/common` is unchanged.
+
 ## Context
 
 The bootstrap iteration ships four TypeScript packages with clearly-scoped

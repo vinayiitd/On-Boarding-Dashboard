@@ -11,7 +11,8 @@ no Node-only APIs) so both the web app and the SDK can depend on it.
 
 ## What does **not** live here
 
-- Business rules or entity behaviour — those go in `@easyid/domain`
+- Business rules or entity behaviour — those go in the Python package
+  `packages/domain` (`easyid_domain`)
 - UI-facing types — those go with the component that owns them
 - Fetching / caching logic — those go in `@easyid/sdk`
 

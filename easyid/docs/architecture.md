@@ -21,28 +21,34 @@ services out later when a bounded context genuinely needs its own deploy.
 
 ## Layered dependency direction
 
-The domain layer is **shared** across the monorepo: it lives in
-`packages/domain` (`@easyid/domain`) and is consumed by both the web app and
-the API. The API keeps three local layers; entities and pure rules never
-live inside the service.
+The domain layer is a **pure Python package** at `packages/domain`
+(`easyid-domain`, import path `easyid_domain`). The business domain
+executes on the backend, so the domain is written in the backend's
+language. The API is the sole runtime consumer; the web app never imports
+it. See
+[`docs/adr/0003-domain-is-a-python-package.md`](./adr/0003-domain-is-a-python-package.md).
 
 ```
                     ┌─────────────────────────────┐
                     │  packages/domain            │
-                    │  @easyid/domain             │
+                    │  easyid_domain (Python)     │
                     │  entities + pure rules      │
                     └──────────────┬──────────────┘
                                    │
-              ┌────────────────────┼────────────────────┐
-              ▼                    ▼                    ▼
-       apps/web/src/         apps/api                packages/*
+                                   ▼
+                             apps/api
                              ├── api/            ── HTTP surface. May depend on
                              │                     application, infrastructure,
-                             │                     contracts.
+                             │                     domain, contracts.
                              ├── application/    ── Use cases. May depend on
-                             │                     ports + contracts.
+                             │                     domain + ports.
                              └── infrastructure/ ── Concrete adapters. May
-                                                   depend on ports + contracts.
+                                                   depend on domain + ports.
+
+       apps/web  ──HTTP──▶  apps/api
+           │
+           └── depends on @easyid/types / @easyid/sdk / @easyid/ui /
+               @easyid/common  (never on packages/domain)
 ```
 
 "Contracts" = the shared HTTP wire types in `@easyid/types` (mirrored in
@@ -51,37 +57,44 @@ Python as Pydantic models under `api/v1/`).
 Enforced rules:
 
 - **No entity or business rule inside `apps/api/`.** Domain modelling belongs
-  in `@easyid/domain`. See
-  [`docs/adr/0001-consolidate-domain-into-packages-domain.md`](./adr/0001-consolidate-domain-into-packages-domain.md).
+  in `packages/domain` (`easyid_domain`). See
+  [ADR-0001](./adr/0001-consolidate-domain-into-packages-domain.md) and
+  [ADR-0003](./adr/0003-domain-is-a-python-package.md).
+- **No FastAPI / SQLAlchemy / Pydantic inside `easyid_domain`.** The domain
+  is framework-independent.
 - **No SQLAlchemy inside `application/`.** Persistence models live in
   `infrastructure/db/models/`.
 - **No FastAPI inside `application/`.** Dependency injection types belong in
   `api/deps.py`.
 - **No `api/` imports inside `application/` or `infrastructure/`.**
+- **No web-tier import of `easyid_domain`.** The browser talks to the domain
+  only through HTTP.
 
 CI enforces these boundaries with an import-linter pass (arriving in a follow-up
 iteration).
 
 ## Frontend architecture
 
-`apps/web` and shared TS packages compose around the same domain model:
+`apps/web` is a thin, contract-driven client. It does **not** own or import
+the domain:
 
-- **`@easyid/domain`** — entities and pure business rules. Framework
-  independent. The single source of truth used by both web and API.
 - **`@easyid/types`** — HTTP wire contracts (also consumed by the SDK and
-  mirrored server-side).
+  mirrored server-side as Pydantic models).
 - **`@easyid/sdk`** — the HTTP client. No React, no caching.
 - **`@easyid/ui`** — design tokens + primitives.
-- **`@easyid/common`** — cross-cutting utilities (assertions, guards, tiny
-  helpers) that don't belong in any of the above.
-- **`apps/web/src/`** — the app itself. Composes SDK + UI + domain. Uses
-  TanStack Query for server state; RHF + Zod for forms.
+- **`@easyid/common`** — cross-cutting TypeScript utilities (assertions,
+  guards, tiny helpers).
+- **`apps/web/src/`** — the app itself. Composes SDK + UI. Uses TanStack
+  Query for server state; RHF + Zod for form UX validation (a thinner
+  concern than domain validation — intentionally separate).
 
 ## Read the code in this order
 
-1. `apps/api/src/easyid_api/main.py` — how the FastAPI app is composed.
-2. `apps/api/src/easyid_api/api/v1/health.py` — the reference endpoint.
-3. `apps/api/src/easyid_api/infrastructure/db/` — engine + session wiring.
-4. `apps/web/src/app/page.tsx` + `components/health-check.tsx` — the end-to-end
+1. `packages/domain/` — the domain package (empty today; the shape of
+   future entities).
+2. `apps/api/src/easyid_api/main.py` — how the FastAPI app is composed.
+3. `apps/api/src/easyid_api/api/v1/health.py` — the reference endpoint.
+4. `apps/api/src/easyid_api/infrastructure/db/` — engine + session wiring.
+5. `apps/web/src/app/page.tsx` + `components/health-check.tsx` — the end-to-end
    call.
-5. `packages/sdk/src/` — the client.
+6. `packages/sdk/src/` — the client.

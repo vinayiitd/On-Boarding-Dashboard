@@ -1,10 +1,13 @@
 # ADR-0001: Consolidate the domain layer into `packages/domain`
 
-- **Status:** Accepted
+- **Status:** Accepted (language / consumer model superseded by
+  [ADR-0003](./0003-domain-is-a-python-package.md))
 - **Date:** 2026-07-18
 - **Deciders:** easyID engineering
 - **Supersedes:** —
-- **Superseded by:** —
+- **Superseded by:** ADR-0003 (for the "TypeScript shared across web +
+  API" framing only — the consolidation into `packages/domain` still
+  stands)
 
 ## Context
 
