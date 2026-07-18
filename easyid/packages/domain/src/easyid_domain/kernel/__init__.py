@@ -10,9 +10,10 @@ from easyid_domain.kernel.clock import Clock, FixedClock, SystemClock
 from easyid_domain.kernel.domain_event import DomainEvent
 from easyid_domain.kernel.entity import Entity
 from easyid_domain.kernel.errors import (
+    BusinessRuleViolation,
     DomainError,
-    InvariantViolationError,
-    ValidationError,
+    InvalidValue,
+    InvariantViolation,
 )
 from easyid_domain.kernel.identity import Identifier, new_id, parse_id
 from easyid_domain.kernel.result import Err, Ok, Result, err, ok
@@ -21,6 +22,7 @@ from easyid_domain.kernel.value_object import ValueObject
 
 __all__ = [
     "AggregateRoot",
+    "BusinessRuleViolation",
     "Clock",
     "DomainError",
     "DomainEvent",
@@ -28,12 +30,12 @@ __all__ = [
     "Err",
     "FixedClock",
     "Identifier",
-    "InvariantViolationError",
+    "InvalidValue",
+    "InvariantViolation",
     "Ok",
     "Result",
     "Specification",
     "SystemClock",
-    "ValidationError",
     "ValueObject",
     "err",
     "new_id",

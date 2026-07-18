@@ -10,17 +10,18 @@ import pytest
 
 from easyid_domain import (
     AggregateRoot,
+    BusinessRuleViolation,
     DomainError,
     DomainEvent,
     Entity,
     Err,
     FixedClock,
     Identifier,
-    InvariantViolationError,
+    InvalidValue,
+    InvariantViolation,
     Ok,
     Specification,
     SystemClock,
-    ValidationError,
     ValueObject,
     err,
     new_id,
@@ -57,9 +58,9 @@ class _Money(ValueObject):
 
     def _validate(self) -> None:
         if self.amount < 0:
-            raise ValidationError("amount must be non-negative")
+            raise InvalidValue("amount must be non-negative")
         if len(self.currency) != 3:
-            raise ValidationError("currency must be a 3-letter code")
+            raise InvalidValue("currency must be a 3-letter code")
 
 
 class _PositiveAmount(Specification[_Money]):
@@ -151,7 +152,7 @@ def test_value_object_inequality() -> None:
 
 
 def test_value_object_validation() -> None:
-    with pytest.raises(ValidationError, match="non-negative"):
+    with pytest.raises(InvalidValue, match="non-negative"):
         _Money(amount=-1, currency="AUD")
 
 
@@ -200,9 +201,9 @@ def test_result_ok_unwrap() -> None:
 
 
 def test_result_err_unwrap_err() -> None:
-    result = err(ValidationError("bad"))
+    result = err(InvalidValue("bad"))
     assert result.is_err()
-    assert isinstance(result.unwrap_err(), ValidationError)
+    assert isinstance(result.unwrap_err(), InvalidValue)
 
 
 def test_result_map_and_and_then() -> None:
@@ -224,20 +225,40 @@ def test_result_unwrap_mismatches_raise() -> None:
 
 
 def test_domain_error_hierarchy() -> None:
-    assert isinstance(ValidationError("v"), ValidationError)
-    assert isinstance(ValidationError("v"), DomainError)
-    assert InvariantViolationError("i").code == "invariant_violation"
+    assert isinstance(InvalidValue("v"), InvalidValue)
+    assert isinstance(InvalidValue("v"), DomainError)
+    assert isinstance(BusinessRuleViolation("r"), DomainError)
+    assert isinstance(InvariantViolation("i"), DomainError)
+    assert InvariantViolation("i").code == "invariant_violation"
+    assert BusinessRuleViolation("r").code == "business_rule_violation"
+    assert InvalidValue("v").code == "invalid_value"
+
+
+def test_business_rule_subclass_lives_outside_kernel() -> None:
+    """Bounded contexts subclass BusinessRuleViolation with UL names."""
+
+    class DuplicateAbn(BusinessRuleViolation):
+        def __init__(self, abn: str) -> None:
+            super().__init__(
+                f"ABN already registered: {abn}",
+                code="duplicate_abn",
+                details={"abn": abn},
+            )
+
+    error = DuplicateAbn("51824753556")
+    assert isinstance(error, BusinessRuleViolation)
+    assert error.code == "duplicate_abn"
 
 
 def test_domain_error_details_immutable() -> None:
-    error = ValidationError("bad", details={"field": "x"})
+    error = InvalidValue("bad", details={"field": "x"})
     with pytest.raises(TypeError):
         error.details["field"] = "y"  # type: ignore[index]
 
 
 def test_domain_error_can_be_raised() -> None:
-    with pytest.raises(ValidationError, match="bad"):
-        raise ValidationError("bad")
+    with pytest.raises(InvalidValue, match="bad"):
+        raise InvalidValue("bad")
 
 
 # --- Specification ------------------------------------------------------------

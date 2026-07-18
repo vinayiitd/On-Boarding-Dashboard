@@ -1,6 +1,10 @@
 """
 Domain error hierarchy.
 
+Keep this set small and generic. Bounded contexts define richer errors
+(e.g. `DuplicateAbn`) by subclassing `BusinessRuleViolation` next to their
+aggregates — not here.
+
 Preferred payload for `Result.Err` when modelling expected business
 failures. Also subclasses `Exception` so callers may raise them when an
 invariant must abort the current flow.
@@ -64,20 +68,7 @@ class DomainError(Exception):
         return hash((type(self), self.code, self.message))
 
 
-class ValidationError(DomainError):
-    """Input or state failed a domain validation rule."""
-
-    def __init__(
-        self,
-        message: str,
-        *,
-        code: str = "validation_error",
-        details: Mapping[str, Any] | None = None,
-    ) -> None:
-        super().__init__(message, code=code, details=details)
-
-
-class InvariantViolationError(DomainError):
+class InvariantViolation(DomainError):
     """An aggregate or entity invariant was broken."""
 
     def __init__(
@@ -85,6 +76,37 @@ class InvariantViolationError(DomainError):
         message: str,
         *,
         code: str = "invariant_violation",
+        details: Mapping[str, Any] | None = None,
+    ) -> None:
+        super().__init__(message, code=code, details=details)
+
+
+class BusinessRuleViolation(DomainError):
+    """
+    A business rule failed.
+
+    Subclass in the owning bounded context with ubiquitous-language names
+    (e.g. `DuplicateAbn`, `OrganisationSuspended`).
+    """
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        code: str = "business_rule_violation",
+        details: Mapping[str, Any] | None = None,
+    ) -> None:
+        super().__init__(message, code=code, details=details)
+
+
+class InvalidValue(DomainError):
+    """A value object or primitive failed domain validation."""
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        code: str = "invalid_value",
         details: Mapping[str, Any] | None = None,
     ) -> None:
         super().__init__(message, code=code, details=details)
