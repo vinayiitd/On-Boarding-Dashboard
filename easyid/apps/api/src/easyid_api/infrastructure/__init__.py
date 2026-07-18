@@ -1,6 +1,7 @@
 """
 Infrastructure layer — concrete adapters for application ports.
 
-Empty in FND-002. Persistence, messaging, storage, identity, and
-observability adapters land in later foundations.
+FND-002 keeps empty shelves (`identity/`, `messaging/`, `storage/`,
+`observability/`) for later foundations. Persistence and tenancy are
+intentionally absent — see ADR-0005.
 """

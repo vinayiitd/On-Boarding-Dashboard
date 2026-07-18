@@ -78,14 +78,16 @@ iteration).
 
 ```
 apps/api/src/easyid_api/
-├── bootstrap/          # logging, lifespan, DI container, request context
+├── bootstrap/          # logging, lifespan, DI container, RequestContext
 ├── api/                # HTTP surface — RFC 7807 errors, /api/v1 routes
-├── application/        # use cases (empty in FND-002)
-└── infrastructure/     # adapters (empty in FND-002)
+├── application/        # commands/ + queries/ shelves (empty in FND-002)
+└── infrastructure/     # identity/messaging/storage/observability stubs
+                        # (no persistence or tenancy in FND-002)
 ```
 
 Errors use RFC 7807 Problem Details (`application/problem+json`). Every
-response carries `X-Request-ID` and `X-Correlation-ID`.
+response carries `X-Request-ID` and `X-Correlation-ID`. See
+[ADR-0005](./adr/0005-fnd-002-bootstrap-without-persistence-tenancy.md).
 
 ## Frontend architecture
 

@@ -1,7 +1,6 @@
 """
 Identity adapters — external IdPs, JWKS fetchers, token validators.
 
-Empty by design. Authentication lands here; tenant *resolution* (once a
-principal is known) lives in `bootstrap/tenant_context.py` and is exposed
-to handlers via `api/deps.py`.
+Empty by design. Authentication and principal-derived tenant resolution
+land here in a later foundation.
 """
