@@ -1,0 +1,7 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# Prevent workspace-only packages from being published to a public registry
+# by accident.
+onlyBuiltDependencies: []

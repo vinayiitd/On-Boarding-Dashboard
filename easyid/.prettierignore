@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+build/
+.next/
+.turbo/
+.vercel/
+out/
+
+# Coverage / test reports
+coverage/
+playwright-report/
+test-results/
+
+# Python
+__pycache__/
+.venv/
+.uv-cache/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Lockfiles are handled by their own tools
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+uv.lock
+
+# Generated
+next-env.d.ts
+*.tsbuildinfo
+alembic/versions/*.py
