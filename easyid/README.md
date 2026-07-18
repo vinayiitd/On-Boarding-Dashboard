@@ -23,20 +23,22 @@ compliance reports, AI) are delivered in subsequent iterations.
 
 - **Modular monolith** — one API service, one web app, one Postgres.
 - **API-first**, versioned at `/api/v1/…`. OpenAPI available at `/openapi.json`.
-- **Domain-Driven Design + Clean Architecture.** The domain layer is
-  **shared** across the monorepo — it lives in `packages/domain`
-  (`@easyid/domain`) and is consumed by both the web app and the API. Layer
-  boundaries are enforced by CI (see
-  [`docs/architecture.md`](docs/architecture.md); rationale in
-  [`docs/adr/0001-consolidate-domain-into-packages-domain.md`](docs/adr/0001-consolidate-domain-into-packages-domain.md)).
+- **Domain-Driven Design + Clean Architecture.** The domain layer is a
+  **pure Python package** at `packages/domain` (`easyid-domain` /
+  `easyid_domain`), consumed exclusively by `apps/api`. The web app never
+  imports it — it talks to the domain through the HTTP contract in
+  `@easyid/types`. See
+  [`docs/architecture.md`](docs/architecture.md),
+  [ADR-0001](docs/adr/0001-consolidate-domain-into-packages-domain.md),
+  [ADR-0003](docs/adr/0003-domain-is-a-python-package.md).
 - **CQRS-lite** — commands and queries kept separate in the application layer.
 - **Repository Pattern** at the persistence boundary.
 - **Dependency Injection** via FastAPI's `Depends`.
 
-Shared TypeScript packages: `@easyid/domain` (entities + rules),
-`@easyid/types` (wire contracts), `@easyid/sdk` (HTTP client), `@easyid/ui`
-(design system), `@easyid/common` (cross-cutting utilities), `@easyid/config`
-(TS + ESLint presets).
+Shared packages: `easyid-domain` (Python — entities + rules),
+`@easyid/types` (TS wire contracts), `@easyid/sdk` (TS HTTP client),
+`@easyid/ui` (TS design system), `@easyid/common` (TS cross-cutting
+utilities), `@easyid/config` (TS + ESLint presets).
 
 ## Tech stack
 
@@ -58,7 +60,7 @@ Shared TypeScript packages: `@easyid/domain` (entities + rules),
 ```
 easyid/
 ├── apps/
-│   ├── api/                    # FastAPI + Clean Architecture (domain lives in packages/domain)
+│   ├── api/                    # FastAPI + Clean Architecture (consumes packages/domain)
 │   │   ├── src/easyid_api/
 │   │   │   ├── api/            # HTTP surface (routers, error contract)
 │   │   │   ├── application/    # Use cases, ports
@@ -67,7 +69,7 @@ easyid/
 │   │   ├── tests/              # Pytest + httpx
 │   │   ├── Dockerfile
 │   │   └── pyproject.toml
-│   └── web/                    # Next.js 15 + React 19
+│   └── web/                    # Next.js 15 + React 19 (never imports the domain)
 │       ├── src/
 │       │   ├── app/            # App Router + Providers (TanStack Query)
 │       │   ├── components/     # Screen-specific components
@@ -77,9 +79,9 @@ easyid/
 │       ├── Dockerfile
 │       └── package.json
 ├── packages/
-│   ├── common/                 # Cross-cutting utilities (assertions, guards, tiny helpers)
+│   ├── common/                 # TS cross-cutting utilities (assertions, guards, tiny helpers)
 │   ├── config/                 # Shared TS + ESLint configs
-│   ├── domain/                 # Shared domain layer — entities + rules (web + API)
+│   ├── domain/                 # Python domain layer — entities + rules (API only)
 │   ├── sdk/                    # Typed HTTP client for the API
 │   ├── types/                  # Shared wire contract types
 │   └── ui/                     # Design tokens + primitives

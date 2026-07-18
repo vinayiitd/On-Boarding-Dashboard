@@ -46,5 +46,6 @@ Small refactors, bug fixes, and dependency bumps do not need an ADR.
 
 | ID   | Title                                                                                   | Status   |
 | ---- | --------------------------------------------------------------------------------------- | -------- |
-| 0001 | [Consolidate the domain layer into `packages/domain`](./0001-consolidate-domain-into-packages-domain.md) | Accepted |
+| 0001 | [Consolidate the domain layer into `packages/domain`](./0001-consolidate-domain-into-packages-domain.md) | Accepted (language model superseded by 0003) |
 | 0002 | [Introduce `packages/common` for cross-cutting utilities](./0002-introduce-packages-common.md)           | Accepted |
+| 0003 | [The domain package is Python, not TypeScript](./0003-domain-is-a-python-package.md)                      | Accepted |

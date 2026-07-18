@@ -89,12 +89,26 @@ jobs:
         with:
           version: "0.5.14"
           enable-cache: true
-          cache-dependency-glob: easyid/apps/api/uv.lock
+          cache-dependency-glob: |
+            easyid/apps/api/uv.lock
+            easyid/packages/domain/uv.lock
 
       - name: Set up Python
         run: uv python install ${{ env.PYTHON_VERSION }}
 
-      - name: Sync dependencies
+      - name: Sync domain package
+        working-directory: easyid/packages/domain
+        run: uv sync --dev --frozen || uv sync --dev
+
+      - name: Domain · ruff + mypy + pytest
+        working-directory: easyid/packages/domain
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+          uv run mypy
+          uv run pytest -q
+
+      - name: Sync API dependencies
         run: uv sync --dev --frozen || uv sync --dev
 
       - name: Ruff · lint

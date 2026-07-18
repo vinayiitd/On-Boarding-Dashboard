@@ -18,7 +18,7 @@ WORKDIR /repo
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY apps/web/package.json ./apps/web/
 COPY packages/config/package.json ./packages/config/
-COPY packages/domain/package.json ./packages/domain/
+COPY packages/common/package.json ./packages/common/
 COPY packages/sdk/package.json ./packages/sdk/
 COPY packages/types/package.json ./packages/types/
 COPY packages/ui/package.json ./packages/ui/

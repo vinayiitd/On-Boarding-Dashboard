@@ -30,8 +30,10 @@ services:
 
   api:
     build:
-      context: ./apps/api
-      dockerfile: Dockerfile
+      # Monorepo root — the API Dockerfile needs packages/domain for the
+      # easyid-domain path dependency.
+      context: .
+      dockerfile: apps/api/Dockerfile
     container_name: easyid-api
     restart: unless-stopped
     depends_on:

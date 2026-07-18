@@ -59,7 +59,7 @@ uv run alembic upgrade head
 uv run alembic revision --autogenerate -m "add users table"
 ```
 
-## Adding a package
+## Adding a TypeScript package
 
 1. Create `packages/<name>/` with `package.json`, `tsconfig.json`,
    `eslint.config.mjs`.
@@ -70,6 +70,21 @@ uv run alembic revision --autogenerate -m "add users table"
 5. If the new package changes a layer boundary or a public contract, add
    an ADR in [`docs/adr/`](./adr/README.md). Copy
    [`docs/adr/template.md`](./adr/template.md) and increment the number.
+
+## Adding a Python package
+
+1. Create `packages/<name>/` with `pyproject.toml` (hatchling),
+   `src/<import_name>/`, and `tests/`. Mirror `packages/domain` as the
+   template.
+2. Use `"name": "easyid-<name>"` and `requires-python = ">=3.13,<3.14"`.
+3. Wire consumers via a `[tool.uv.sources]` path dependency (see
+   `apps/api/pyproject.toml` → `easyid-domain`).
+4. Run `uv lock` in both the new package and every consumer.
+5. If the package changes a layer boundary, add an ADR.
+
+> The domain package (`packages/domain`) is Python on purpose — see
+> [ADR-0003](./adr/0003-domain-is-a-python-package.md). Do not reintroduce
+> a TypeScript `@easyid/domain`.
 
 ## Architecture Decision Records
 

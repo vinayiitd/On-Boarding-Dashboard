@@ -1,7 +1,7 @@
 # @easyid/common
 
-Cross-cutting utilities shared across the easyID monorepo — the stuff that
-doesn't belong in `@easyid/types`, `@easyid/domain`, `@easyid/sdk`, or
+Cross-cutting **TypeScript** utilities shared across the easyID monorepo —
+the stuff that doesn't belong in `@easyid/types`, `@easyid/sdk`, or
 `@easyid/ui`.
 
 ## What lives here
@@ -12,7 +12,8 @@ doesn't belong in `@easyid/types`, `@easyid/domain`, `@easyid/sdk`, or
 
 ## What does NOT live here
 
-- **Domain entities and rules** → `@easyid/domain`.
+- **Domain entities and rules** → the Python package `packages/domain`
+  (`easyid_domain`). The web tier does not own the domain.
 - **HTTP wire contracts** → `@easyid/types`.
 - **HTTP client code** → `@easyid/sdk`.
 - **React / UI components** → `@easyid/ui`.
