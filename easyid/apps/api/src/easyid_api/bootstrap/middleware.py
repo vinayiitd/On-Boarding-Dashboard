@@ -1,51 +1,61 @@
 """
 HTTP middleware owned by the bootstrap layer.
 
-Keeps request-correlation logging bound for *every* request without forcing
-each endpoint to declare a `RequestContextDep`. Tenant resolution stays in
-`api/deps.py` — only tenant-scoped routes pull `TenantContextDep`.
+Assigns a request id and correlation id to every request, binds them into
+the logging contextvars, and echoes them on the response.
 """
 
 from __future__ import annotations
+
+from uuid import uuid4
 
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
 from starlette.responses import Response
 
-from easyid_api.bootstrap.logging import bind_request_logging, clear_request_logging
-from easyid_api.bootstrap.request_context import RequestContext
+from easyid_api.bootstrap.logging import bind_request_ids, reset_request_ids
 
 REQUEST_ID_HEADER = "X-Request-ID"
 CORRELATION_ID_HEADER = "X-Correlation-ID"
-TENANT_HEADER = "X-Tenant-ID"
 
 
 class RequestContextMiddleware(BaseHTTPMiddleware):
-    """Bind request / optional tenant ids into structlog for the request."""
+    """Ensure every request carries stable request and correlation ids."""
 
     async def dispatch(
         self,
         request: Request,
         call_next: RequestResponseEndpoint,
     ) -> Response:
-        ctx = RequestContext.create(
-            request_id=request.headers.get(REQUEST_ID_HEADER),
-            correlation_id=request.headers.get(CORRELATION_ID_HEADER),
-        )
-        raw_tenant = request.headers.get(TENANT_HEADER)
-        tenant_id = raw_tenant.strip() if raw_tenant and raw_tenant.strip() else None
+        request_id = _header_or_new(request, REQUEST_ID_HEADER)
+        correlation_id = _header_or_new(request, CORRELATION_ID_HEADER, fallback=request_id)
 
-        request.state.request_context = ctx
-        bind_request_logging(
-            request_id=ctx.request_id,
-            correlation_id=ctx.correlation_id,
-            tenant_id=tenant_id,
+        request.state.request_id = request_id
+        request.state.correlation_id = correlation_id
+
+        request_token, correlation_token = bind_request_ids(
+            request_id=request_id,
+            correlation_id=correlation_id,
         )
         try:
             response = await call_next(request)
         finally:
-            clear_request_logging()
+            reset_request_ids(request_token, correlation_token)
 
-        response.headers[REQUEST_ID_HEADER] = ctx.request_id
-        response.headers[CORRELATION_ID_HEADER] = ctx.correlation_id
+        response.headers[REQUEST_ID_HEADER] = request_id
+        response.headers[CORRELATION_ID_HEADER] = correlation_id
         return response
+
+
+def _header_or_new(
+    request: Request,
+    header_name: str,
+    *,
+    fallback: str | None = None,
+) -> str:
+    raw = request.headers.get(header_name)
+    if raw is not None and raw.strip():
+        return raw.strip()
+    if fallback is not None:
+        return fallback
+    return str(uuid4())

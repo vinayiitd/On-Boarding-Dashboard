@@ -23,15 +23,9 @@ Then:
 - API: <http://localhost:8000/api/v1/health>
 - Swagger: <http://localhost:8000/docs>
 
-Stop with `pnpm docker:down`. Reset (drops Postgres data) with
-`pnpm docker:reset`.
+Stop with `pnpm docker:down`. Reset with `pnpm docker:reset`.
 
 ## Local dev (no Docker for the apps)
-
-### Postgres
-
-Either use `docker compose up -d postgres`, or connect to your own instance and
-update `DATABASE_URL` accordingly.
 
 ### API
 
@@ -39,7 +33,6 @@ update `DATABASE_URL` accordingly.
 cd easyid/apps/api
 uv sync --dev
 cp .env.example .env
-uv run alembic upgrade head          # no-op today, populates schema in the future
 uv run uvicorn easyid_api.main:app --reload
 ```
 

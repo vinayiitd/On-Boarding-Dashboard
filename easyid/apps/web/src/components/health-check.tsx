@@ -48,7 +48,7 @@ function StatusPill({
   if (query.isError) {
     const message =
       query.error instanceof ApiClientError
-        ? `${query.error.code}: ${query.error.message}`
+        ? `${query.error.title}: ${query.error.detail}`
         : "Unreachable";
     return (
       <span className="inline-flex items-center gap-2 rounded-full border border-[color-mix(in_srgb,var(--danger)_30%,var(--border))] bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] px-3 py-1 text-xs font-medium text-[color-mix(in_srgb,var(--danger)_75%,var(--foreground))]">

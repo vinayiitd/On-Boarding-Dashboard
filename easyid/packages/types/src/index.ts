@@ -9,7 +9,7 @@
  * Discriminated result type for I/O boundaries.
  * Prefer this over throwing exceptions across module boundaries.
  */
-export type Result<T, E = ApiError> = { ok: true; value: T } | { ok: false; error: E };
+export type Result<T, E = ProblemDetails> = { ok: true; value: T } | { ok: false; error: E };
 
 export const ok = <T>(value: T): Result<T, never> => ({ ok: true, value });
 export const err = <E>(error: E): Result<never, E> => ({ ok: false, error });
@@ -22,14 +22,18 @@ export const err = <E>(error: E): Result<never, E> => ({ ok: false, error });
 export type Brand<T, B extends string> = T & { readonly __brand: B };
 
 /**
- * A stable server error contract. Mirrors the FastAPI error responses.
+ * RFC 7807 Problem Details payload returned by the API for non-2xx responses.
+ * `Content-Type: application/problem+json`.
  */
-export interface ApiError {
+export interface ProblemDetails {
+  type: string;
+  title: string;
   status: number;
-  code: string;
-  message: string;
-  details?: Record<string, unknown>;
-  traceId?: string;
+  detail: string;
+  instance?: string;
+  request_id?: string;
+  correlation_id?: string;
+  errors?: unknown;
 }
 
 /**

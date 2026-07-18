@@ -6,7 +6,7 @@ no Node-only APIs) so both the web app and the SDK can depend on it.
 ## What lives here
 
 - HTTP contract types shared between web and api (e.g. `HealthStatus`,
-  `ApiError`)
+  `ProblemDetails`)
 - Small, reusable primitives (`Result<T, E>`, `Brand<T, B>`, `IsoDateString`)
 
 ## What does **not** live here
