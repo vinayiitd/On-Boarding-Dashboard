@@ -1,7 +1,7 @@
 """
 Infrastructure layer — concrete adapters for application ports.
 
-FND-002 keeps empty shelves (`identity/`, `messaging/`, `storage/`,
-`observability/`) for later foundations. Persistence and tenancy are
-intentionally absent — see ADR-0005.
+Persistence (SQLAlchemy 2.x async + PostgreSQL) lives under `persistence/`.
+Other shelves (`identity/`, `messaging/`, `storage/`, `observability/`)
+remain empty until later foundations.
 """

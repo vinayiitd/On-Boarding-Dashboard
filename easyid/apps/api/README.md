@@ -2,31 +2,32 @@
 
 FastAPI service — the easyID compliance API.
 
-## FND-002 scope
+## Scope
 
-This foundation ships the **application bootstrap only**:
+**FND-002** — application bootstrap (factory, routing, settings, logging,
+lifespan, RFC 7807, request correlation, composition root).
 
-- FastAPI application factory
-- Versioned routing at `/api/v1`
-- Health endpoint
-- Pydantic Settings v2 configuration
-- Structured logging (stdlib)
-- Lifespan startup / shutdown
-- RFC 7807 Problem Details exception handling
-- Request ID + Correlation ID middleware
-- Lightweight composition root (`bootstrap/container.py`)
-- OpenAPI metadata
+**FND-003** — persistence foundation:
 
-It does **not** include persistence, authentication, authorization, tenant
-resolution, SQLAlchemy, Alembic, PostgreSQL connectivity, or business logic.
+- SQLAlchemy 2.x async engine + asyncpg
+- Alembic with explicit MetaData naming conventions
+- Async session factory + Unit of Work
+- Repository base (application port + infrastructure impl)
+- `infrastructure/persistence/mappings/` (no business tables yet)
+- Database health probe wired into `GET /api/v1/health`
+- UUID generation seam prepared for UUIDv7
+- Optimistic locking mixin (`VersionedMixin`)
+
+No business entities (Organisation, Party, User, etc.) and no ORM types in
+`packages/domain`.
 
 ## Architecture
 
 ```
-bootstrap/  ── wires the process (logging, lifespan, DI)
-api/        ── HTTP surface (routers, deps, RFC 7807 errors)
-application/── use cases (empty in FND-002; may depend on domain)
-infrastructure/── adapters (empty in FND-002)
+bootstrap/       ── wires the process (logging, lifespan, DI)
+api/             ── HTTP surface (routers, deps, RFC 7807 errors)
+application/     ── use cases + ports (UnitOfWork, repositories, health)
+infrastructure/  ── adapters (persistence/, …)
 ```
 
 Domain entities live in [`packages/domain`](../../packages/domain)
@@ -36,6 +37,7 @@ Domain entities live in [`packages/domain`](../../packages/domain)
 
 - **Python 3.13** managed with **uv**
 - **FastAPI** for HTTP
+- **SQLAlchemy 2.x async** + **asyncpg** + **Alembic**
 - **Pydantic Settings v2** for typed env-var config
 - **Ruff** for lint + format
 - **mypy** for type checking (strict)
@@ -44,6 +46,9 @@ Domain entities live in [`packages/domain`](../../packages/domain)
 ## Local setup
 
 ```bash
+# Start Postgres (from easyid/)
+docker compose up -d postgres
+
 # From apps/api/
 uv sync --dev
 cp .env.example .env
@@ -56,6 +61,18 @@ Then visit:
 - **Swagger**: <http://localhost:8000/docs>
 - **ReDoc**: <http://localhost:8000/redoc>
 - **OpenAPI JSON**: <http://localhost:8000/openapi.json>
+
+## Migrations
+
+```bash
+# From apps/api/
+uv run alembic revision --autogenerate -m "describe change"
+uv run alembic upgrade head
+uv run alembic downgrade -1
+```
+
+Autogenerate reads mappings imported from
+`easyid_api.infrastructure.persistence.mappings`.
 
 ## Common tasks
 
@@ -73,8 +90,5 @@ resolves):
 
 ```bash
 # From easyid/
-docker build -t easyid/api -f apps/api/Dockerfile .
-docker run --rm -p 8000:8000 --env-file apps/api/.env easyid/api
+docker compose up -d
 ```
-
-Or via Compose: `pnpm docker:up`.

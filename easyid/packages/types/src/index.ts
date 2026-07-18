@@ -50,4 +50,6 @@ export type IsoDateString = string & { readonly __brand: "IsoDateString" };
 export interface HealthStatus {
   status: "healthy" | "degraded" | "unhealthy";
   version: string;
+  /** Database connectivity probe (`SELECT 1`). */
+  database: "up" | "down";
 }

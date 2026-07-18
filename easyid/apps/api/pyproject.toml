@@ -16,6 +16,9 @@ dependencies = [
     # Config
     "pydantic>=2.10.4",
     "pydantic-settings>=2.7.1",
+    "sqlalchemy[asyncio]>=2.0.36",
+    "asyncpg>=0.30.0",
+    "alembic>=1.14.0",
 ]
 
 [tool.uv.sources]
@@ -112,6 +115,9 @@ addopts = [
     "--tb=short",
 ]
 asyncio_mode = "auto"
+markers = [
+    "integration: tests that require a live PostgreSQL database",
+]
 filterwarnings = [
     "error",
     "ignore::DeprecationWarning:pydantic.*",
