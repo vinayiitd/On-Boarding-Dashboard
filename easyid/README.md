@@ -62,9 +62,10 @@ easyid/
 ├── apps/
 │   ├── api/                    # FastAPI + Clean Architecture (consumes packages/domain)
 │   │   ├── src/easyid_api/
-│   │   │   ├── api/            # HTTP surface (routers, error contract)
-│   │   │   ├── application/    # Use cases, ports
-│   │   │   └── infrastructure/ # SQLAlchemy engine, ORM models, repositories
+│   │   │   ├── api/            # HTTP surface (routers, deps, error contract)
+│   │   │   ├── application/    # commands/ + queries/ + ports (TenantContext in)
+│   │   │   ├── bootstrap/      # logging, lifespan, DI, request/tenant context
+│   │   │   └── infrastructure/ # persistence / messaging / storage / identity / observability
 │   │   ├── alembic/            # Async-aware Alembic env
 │   │   ├── tests/              # Pytest + httpx
 │   │   ├── Dockerfile
