@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import ClassVar, Self
 
 
-@dataclass(eq=False)
+@dataclass(eq=False, slots=True)
 class Entity[TId](ABC):
     """
     An object defined by identity, not by its attributes.

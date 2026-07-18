@@ -24,7 +24,7 @@ from easyid_domain.organisation.name import OrganisationName
 from easyid_domain.organisation.status import OrganisationStatus
 
 
-@dataclass(eq=False)
+@dataclass(eq=False, slots=True)
 class Organisation(AggregateRoot[OrganisationId]):
     """
     Consistency boundary for an organisation's identity, name, and status.
@@ -37,6 +37,7 @@ class Organisation(AggregateRoot[OrganisationId]):
     status: OrganisationStatus
     created_at: datetime
     updated_at: datetime
+    version: int = 1
 
     @classmethod
     def register(
@@ -44,10 +45,9 @@ class Organisation(AggregateRoot[OrganisationId]):
         name: OrganisationName,
         *,
         clock: Clock,
-        organisation_id: OrganisationId | None = None,
     ) -> Organisation:
         """Register a new active organisation and raise `OrganisationRegistered`."""
-        org_id = organisation_id if organisation_id is not None else OrganisationId.generate()
+        org_id = OrganisationId.generate()
         now = clock.now()
         organisation = cls(
             id=org_id,
@@ -55,6 +55,7 @@ class Organisation(AggregateRoot[OrganisationId]):
             status=OrganisationStatus.ACTIVE,
             created_at=now,
             updated_at=now,
+            version=1,
         )
         organisation.raise_event(OrganisationRegistered(organisation_id=org_id, name=name))
         return organisation

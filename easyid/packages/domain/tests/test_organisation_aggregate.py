@@ -41,33 +41,22 @@ def test_register_creates_active_organisation(
     clock: FixedClock,
     name: OrganisationName,
 ) -> None:
-    org_id = OrganisationId.generate()
-    organisation = Organisation.register(
-        name,
-        clock=clock,
-        organisation_id=org_id,
-    )
+    organisation = Organisation.register(name, clock=clock)
 
-    assert organisation.id == org_id
+    assert isinstance(organisation.id, OrganisationId)
     assert organisation.name == name
     assert organisation.status is OrganisationStatus.ACTIVE
+    assert organisation.version == 1
     assert organisation.created_at == clock.now()
     assert organisation.updated_at == clock.now()
+    assert hasattr(Organisation, "__slots__")
 
     events = organisation.collect_events()
     assert len(events) == 1
     event = events[0]
     assert isinstance(event, OrganisationRegistered)
-    assert event.organisation_id == org_id
+    assert event.organisation_id == organisation.id
     assert event.name == name
-
-
-def test_register_generates_id_when_omitted(
-    clock: FixedClock,
-    name: OrganisationName,
-) -> None:
-    organisation = Organisation.register(name, clock=clock)
-    assert isinstance(organisation.id, OrganisationId)
 
 
 def test_rename_updates_name_and_raises_event(
@@ -187,12 +176,14 @@ def test_reactivate_rejects_when_already_active(
 
 
 def test_identity_equality(clock: FixedClock, name: OrganisationName) -> None:
-    org_id = OrganisationId.generate()
-    left = Organisation.register(name, clock=clock, organisation_id=org_id)
-    right = Organisation.register(
-        OrganisationName("Other"),
-        clock=clock,
-        organisation_id=org_id,
+    left = Organisation.register(name, clock=clock)
+    right = Organisation(
+        id=left.id,
+        name=OrganisationName("Other"),
+        status=OrganisationStatus.ACTIVE,
+        created_at=left.created_at,
+        updated_at=left.updated_at,
+        version=1,
     )
     assert left == right
     assert hash(left) == hash(right)
