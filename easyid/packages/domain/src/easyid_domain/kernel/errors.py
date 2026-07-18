@@ -1,6 +1,10 @@
 """
 Domain error hierarchy.
 
+Keep this set small and generic. Bounded contexts define richer errors
+(e.g. `DuplicateAbn`) by subclassing `BusinessRuleViolation` next to their
+aggregates — not here.
+
 Preferred payload for `Result.Err` when modelling expected business
 failures. Also subclasses `Exception` so callers may raise them when an
 invariant must abort the current flow.
@@ -19,6 +23,8 @@ class DomainError(Exception):
 
     `code` is a stable machine-readable identifier; `message` is human-
     readable. `details` carries optional structured context (immutable).
+    Values in `details` must be hashable if the error is used in a set or
+    as a dict key — they contribute to both equality and the hash.
     """
 
     __slots__ = ("code", "details", "message")
@@ -61,49 +67,17 @@ class DomainError(Exception):
         )
 
     def __hash__(self) -> int:
-        return hash((type(self), self.code, self.message))
+        return hash(
+            (
+                type(self),
+                self.code,
+                self.message,
+                tuple(sorted(self.details.items())),
+            )
+        )
 
 
-class ValidationError(DomainError):
-    """Input or state failed a domain validation rule."""
-
-    def __init__(
-        self,
-        message: str,
-        *,
-        code: str = "validation_error",
-        details: Mapping[str, Any] | None = None,
-    ) -> None:
-        super().__init__(message, code=code, details=details)
-
-
-class NotFoundError(DomainError):
-    """A required domain object could not be found."""
-
-    def __init__(
-        self,
-        message: str,
-        *,
-        code: str = "not_found",
-        details: Mapping[str, Any] | None = None,
-    ) -> None:
-        super().__init__(message, code=code, details=details)
-
-
-class ConflictError(DomainError):
-    """The operation conflicts with current domain state."""
-
-    def __init__(
-        self,
-        message: str,
-        *,
-        code: str = "conflict",
-        details: Mapping[str, Any] | None = None,
-    ) -> None:
-        super().__init__(message, code=code, details=details)
-
-
-class InvariantViolationError(DomainError):
+class InvariantViolation(DomainError):
     """An aggregate or entity invariant was broken."""
 
     def __init__(
@@ -111,6 +85,37 @@ class InvariantViolationError(DomainError):
         message: str,
         *,
         code: str = "invariant_violation",
+        details: Mapping[str, Any] | None = None,
+    ) -> None:
+        super().__init__(message, code=code, details=details)
+
+
+class BusinessRuleViolation(DomainError):
+    """
+    A business rule failed.
+
+    Subclass in the owning bounded context with ubiquitous-language names
+    (e.g. `DuplicateAbn`, `OrganisationSuspended`).
+    """
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        code: str = "business_rule_violation",
+        details: Mapping[str, Any] | None = None,
+    ) -> None:
+        super().__init__(message, code=code, details=details)
+
+
+class InvalidValue(DomainError):
+    """A value object or primitive failed domain validation."""
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        code: str = "invalid_value",
         details: Mapping[str, Any] | None = None,
     ) -> None:
         super().__init__(message, code=code, details=details)

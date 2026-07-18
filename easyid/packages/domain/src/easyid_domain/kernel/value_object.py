@@ -19,5 +19,5 @@ class ValueObject:
         self._validate()
 
     def _validate(self) -> None:
-        """Hook for subclass invariants. Raise `DomainError` on violation."""
+        """Hook for subclass invariants. Raise `InvalidValue` on violation."""
         return None
