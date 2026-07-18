@@ -1,0 +1,44 @@
+# Shared ignore list for Docker builds whose context is the easyid/ root
+# (apps/api and apps/web).
+
+# VCS / editor
+.git
+.github
+.husky
+.vscode
+.idea
+**/.DS_Store
+
+# Dependencies & caches
+**/node_modules
+**/.pnpm-store
+**/.turbo
+**/.next
+**/.venv
+**/.uv-cache
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/.mypy_cache
+**/coverage
+**/htmlcov
+**/playwright-report
+**/test-results
+**/.tsbuildinfo
+
+# Env / secrets
+**/.env
+**/.env.*
+!**/.env.example
+
+# Build artefacts
+**/dist
+**/build
+**/out
+**/*.egg-info
+
+# Docs (not needed in runtime images)
+docs
+
+# Logs
+**/*.log

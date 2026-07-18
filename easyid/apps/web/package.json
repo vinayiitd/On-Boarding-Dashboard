@@ -17,7 +17,6 @@
     "clean": "rm -rf .next .turbo node_modules"
   },
   "dependencies": {
-    "@easyid/domain": "workspace:*",
     "@easyid/sdk": "workspace:*",
     "@easyid/types": "workspace:*",
     "@easyid/ui": "workspace:*",

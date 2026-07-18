@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
   // Compile shared workspace packages on the fly during `next dev` and
   // `next build`. Without this, imports like `@easyid/ui` would need to be
   // pre-built to CJS/ESM, which is unnecessary in a monorepo.
-  transpilePackages: ["@easyid/domain", "@easyid/sdk", "@easyid/types", "@easyid/ui"],
+  transpilePackages: ["@easyid/sdk", "@easyid/types", "@easyid/ui"],
 
   eslint: {
     // We run ESLint via `pnpm lint` at the workspace root; skip it during

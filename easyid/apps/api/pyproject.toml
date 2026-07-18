@@ -8,6 +8,8 @@ license = { text = "Proprietary" }
 authors = [{ name = "easyID" }]
 
 dependencies = [
+    # Domain layer (shared Python package — see packages/domain)
+    "easyid-domain",
     # Web framework
     "fastapi[standard]>=0.115.6",
     "uvicorn[standard]>=0.34.0",
@@ -21,6 +23,12 @@ dependencies = [
     # Observability
     "structlog>=24.4.0",
 ]
+
+[tool.uv.sources]
+# Path dependency (non-editable). Keeps the Docker runtime image simple —
+# the wheel is installed into the venv rather than linked back to the source
+# tree. Re-run `uv sync` from apps/api after changing packages/domain.
+easyid-domain = { path = "../../packages/domain" }
 
 [dependency-groups]
 dev = [
@@ -86,7 +94,7 @@ ignore = [
 "alembic/env.py" = ["E402"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["easyid_api"]
+known-first-party = ["easyid_api", "easyid_domain"]
 
 [tool.ruff.format]
 quote-style = "double"
