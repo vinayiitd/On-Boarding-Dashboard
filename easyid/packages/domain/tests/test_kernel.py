@@ -10,7 +10,6 @@ import pytest
 
 from easyid_domain import (
     AggregateRoot,
-    ConflictError,
     DomainError,
     DomainEvent,
     Entity,
@@ -227,7 +226,6 @@ def test_result_unwrap_mismatches_raise() -> None:
 def test_domain_error_hierarchy() -> None:
     assert isinstance(ValidationError("v"), ValidationError)
     assert isinstance(ValidationError("v"), DomainError)
-    assert ConflictError("c").code == "conflict"
     assert InvariantViolationError("i").code == "invariant_violation"
 
 
