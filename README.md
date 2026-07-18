@@ -19,12 +19,18 @@ client → pick document types, upload files, capture identity fields →
 AI Compliance Officer recommendation → printable compliance report. See
 [`kyc-platform/README.md`](./kyc-platform/README.md).
 
+**Live demo:** https://on-boarding-dashboard-89pm.vercel.app/
+(deployed from `main` via Vercel — auto-updates on every push).
+
+Run it locally instead:
+
 ```bash
 cd kyc-platform && npm install && npm run dev
 ```
 
-The **Launch Sentinel demo** button on the easyID landing page opens
-`http://localhost:3000` — start the dev server first.
+The **Launch Sentinel demo** button on the easyID landing page points at the
+Vercel deployment above, so anyone with the landing-page URL can try Sentinel
+in one click — no install required.
 
 ### Standalone HTML dashboards
 
