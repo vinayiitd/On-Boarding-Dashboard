@@ -50,7 +50,7 @@ packages/domain/
 
 | Symbol | Notes |
 | ------ | ----- |
-| `Entity` | Identity-based `==` / `hash` |
+| `Entity` | ABC; identity-based `==` / `hash`; immutable `id` |
 | `AggregateRoot` | Pending domain events (`raise_event` / `collect_events`) |
 | `ValueObject` | Frozen, value-based equality; `_validate()` hook |
 | `DomainEvent` | Immutable; `kw_only` metadata (`event_id`, `occurred_at`) |

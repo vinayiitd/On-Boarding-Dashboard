@@ -2,25 +2,45 @@
 
 from __future__ import annotations
 
+from abc import ABC
 from dataclasses import dataclass
-from typing import ClassVar
+from typing import ClassVar, Self
 
 
 @dataclass(eq=False)
-class Entity[TId]:
+class Entity[TId](ABC):
     """
     An object defined by identity, not by its attributes.
 
-    Two entities of the same concrete type are equal when their `id` values
-    are equal, regardless of other field differences. Subclasses should use
-    `@dataclass(eq=False)` (or inherit this base) and must not restore
-    value-based equality.
+    Abstract — subclass before use. Two entities of the same concrete type
+    are equal when their `id` values are equal, regardless of other field
+    differences. The `id` is fixed after construction.
+
+    Subclasses should use `@dataclass(eq=False)` (or inherit this base) and
+    must not restore value-based equality.
     """
 
     id: TId
 
     # Marker for isinstance checks without importing SQLAlchemy/Pydantic.
     __domain_entity__: ClassVar[bool] = True
+
+    def __new__(cls, *_args: object, **_kwargs: object) -> Self:
+        if cls is Entity:
+            msg = "Entity cannot be instantiated directly; subclass it"
+            raise TypeError(msg)
+        return super().__new__(cls)
+
+    def __setattr__(self, name: str, value: object) -> None:
+        if name == "id":
+            try:
+                object.__getattribute__(self, "id")
+            except AttributeError:
+                pass
+            else:
+                msg = "Entity id is immutable after construction"
+                raise AttributeError(msg)
+        super().__setattr__(name, value)
 
     def __eq__(self, other: object) -> bool:
         if other is self:

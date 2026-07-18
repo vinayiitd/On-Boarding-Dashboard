@@ -124,6 +124,20 @@ def test_entity_inequality_different_types() -> None:
     assert left != right
 
 
+def test_entity_cannot_be_instantiated_directly() -> None:
+    with pytest.raises(TypeError, match="cannot be instantiated directly"):
+        Entity(id=uuid4())
+
+
+def test_entity_id_is_immutable_after_construction() -> None:
+    entity = _SampleEntity(id=uuid4(), name="a")
+    with pytest.raises(AttributeError, match="immutable"):
+        entity.id = uuid4()
+    # Non-identity fields remain mutable.
+    entity.name = "b"
+    assert entity.name == "b"
+
+
 # --- ValueObject --------------------------------------------------------------
 
 
