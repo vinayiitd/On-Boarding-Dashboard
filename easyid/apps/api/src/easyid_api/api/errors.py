@@ -86,12 +86,10 @@ def problem_response(
         "detail": detail,
         "instance": request.url.path,
     }
-    request_id = getattr(request.state, "request_id", None)
-    correlation_id = getattr(request.state, "correlation_id", None)
-    if isinstance(request_id, str):
-        body["request_id"] = request_id
-    if isinstance(correlation_id, str):
-        body["correlation_id"] = correlation_id
+    context = getattr(request.state, "request_context", None)
+    if context is not None:
+        body["request_id"] = context.request_id
+        body["correlation_id"] = context.correlation_id
     if extensions:
         body.update(extensions)
 

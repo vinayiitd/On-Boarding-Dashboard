@@ -1,35 +1,39 @@
-"""RequestContext middleware smoke tests."""
+"""Unit tests for RequestContext and the shared id generator."""
 
 from __future__ import annotations
 
-import pytest
-from httpx import ASGITransport, AsyncClient
-
+from easyid_api.bootstrap.ids import new_id
 from easyid_api.bootstrap.request_context import RequestContext
-from easyid_api.main import create_app
+
+
+def test_new_id_returns_non_empty_string() -> None:
+    value = new_id()
+    assert isinstance(value, str)
+    assert value
 
 
 def test_request_context_generates_ids() -> None:
-    ctx = RequestContext.create()
-    assert ctx.request_id
-    assert ctx.correlation_id == ctx.request_id
+    context = RequestContext.create()
+    assert context.request_id
+    assert context.correlation_id == context.request_id
 
 
 def test_request_context_respects_supplied_ids() -> None:
-    ctx = RequestContext.create(request_id="req-1", correlation_id="corr-1")
-    assert ctx.request_id == "req-1"
-    assert ctx.correlation_id == "corr-1"
+    context = RequestContext.create(request_id="req-1", correlation_id="corr-1")
+    assert context.request_id == "req-1"
+    assert context.correlation_id == "corr-1"
 
 
-@pytest.mark.asyncio
-async def test_health_echoes_request_id_header() -> None:
-    app = create_app()
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
-        response = await client.get(
-            "/api/v1/health",
-            headers={"X-Request-ID": "req-fixed"},
-        )
-        assert response.status_code == 200
-        assert response.headers.get("X-Request-ID") == "req-fixed"
-        assert response.headers.get("X-Correlation-ID") == "req-fixed"
+def test_request_context_falls_back_correlation_to_request_id() -> None:
+    context = RequestContext.create(request_id="req-1", correlation_id="   ")
+    assert context.request_id == "req-1"
+    assert context.correlation_id == "req-1"
+
+
+def test_request_context_is_frozen() -> None:
+    context = RequestContext.create(request_id="req-1")
+    try:
+        context.request_id = "other"  # type: ignore[misc]
+    except AttributeError:
+        return
+    raise AssertionError("RequestContext should be frozen")

@@ -12,6 +12,7 @@ from typing import Annotated
 from fastapi import Depends, Request
 
 from easyid_api.bootstrap.container import AppContainer
+from easyid_api.bootstrap.request_context import RequestContext
 from easyid_api.config import Settings
 
 
@@ -31,23 +32,30 @@ def get_settings(container: Annotated[AppContainer, Depends(get_container)]) -> 
     return container.settings
 
 
-def get_request_id(request: Request) -> str:
-    """Return the request id assigned by RequestContextMiddleware."""
-    request_id = getattr(request.state, "request_id", None)
-    if not isinstance(request_id, str) or not request_id:
-        raise RuntimeError("Request id is missing from request state.")
-    return request_id
+def get_request_context(request: Request) -> RequestContext:
+    """Return the RequestContext assigned by RequestContextMiddleware."""
+    context = getattr(request.state, "request_context", None)
+    if not isinstance(context, RequestContext):
+        raise RuntimeError("Request context is missing from request state.")
+    return context
 
 
-def get_correlation_id(request: Request) -> str:
-    """Return the correlation id assigned by RequestContextMiddleware."""
-    correlation_id = getattr(request.state, "correlation_id", None)
-    if not isinstance(correlation_id, str) or not correlation_id:
-        raise RuntimeError("Correlation id is missing from request state.")
-    return correlation_id
+def get_request_id(
+    context: Annotated[RequestContext, Depends(get_request_context)],
+) -> str:
+    """Return the request id from the current RequestContext."""
+    return context.request_id
+
+
+def get_correlation_id(
+    context: Annotated[RequestContext, Depends(get_request_context)],
+) -> str:
+    """Return the correlation id from the current RequestContext."""
+    return context.correlation_id
 
 
 ContainerDep = Annotated[AppContainer, Depends(get_container)]
 SettingsDep = Annotated[Settings, Depends(get_settings)]
+RequestContextDep = Annotated[RequestContext, Depends(get_request_context)]
 RequestIdDep = Annotated[str, Depends(get_request_id)]
 CorrelationIdDep = Annotated[str, Depends(get_correlation_id)]
