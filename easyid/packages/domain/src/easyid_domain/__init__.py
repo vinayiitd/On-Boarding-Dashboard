@@ -21,7 +21,6 @@ primitives with no business concepts. See
 from easyid_domain.kernel import (
     AggregateRoot,
     Clock,
-    ConflictError,
     DomainError,
     DomainEvent,
     Entity,
@@ -44,7 +43,6 @@ from easyid_domain.kernel import (
 __all__ = [
     "AggregateRoot",
     "Clock",
-    "ConflictError",
     "DomainError",
     "DomainEvent",
     "Entity",

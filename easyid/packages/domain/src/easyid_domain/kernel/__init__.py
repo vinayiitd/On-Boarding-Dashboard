@@ -10,7 +10,6 @@ from easyid_domain.kernel.clock import Clock, FixedClock, SystemClock
 from easyid_domain.kernel.domain_event import DomainEvent
 from easyid_domain.kernel.entity import Entity
 from easyid_domain.kernel.errors import (
-    ConflictError,
     DomainError,
     InvariantViolationError,
     ValidationError,
@@ -23,7 +22,6 @@ from easyid_domain.kernel.value_object import ValueObject
 __all__ = [
     "AggregateRoot",
     "Clock",
-    "ConflictError",
     "DomainError",
     "DomainEvent",
     "Entity",
