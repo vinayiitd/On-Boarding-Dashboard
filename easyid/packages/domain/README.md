@@ -55,7 +55,8 @@ packages/domain/
 | `ValueObject` | Frozen, value-based equality; `_validate()` hook |
 | `DomainEvent` | Immutable; `kw_only` metadata (`event_id`, `occurred_at`) |
 | `Result` / `ok` / `err` | Expected success/failure without exceptions |
-| `DomainError` (+ subclasses) | `validation_error`, `invariant_violation` (not-found / conflict are not kernel errors) |
+| `DomainError` | Base; subclasses: `InvariantViolation`, `BusinessRuleViolation`, `InvalidValue` |
+| | Context-specific rules (e.g. `DuplicateAbn`) subclass `BusinessRuleViolation` next to aggregates |
 | `Specification` | Composable with `&` / `|` / `~` |
 | `Clock` / `SystemClock` / `FixedClock` | Testable time |
 | `Identifier` / `new_id` / `parse_id` | UUID seam (ready for UUIDv7) |
