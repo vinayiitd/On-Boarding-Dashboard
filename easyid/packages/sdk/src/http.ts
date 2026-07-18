@@ -1,4 +1,4 @@
-import type { ApiError } from "@easyid/types";
+import type { ProblemDetails } from "@easyid/types";
 import { ApiClientError } from "./errors";
 
 /** Minimum fetch signature the SDK requires. Native `fetch` satisfies this. */
@@ -50,7 +50,7 @@ export async function request<T>(
   const response = await ctx.fetch(url, init);
 
   if (!response.ok) {
-    throw new ApiClientError(await extractApiError(response));
+    throw new ApiClientError(await extractProblemDetails(response));
   }
 
   if (response.status === 204) {
@@ -67,33 +67,38 @@ export async function request<T>(
   }
 }
 
-async function extractApiError(response: Response): Promise<ApiError> {
+async function extractProblemDetails(response: Response): Promise<ProblemDetails> {
   let payload: unknown = null;
   try {
     payload = await response.json();
   } catch {
-    // fall through to a synthetic error below
+    // fall through to a synthetic problem below
   }
 
-  if (isApiError(payload)) {
+  if (isProblemDetails(payload)) {
     return { ...payload, status: payload.status || response.status };
   }
 
   return {
+    type: `https://easyid.app/problems/http-${response.status.toString()}`,
+    title: response.statusText || "HTTP Error",
     status: response.status,
-    code: `http_${response.status.toString()}`,
-    message: response.statusText || "Request failed",
+    detail: response.statusText || "Request failed",
   };
 }
 
-function isApiError(v: unknown): v is ApiError {
+function isProblemDetails(value: unknown): value is ProblemDetails {
   return (
-    typeof v === "object" &&
-    v !== null &&
-    "code" in v &&
-    "message" in v &&
-    typeof (v as { code: unknown }).code === "string" &&
-    typeof (v as { message: unknown }).message === "string"
+    typeof value === "object" &&
+    value !== null &&
+    "type" in value &&
+    "title" in value &&
+    "status" in value &&
+    "detail" in value &&
+    typeof (value as { type: unknown }).type === "string" &&
+    typeof (value as { title: unknown }).title === "string" &&
+    typeof (value as { status: unknown }).status === "number" &&
+    typeof (value as { detail: unknown }).detail === "string"
   );
 }
 

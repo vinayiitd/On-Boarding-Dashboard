@@ -1,94 +1,104 @@
 """
-Process-wide structured logging.
+Process-wide structured logging using the standard library.
 
-Configured once at startup from `Settings`. Uses structlog so every log
-event is a JSON object in production and a coloured console line in
-development. Request / tenant fields are bound via contextvars by the
-API dependency layer — see `api/deps.py`.
+JSON lines in non-development environments; human-readable key=value lines
+in development. Request / correlation ids are read from contextvars when
+present (bound by `RequestContextMiddleware`).
 """
 
 from __future__ import annotations
 
+import json
 import logging
 import sys
-
-import structlog
+from contextvars import ContextVar, Token
+from datetime import UTC, datetime
+from typing import Any
 
 from easyid_api.config import Settings
+
+request_id_var: ContextVar[str | None] = ContextVar("request_id", default=None)
+correlation_id_var: ContextVar[str | None] = ContextVar("correlation_id", default=None)
+
+
+class StructuredFormatter(logging.Formatter):
+    """Render log records as structured JSON or compact key=value text."""
+
+    def __init__(self, *, json_logs: bool) -> None:
+        super().__init__()
+        self._json_logs = json_logs
+
+    def format(self, record: logging.LogRecord) -> str:
+        payload: dict[str, Any] = {
+            "timestamp": datetime.now(UTC).isoformat(timespec="milliseconds"),
+            "level": record.levelname,
+            "logger": record.name,
+            "message": record.getMessage(),
+        }
+        request_id = request_id_var.get()
+        correlation_id = correlation_id_var.get()
+        if request_id is not None:
+            payload["request_id"] = request_id
+        if correlation_id is not None:
+            payload["correlation_id"] = correlation_id
+        if record.exc_info:
+            payload["exception"] = self.formatException(record.exc_info)
+
+        if self._json_logs:
+            return json.dumps(payload, default=str)
+
+        parts = [
+            payload["timestamp"],
+            payload["level"],
+            payload["logger"],
+            payload["message"],
+        ]
+        if "request_id" in payload:
+            parts.append(f"request_id={payload['request_id']}")
+        if "correlation_id" in payload:
+            parts.append(f"correlation_id={payload['correlation_id']}")
+        line = " | ".join(parts)
+        if "exception" in payload:
+            return f"{line}\n{payload['exception']}"
+        return line
 
 
 def configure_logging(settings: Settings) -> None:
     """
-    Configure stdlib logging + structlog for the process.
+    Configure root logging for the process.
 
-    Safe to call more than once (e.g. in tests) — each call reconfigures.
+    Safe to call more than once — each call replaces existing handlers.
     """
     level = getattr(logging, settings.log_level.upper(), logging.INFO)
-
-    shared_processors: list[structlog.types.Processor] = [
-        structlog.contextvars.merge_contextvars,
-        structlog.stdlib.add_log_level,
-        structlog.stdlib.add_logger_name,
-        structlog.processors.TimeStamper(fmt="iso", utc=True),
-        structlog.processors.StackInfoRenderer(),
-        structlog.processors.format_exc_info,
-        structlog.processors.UnicodeDecoder(),
-    ]
-
-    if settings.environment == "development":
-        renderer: structlog.types.Processor = structlog.dev.ConsoleRenderer()
-    else:
-        renderer = structlog.processors.JSONRenderer()
-
-    structlog.configure(
-        processors=[
-            *shared_processors,
-            structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
-        ],
-        logger_factory=structlog.stdlib.LoggerFactory(),
-        wrapper_class=structlog.stdlib.BoundLogger,
-        cache_logger_on_first_use=True,
-    )
-
-    formatter = structlog.stdlib.ProcessorFormatter(
-        processors=[
-            structlog.stdlib.ProcessorFormatter.remove_processors_meta,
-            renderer,
-        ],
-    )
-
     handler = logging.StreamHandler(sys.stdout)
-    handler.setFormatter(formatter)
+    handler.setFormatter(StructuredFormatter(json_logs=not settings.is_development))
 
     root = logging.getLogger()
     root.handlers.clear()
     root.addHandler(handler)
     root.setLevel(level)
 
-    # Keep noisy third-party loggers quiet unless we are debugging.
-    for name in ("uvicorn.access", "sqlalchemy.engine"):
-        logging.getLogger(name).setLevel(
-            logging.DEBUG if settings.log_level == "debug" else logging.WARNING
-        )
+    # Keep framework access logs quieter unless we are debugging.
+    access_level = logging.DEBUG if settings.log_level == "debug" else logging.WARNING
+    logging.getLogger("uvicorn.access").setLevel(access_level)
+    logging.getLogger("uvicorn.error").setLevel(level)
 
 
-def bind_request_logging(
+def bind_request_ids(
     *,
     request_id: str,
     correlation_id: str,
-    tenant_id: str | None = None,
+) -> tuple[Token[str | None], Token[str | None]]:
+    """Bind request identifiers into contextvars; return tokens for reset."""
+    request_token = request_id_var.set(request_id)
+    correlation_token = correlation_id_var.set(correlation_id)
+    return request_token, correlation_token
+
+
+def reset_request_ids(
+    request_token: Token[str | None],
+    correlation_token: Token[str | None],
 ) -> None:
-    """Bind per-request fields into the structlog contextvars."""
-    structlog.contextvars.clear_contextvars()
-    payload: dict[str, str] = {
-        "request_id": request_id,
-        "correlation_id": correlation_id,
-    }
-    if tenant_id is not None:
-        payload["tenant_id"] = tenant_id
-    structlog.contextvars.bind_contextvars(**payload)
-
-
-def clear_request_logging() -> None:
-    """Drop per-request fields at the end of a request."""
-    structlog.contextvars.clear_contextvars()
+    """Clear request identifiers bound for the current context."""
+    request_id_var.reset(request_token)
+    correlation_id_var.reset(correlation_token)

@@ -55,8 +55,6 @@ uv run uvicorn easyid_api.main:app --reload
 uv run pytest
 uv run ruff check .
 uv run mypy
-uv run alembic upgrade head
-uv run alembic revision --autogenerate -m "add users table"
 ```
 
 ## Adding a TypeScript package
@@ -99,13 +97,9 @@ might reasonably want to revisit.
 1. Create a router module under `apps/api/src/easyid_api/api/v1/`.
 2. Register it in `api/v1/router.py`.
 3. Define request / response shapes as Pydantic models in the same file.
-4. Put the use case in `application/commands/` (write) or
-   `application/queries/` (read). The handler’s first argument is
-   `TenantContext`.
-5. In the router, take `TenantContextDep` (and `DbSessionDep` if needed)
-   from `api/deps.py` and pass them into the handler. Do **not** pass a
-   raw tenant id string.
-6. Add a `pytest` covering the happy path and one failure mode (including
-   missing `X-Tenant-ID` → 400).
-7. If the response shape is consumed by the web app, mirror the type in
+4. Put use-case logic in `application/` (not in the router).
+5. Add a `pytest` covering the happy path and one failure mode.
+6. If the response shape is consumed by the web app, mirror the type in
    `@easyid/types` and expose an endpoint helper in `@easyid/sdk`.
+7. Errors must surface as RFC 7807 Problem Details — raise `HTTPException`
+   or let validation fail; do not invent ad-hoc error JSON.

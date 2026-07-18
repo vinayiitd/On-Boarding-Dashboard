@@ -16,16 +16,16 @@ foundation ships production-ready containers and CI, but choosing hosts (Fly.io
 
 ## Environment variables required in production
 
-See `.env.example` for the authoritative list. Minimum:
+See `.env.example` and `apps/api/.env.example` for the authoritative list.
+Minimum for the API bootstrap:
 
-- `DATABASE_URL` (must use `postgresql+asyncpg://`)
+- `ENVIRONMENT` (`production`)
 - `API_CORS_ORIGINS` (comma-separated, no `*` in prod)
 - `NEXT_PUBLIC_API_URL` (public API URL, baked into the web bundle at build)
 
 ## What's coming next
 
-- Alembic auto-migrate on API startup — behind an env flag so a rollback never
-  runs `downgrade` unattended.
+- Persistence (SQLAlchemy + Alembic + PostgreSQL) in a later foundation.
 - OpenTelemetry wiring for both apps.
 - Terraform / Pulumi module for the target cloud.
 - Blue/green or canary deploy workflow in GitHub Actions.

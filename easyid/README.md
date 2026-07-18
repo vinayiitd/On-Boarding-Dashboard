@@ -45,28 +45,28 @@ utilities), `@easyid/config` (TS + ESLint presets).
 | Layer          | Choice                                                                                        |
 | -------------- | --------------------------------------------------------------------------------------------- |
 | **Frontend**   | Next.js 15 · React 19 · TypeScript · Tailwind CSS v4 · shadcn/ui · TanStack Query · RHF · Zod |
-| **Backend**    | FastAPI · Python 3.13 · uv                                                                    |
-| **ORM**        | SQLAlchemy 2.x (async)                                                                        |
-| **Migrations** | Alembic (async env)                                                                           |
-| **Database**   | PostgreSQL 17                                                                                 |
+| **Backend**    | FastAPI · Python 3.13 · uv · Pydantic Settings v2                                             |
+| **Errors**     | RFC 7807 Problem Details                                                                      |
 | **Monorepo**   | pnpm workspaces · Turborepo                                                                   |
 | **Containers** | Docker Compose                                                                                |
 | **CI**         | GitHub Actions (Node · Python · Docker)                                                       |
 | **Testing**    | Pytest · Vitest · Playwright                                                                  |
 | **Tooling**    | ESLint · Prettier · Ruff · mypy · Husky · lint-staged · EditorConfig                          |
 
+Persistence (SQLAlchemy / Alembic / PostgreSQL) is intentionally deferred past
+FND-002.
+
 ## Folder structure
 
 ```
 easyid/
 ├── apps/
-│   ├── api/                    # FastAPI + Clean Architecture (consumes packages/domain)
+│   ├── api/                    # FastAPI bootstrap (FND-002) — consumes packages/domain
 │   │   ├── src/easyid_api/
-│   │   │   ├── api/            # HTTP surface (routers, deps, error contract)
-│   │   │   ├── application/    # commands/ + queries/ + ports (TenantContext in)
-│   │   │   ├── bootstrap/      # logging, lifespan, DI, request/tenant context
-│   │   │   └── infrastructure/ # persistence / messaging / storage / identity / observability
-│   │   ├── alembic/            # Async-aware Alembic env
+│   │   │   ├── api/            # HTTP surface (routers, RFC 7807 errors)
+│   │   │   ├── application/    # Use cases, ports (empty in FND-002)
+│   │   │   ├── bootstrap/      # logging, lifespan, DI, request context
+│   │   │   └── infrastructure/ # adapters (empty in FND-002)
 │   │   ├── tests/              # Pytest + httpx
 │   │   ├── Dockerfile
 │   │   └── pyproject.toml
@@ -148,7 +148,6 @@ uv run uvicorn easyid_api.main:app --reload
 uv run pytest
 uv run ruff check .
 uv run mypy
-uv run alembic upgrade head
 ```
 
 ## Development workflow
@@ -176,8 +175,9 @@ iterations:
 
 - Business entities (Customer / Party / Client / etc.)
 - Authentication and authorisation
+- Persistence (SQLAlchemy, Alembic, PostgreSQL connectivity)
+- Tenant resolution
 - AI / LLM integration
-- Concrete SQLAlchemy models
 - Business use cases in the application layer
 
 Adding any of the above before their own iteration is a code-review veto.

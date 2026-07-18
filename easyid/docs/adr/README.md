@@ -49,4 +49,5 @@ Small refactors, bug fixes, and dependency bumps do not need an ADR.
 | 0001 | [Consolidate the domain layer into `packages/domain`](./0001-consolidate-domain-into-packages-domain.md) | Accepted (language model superseded by 0003) |
 | 0002 | [Introduce `packages/common` for cross-cutting utilities](./0002-introduce-packages-common.md)           | Accepted |
 | 0003 | [The domain package is Python, not TypeScript](./0003-domain-is-a-python-package.md)                      | Accepted |
-| 0004 | [Bootstrap layer, infrastructure adapters, and TenantContext](./0004-bootstrap-tenancy-infrastructure-shape.md) | Accepted |
+| 0004 | [Bootstrap layer, infrastructure adapters, and TenantContext](./0004-bootstrap-tenancy-infrastructure-shape.md) | Superseded by 0005 |
+| 0005 | [FND-002 bootstrap without persistence or tenancy](./0005-fnd-002-bootstrap-without-persistence-tenancy.md) | Accepted |

@@ -62,43 +62,32 @@ Enforced rules:
   [ADR-0003](./adr/0003-domain-is-a-python-package.md).
 - **No FastAPI / SQLAlchemy / Pydantic inside `easyid_domain`.** The domain
   is framework-independent.
-- **No SQLAlchemy inside `application/`.** Persistence models live in
-  `infrastructure/persistence/models/`.
 - **No FastAPI inside `application/`.** Dependency injection types belong in
   `api/deps.py`.
 - **No `api/` imports inside `application/` or `infrastructure/`.**
 - **No web-tier import of `easyid_domain`.** The browser talks to the domain
   only through HTTP.
 - **`bootstrap/` contains no business logic** — only process wiring.
+- **FND-002 ships no persistence.** Infrastructure adapters land in later
+  foundations.
 
 CI enforces these boundaries with an import-linter pass (arriving in a follow-up
 iteration).
 
-## Bootstrap, infrastructure adapters, and multi-tenancy
-
-See
-[`docs/adr/0004-bootstrap-tenancy-infrastructure-shape.md`](./adr/0004-bootstrap-tenancy-infrastructure-shape.md).
+## API bootstrap (FND-002)
 
 ```
 apps/api/src/easyid_api/
-├── bootstrap/          # logging, lifespan, DI container, request/tenant context
-├── api/                # HTTP surface — resolves TenantContext once per request
-├── application/
-│   ├── commands/       # writes — every handler takes TenantContext first
-│   ├── queries/        # reads  — every handler takes TenantContext first
-│   └── ports.py
-└── infrastructure/
-    ├── persistence/    # SQLAlchemy engine, sessions, ORM, repositories
-    ├── messaging/      # queues / event buses (stub)
-    ├── storage/        # object / file storage (stub)
-    ├── identity/       # IdPs / JWKS (stub)
-    └── observability/  # metrics / tracing exporters (stub)
+├── bootstrap/          # logging, lifespan, DI container, RequestContext
+├── api/                # HTTP surface — RFC 7807 errors, /api/v1 routes
+├── application/        # commands/ + queries/ shelves (empty in FND-002)
+└── infrastructure/     # identity/messaging/storage/observability stubs
+                        # (no persistence or tenancy in FND-002)
 ```
 
-**Tenant flow:** `api/deps.py` → `TenantContext` → `application/commands|queries`.
-Isolation is shared-schema, row-level: every tenant-scoped query filters on
-`tenant.tenant_id`. Scaffold resolution today reads `X-Tenant-ID`; identity
-adapters will replace that without changing the handler contract.
+Errors use RFC 7807 Problem Details (`application/problem+json`). Every
+response carries `X-Request-ID` and `X-Correlation-ID`. See
+[ADR-0005](./adr/0005-fnd-002-bootstrap-without-persistence-tenancy.md).
 
 ## Frontend architecture
 
@@ -106,7 +95,7 @@ adapters will replace that without changing the handler contract.
 the domain:
 
 - **`@easyid/types`** — HTTP wire contracts (also consumed by the SDK and
-  mirrored server-side as Pydantic models).
+  mirrored server-side as Pydantic models), including `ProblemDetails`.
 - **`@easyid/sdk`** — the HTTP client. No React, no caching.
 - **`@easyid/ui`** — design tokens + primitives.
 - **`@easyid/common`** — cross-cutting TypeScript utilities (assertions,
@@ -117,13 +106,11 @@ the domain:
 
 ## Read the code in this order
 
-1. `packages/domain/` — the Python domain package (empty today; the shape of
-   future entities).
+1. `packages/domain/` — the Python domain package (empty today).
 2. `apps/api/src/easyid_api/main.py` — how the FastAPI app is composed.
-3. `apps/api/src/easyid_api/bootstrap/` — lifespan, logging, contexts, DI.
-4. `apps/api/src/easyid_api/api/deps.py` — `TenantContextDep` / request wiring.
-5. `apps/api/src/easyid_api/api/v1/health.py` — the reference endpoint.
-6. `apps/api/src/easyid_api/infrastructure/persistence/` — engine + session wiring.
-7. `apps/web/src/app/page.tsx` + `components/health-check.tsx` — the end-to-end
+3. `apps/api/src/easyid_api/bootstrap/` — lifespan, logging, container, middleware.
+4. `apps/api/src/easyid_api/api/v1/health.py` — the reference endpoint.
+5. `apps/api/src/easyid_api/api/errors.py` — RFC 7807 handlers.
+6. `apps/web/src/app/page.tsx` + `components/health-check.tsx` — the end-to-end
    call.
-8. `packages/sdk/src/` — the client.
+7. `packages/sdk/src/` — the client.

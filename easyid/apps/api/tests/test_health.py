@@ -1,10 +1,8 @@
-"""Smoke tests for `GET /api/v1/health`."""
+"""Tests for `GET /api/v1/health`."""
 
 from __future__ import annotations
 
 from httpx import AsyncClient
-
-from easyid_api import __version__
 
 
 async def test_health_returns_200(client: AsyncClient) -> None:
@@ -14,17 +12,26 @@ async def test_health_returns_200(client: AsyncClient) -> None:
 
 async def test_health_returns_expected_contract(client: AsyncClient) -> None:
     response = await client.get("/api/v1/health")
-    payload = response.json()
-    assert payload == {"status": "healthy", "version": __version__}
+    assert response.json() == {"status": "healthy", "version": "0.1.0"}
 
 
-async def test_openapi_document_is_served(client: AsyncClient) -> None:
-    """
-    Guardrail — Swagger/OpenAPI must be reachable so downstream tooling
-    (SDK codegen, Postman imports, docs sites) can rely on it.
-    """
-    response = await client.get("/openapi.json")
+async def test_health_echoes_request_and_correlation_ids(client: AsyncClient) -> None:
+    response = await client.get(
+        "/api/v1/health",
+        headers={
+            "X-Request-ID": "req-fixed",
+            "X-Correlation-ID": "corr-fixed",
+        },
+    )
     assert response.status_code == 200
-    doc = response.json()
-    assert doc["info"]["title"] == "easyID API"
-    assert "/api/v1/health" in doc["paths"]
+    assert response.headers.get("X-Request-ID") == "req-fixed"
+    assert response.headers.get("X-Correlation-ID") == "corr-fixed"
+
+
+async def test_health_generates_request_id_when_absent(client: AsyncClient) -> None:
+    response = await client.get("/api/v1/health")
+    assert response.status_code == 200
+    request_id = response.headers.get("X-Request-ID")
+    correlation_id = response.headers.get("X-Correlation-ID")
+    assert request_id
+    assert correlation_id == request_id

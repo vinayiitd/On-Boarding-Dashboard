@@ -1,11 +1,15 @@
 # ADR-0004: Bootstrap layer, infrastructure adapters, and TenantContext
 
-- **Status:** Accepted
+- **Status:** Superseded by [ADR-0005](./0005-fnd-002-bootstrap-without-persistence-tenancy.md)
 - **Date:** 2026-07-18
 - **Deciders:** easyID engineering
 - **Supersedes:** —
-- **Superseded by:** —
+- **Superseded by:** [ADR-0005](./0005-fnd-002-bootstrap-without-persistence-tenancy.md)
 - **Related:** [ADR-0003](./0003-domain-is-a-python-package.md) (domain is Python)
+
+> **Note:** The bootstrap package and infrastructure adapter folders from
+> this ADR remain. Early `TenantContext` wiring and `infrastructure/persistence/`
+> were removed under FND-002 — see ADR-0005.
 
 ## Context
 

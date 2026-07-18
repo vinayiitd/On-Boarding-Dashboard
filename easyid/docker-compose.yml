@@ -36,11 +36,8 @@ services:
       dockerfile: apps/api/Dockerfile
     container_name: easyid-api
     restart: unless-stopped
-    depends_on:
-      postgres:
-        condition: service_healthy
     environment:
-      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-easyid}:${POSTGRES_PASSWORD:-easyid}@postgres:5432/${POSTGRES_DB:-easyid}
+      ENVIRONMENT: ${ENVIRONMENT:-development}
       API_HOST: 0.0.0.0
       API_PORT: 8000
       API_LOG_LEVEL: ${API_LOG_LEVEL:-info}
