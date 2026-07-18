@@ -57,8 +57,9 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101", "PLR2004"]
-# Kernel uses Violation/InvalidValue names (not *Error) by design.
+# Domain errors use Violation/Empty/Suspended names (not *Error) by design.
 "src/easyid_domain/kernel/errors.py" = ["N818"]
+"src/easyid_domain/organisation/errors.py" = ["N818"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["easyid_domain"]

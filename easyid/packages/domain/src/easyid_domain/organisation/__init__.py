@@ -1,10 +1,12 @@
-"""Organisation bounded-context building blocks (no aggregate in DOM-001.1)."""
+"""Organisation bounded context."""
 
 from easyid_domain.organisation.identifiers import OrganisationId
 from easyid_domain.organisation.name import OrganisationName
+from easyid_domain.organisation.organisation import Organisation
 from easyid_domain.organisation.status import OrganisationStatus
 
 __all__ = [
+    "Organisation",
     "OrganisationId",
     "OrganisationName",
     "OrganisationStatus",
