@@ -1,0 +1,40 @@
+{
+  "name": "@easyid/config",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared build, lint, format, and TypeScript configuration for the easyID monorepo.",
+  "type": "module",
+  "exports": {
+    "./tsconfig/base.json": "./tsconfig/base.json",
+    "./tsconfig/nextjs.json": "./tsconfig/nextjs.json",
+    "./tsconfig/react-library.json": "./tsconfig/react-library.json",
+    "./eslint/base": "./eslint/base.mjs",
+    "./eslint/react": "./eslint/react.mjs",
+    "./eslint/nextjs": "./eslint/nextjs.mjs"
+  },
+  "files": [
+    "tsconfig/**",
+    "eslint/**"
+  ],
+  "scripts": {
+    "clean": "rm -rf .turbo",
+    "lint": "echo 'no source in @easyid/config — nothing to lint'",
+    "typecheck": "echo 'no source in @easyid/config — nothing to typecheck'"
+  },
+  "dependencies": {
+    "@eslint/js": "^9.17.0",
+    "@typescript-eslint/eslint-plugin": "^8.19.0",
+    "@typescript-eslint/parser": "^8.19.0",
+    "eslint-config-next": "15.1.4",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "^7.37.3",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "typescript-eslint": "^8.19.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.17.0"
+  },
+  "peerDependencies": {
+    "eslint": "^9.17.0"
+  }
+}
