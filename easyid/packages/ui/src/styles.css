@@ -1,0 +1,96 @@
+/*
+ * @easyid/ui — design tokens and base styles.
+ *
+ * Loaded from `apps/web/src/app/globals.css` (or any other Tailwind entry
+ * point). Uses Tailwind v4's CSS-first `@theme` syntax so there is no
+ * separate tailwind.config.ts to maintain.
+ */
+
+@theme {
+  --font-sans:
+    "Inter", "InterVariable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono:
+    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  --shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.05);
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 10px 32px -18px rgba(15, 23, 42, 0.14);
+  --shadow-elevated:
+    0 20px 48px -20px rgba(15, 23, 42, 0.22), 0 6px 16px -8px rgba(15, 23, 42, 0.1);
+}
+
+/* Semantic tokens — light */
+:root {
+  --background: #fafafa;
+  --surface: #ffffff;
+  --surface-muted: #f4f5f7;
+  --border: #ebecef;
+  --border-strong: #dfe2e7;
+  --foreground: #0a0d14;
+  --foreground-muted: #545a6a;
+  --foreground-subtle: #7d8494;
+  --ring: rgba(37, 99, 235, 0.35);
+
+  --primary: #2563eb;
+  --primary-foreground: #ffffff;
+  --accent: #14b8a6;
+  --accent-foreground: #ffffff;
+  --warning: #f59e0b;
+  --warning-foreground: #ffffff;
+  --danger: #ef4444;
+  --danger-foreground: #ffffff;
+  --success: #22c55e;
+  --success-foreground: #ffffff;
+}
+
+/* Semantic tokens — dark */
+.dark {
+  --background: #06080d;
+  --surface: #0d121c;
+  --surface-muted: #121826;
+  --border: #1c2333;
+  --border-strong: #29334a;
+  --foreground: #eef1f7;
+  --foreground-muted: #9aa3b5;
+  --foreground-subtle: #667089;
+  --ring: rgba(96, 142, 250, 0.45);
+
+  --primary: #608efa;
+  --primary-foreground: #06080d;
+  --accent: #2dd4bf;
+  --accent-foreground: #06080d;
+  --warning: #fbbf24;
+  --warning-foreground: #06080d;
+  --danger: #f87171;
+  --danger-foreground: #06080d;
+  --success: #4ade80;
+  --success-foreground: #06080d;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-foreground-subtle: var(--foreground-subtle);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-ring: var(--ring);
+}
