@@ -77,19 +77,6 @@ class ValidationError(DomainError):
         super().__init__(message, code=code, details=details)
 
 
-class NotFoundError(DomainError):
-    """A required domain object could not be found."""
-
-    def __init__(
-        self,
-        message: str,
-        *,
-        code: str = "not_found",
-        details: Mapping[str, Any] | None = None,
-    ) -> None:
-        super().__init__(message, code=code, details=details)
-
-
 class ConflictError(DomainError):
     """The operation conflicts with current domain state."""
 
