@@ -23,6 +23,8 @@ class DomainError(Exception):
 
     `code` is a stable machine-readable identifier; `message` is human-
     readable. `details` carries optional structured context (immutable).
+    Values in `details` must be hashable if the error is used in a set or
+    as a dict key — they contribute to both equality and the hash.
     """
 
     __slots__ = ("code", "details", "message")
@@ -65,7 +67,14 @@ class DomainError(Exception):
         )
 
     def __hash__(self) -> int:
-        return hash((type(self), self.code, self.message))
+        return hash(
+            (
+                type(self),
+                self.code,
+                self.message,
+                tuple(sorted(self.details.items())),
+            )
+        )
 
 
 class InvariantViolation(DomainError):

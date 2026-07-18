@@ -256,6 +256,17 @@ def test_domain_error_details_immutable() -> None:
         error.details["field"] = "y"  # type: ignore[index]
 
 
+def test_domain_error_hash_includes_details() -> None:
+    left = InvalidValue("bad", details={"field": "a"})
+    right = InvalidValue("bad", details={"field": "b"})
+    same = InvalidValue("bad", details={"field": "a"})
+
+    assert left != right
+    assert hash(left) != hash(right)
+    assert left == same
+    assert hash(left) == hash(same)
+
+
 def test_domain_error_can_be_raised() -> None:
     with pytest.raises(InvalidValue, match="bad"):
         raise InvalidValue("bad")
