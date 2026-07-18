@@ -16,7 +16,7 @@ from easyid_api.infrastructure.persistence.ids import (
     generate_entity_id,
 )
 from easyid_api.infrastructure.persistence.metadata import NAMING_CONVENTION
-from easyid_api.infrastructure.persistence.repository import SqlAlchemyRepository
+from easyid_api.infrastructure.persistence.repositories import SqlAlchemyRepository
 from easyid_api.infrastructure.persistence.unit_of_work import SqlAlchemyUnitOfWork
 
 pytestmark = pytest.mark.integration
