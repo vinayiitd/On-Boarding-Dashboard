@@ -13,7 +13,6 @@ from easyid_domain.kernel.errors import (
     ConflictError,
     DomainError,
     InvariantViolationError,
-    NotFoundError,
     ValidationError,
 )
 from easyid_domain.kernel.identity import Identifier, new_id, parse_id
@@ -32,7 +31,6 @@ __all__ = [
     "FixedClock",
     "Identifier",
     "InvariantViolationError",
-    "NotFoundError",
     "Ok",
     "Result",
     "Specification",

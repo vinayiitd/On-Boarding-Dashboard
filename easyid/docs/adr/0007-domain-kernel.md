@@ -26,7 +26,7 @@ Ship a **domain kernel** under `easyid_domain.kernel` (re-exported from
 | `ValueObject` | Frozen, value-based equality + `_validate()` |
 | `DomainEvent` | Immutable fact (`kw_only`, metadata fields) |
 | `Result` / `Ok` / `Err` | Expected success/failure without exceptions |
-| `DomainError` hierarchy | Stable error codes for `Result.Err` (also raisable) |
+| `DomainError` hierarchy | Domain invariants (`validation` / `conflict` / `invariant_violation`). Lookup misses are application-layer (`EntityNotFound`), not kernel errors. |
 | `Specification` | Composable predicates (`&` / `|` / `~`) |
 | `Clock` / `SystemClock` / `FixedClock` | Testable time |
 | `Identifier` / `new_id` / `parse_id` | UUID identity seam (UUIDv7-ready) |

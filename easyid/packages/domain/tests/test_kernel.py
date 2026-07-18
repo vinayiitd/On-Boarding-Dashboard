@@ -18,7 +18,6 @@ from easyid_domain import (
     FixedClock,
     Identifier,
     InvariantViolationError,
-    NotFoundError,
     Ok,
     Specification,
     SystemClock,
@@ -227,7 +226,7 @@ def test_result_unwrap_mismatches_raise() -> None:
 
 def test_domain_error_hierarchy() -> None:
     assert isinstance(ValidationError("v"), ValidationError)
-    assert isinstance(NotFoundError("n"), DomainError)
+    assert isinstance(ValidationError("v"), DomainError)
     assert ConflictError("c").code == "conflict"
     assert InvariantViolationError("i").code == "invariant_violation"
 
@@ -239,8 +238,8 @@ def test_domain_error_details_immutable() -> None:
 
 
 def test_domain_error_can_be_raised() -> None:
-    with pytest.raises(NotFoundError, match="missing"):
-        raise NotFoundError("missing")
+    with pytest.raises(ValidationError, match="bad"):
+        raise ValidationError("bad")
 
 
 # --- Specification ------------------------------------------------------------

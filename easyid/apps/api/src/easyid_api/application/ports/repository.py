@@ -18,7 +18,12 @@ class AbstractRepository[T](ABC):
 
     @abstractmethod
     async def get_by_id(self, entity_id: UUID) -> T | None:
-        """Return the entity with the given id, or `None` if missing."""
+        """
+        Return the entity with the given id, or `None` if missing.
+
+        Application use cases that treat a miss as a failure should map
+        `None` to `Result.Err(EntityNotFound(...))` — not a domain error.
+        """
 
     @abstractmethod
     async def add(self, entity: T) -> None:

@@ -55,7 +55,7 @@ packages/domain/
 | `ValueObject` | Frozen, value-based equality; `_validate()` hook |
 | `DomainEvent` | Immutable; `kw_only` metadata (`event_id`, `occurred_at`) |
 | `Result` / `ok` / `err` | Expected success/failure without exceptions |
-| `DomainError` (+ subclasses) | `validation_error`, `not_found`, `conflict`, `invariant_violation` |
+| `DomainError` (+ subclasses) | `validation_error`, `conflict`, `invariant_violation` (not-found is application-layer) |
 | `Specification` | Composable with `&` / `|` / `~` |
 | `Clock` / `SystemClock` / `FixedClock` | Testable time |
 | `Identifier` / `new_id` / `parse_id` | UUID seam (ready for UUIDv7) |
