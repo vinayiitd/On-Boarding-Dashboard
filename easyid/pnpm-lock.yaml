@@ -124,6 +124,18 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.1)(happy-dom@15.11.7)(lightningcss@1.32.0)
 
+  packages/common:
+    devDependencies:
+      '@easyid/config':
+        specifier: workspace:*
+        version: link:../config
+      eslint:
+        specifier: ^9.17.0
+        version: 9.39.5(jiti@2.7.0)
+      typescript:
+        specifier: ~5.7.2
+        version: 5.7.3
+
   packages/config:
     dependencies:
       '@eslint/js':

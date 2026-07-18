@@ -4,25 +4,36 @@ FastAPI service — the easyID compliance API.
 
 ## Architecture
 
-Follows Clean Architecture. Dependency direction is one-way:
+Follows Clean Architecture with a **shared domain** hosted in
+[`packages/domain`](../../packages/domain) (`@easyid/domain`) — a single
+source of truth for entities and business rules, shared between web and API
+via the HTTP contract in [`packages/types`](../../packages/types)
+(`@easyid/types`). The API keeps three layers locally; the domain layer sits
+outside the service:
 
 ```
-api  →  application  →  domain  ←  infrastructure
+api  →  application  ←  infrastructure
+             ↓
+     @easyid/domain (packages/domain)
 ```
 
-| Layer            | Location                         | May import                          |
-| ---------------- | -------------------------------- | ----------------------------------- |
-| `api`            | `src/easyid_api/api/`            | application, domain, infrastructure |
-| `application`    | `src/easyid_api/application/`    | domain, ports                       |
-| `domain`         | `src/easyid_api/domain/`         | (nothing framework-specific)        |
-| `infrastructure` | `src/easyid_api/infrastructure/` | domain, ports                       |
+| Layer            | Location                         | May import                             |
+| ---------------- | -------------------------------- | -------------------------------------- |
+| `api`            | `src/easyid_api/api/`            | application, infrastructure, contracts |
+| `application`    | `src/easyid_api/application/`    | ports, contracts                       |
+| `infrastructure` | `src/easyid_api/infrastructure/` | ports, contracts                       |
+
+"Contracts" = the shared HTTP wire types generated from/for `@easyid/types`
+(mirrored in Python as Pydantic models under `api/v1/`).
 
 Rules:
 
-- No `from sqlalchemy import ...` inside `domain/`.
-- No `from fastapi import ...` inside `domain/` or `application/`.
-- No `from easyid_api.api ...` inside `application/`, `domain/`, or
-  `infrastructure/`.
+- No `from sqlalchemy import ...` inside `application/`.
+- No `from fastapi import ...` inside `application/`.
+- No `from easyid_api.api ...` inside `application/` or `infrastructure/`.
+- Domain entities and pure business rules live in `@easyid/domain`, **not**
+  inside `apps/api/`. See
+  [`docs/adr/0001-consolidate-domain-into-packages-domain.md`](../../docs/adr/0001-consolidate-domain-into-packages-domain.md).
 
 CI enforces these boundaries with an import-linter pass (arriving in a follow-up
 iteration).

@@ -21,36 +21,61 @@ services out later when a bounded context genuinely needs its own deploy.
 
 ## Layered dependency direction
 
+The domain layer is **shared** across the monorepo: it lives in
+`packages/domain` (`@easyid/domain`) and is consumed by both the web app and
+the API. The API keeps three local layers; entities and pure rules never
+live inside the service.
+
 ```
-apps/api
-├── api/            ── HTTP surface. May depend on application, domain, infra.
-├── application/    ── Use cases. May depend on domain + ports.
-├── domain/         ── Entities + rules. Depends on nothing framework-specific.
-└── infrastructure/ ── Concrete adapters. May depend on domain + ports.
+                    ┌─────────────────────────────┐
+                    │  packages/domain            │
+                    │  @easyid/domain             │
+                    │  entities + pure rules      │
+                    └──────────────┬──────────────┘
+                                   │
+              ┌────────────────────┼────────────────────┐
+              ▼                    ▼                    ▼
+       apps/web/src/         apps/api                packages/*
+                             ├── api/            ── HTTP surface. May depend on
+                             │                     application, infrastructure,
+                             │                     contracts.
+                             ├── application/    ── Use cases. May depend on
+                             │                     ports + contracts.
+                             └── infrastructure/ ── Concrete adapters. May
+                                                   depend on ports + contracts.
 ```
+
+"Contracts" = the shared HTTP wire types in `@easyid/types` (mirrored in
+Python as Pydantic models under `api/v1/`).
 
 Enforced rules:
 
-- **No SQLAlchemy inside `domain/`.** Persistence models live in
+- **No entity or business rule inside `apps/api/`.** Domain modelling belongs
+  in `@easyid/domain`. See
+  [`docs/adr/0001-consolidate-domain-into-packages-domain.md`](./adr/0001-consolidate-domain-into-packages-domain.md).
+- **No SQLAlchemy inside `application/`.** Persistence models live in
   `infrastructure/db/models/`.
-- **No FastAPI inside `domain/` or `application/`.** Dependency injection types
-  belong in `api/deps.py`.
-- **No `api/` imports inside `application/`, `domain/`, `infrastructure/`.**
+- **No FastAPI inside `application/`.** Dependency injection types belong in
+  `api/deps.py`.
+- **No `api/` imports inside `application/` or `infrastructure/`.**
 
 CI enforces these boundaries with an import-linter pass (arriving in a follow-up
 iteration).
 
 ## Frontend architecture
 
-`apps/web` follows the same discipline in TypeScript:
+`apps/web` and shared TS packages compose around the same domain model:
 
-- **`@easyid/domain`** — entities and rules for the client tier, framework
-  independent.
+- **`@easyid/domain`** — entities and pure business rules. Framework
+  independent. The single source of truth used by both web and API.
+- **`@easyid/types`** — HTTP wire contracts (also consumed by the SDK and
+  mirrored server-side).
 - **`@easyid/sdk`** — the HTTP client. No React, no caching.
 - **`@easyid/ui`** — design tokens + primitives.
-- **`@easyid/types`** — shared contract types (also consumed by the SDK).
-- **`apps/web/src/`** — the app itself. Composes SDK + UI. Uses TanStack Query
-  for server state; RHF + Zod for forms.
+- **`@easyid/common`** — cross-cutting utilities (assertions, guards, tiny
+  helpers) that don't belong in any of the above.
+- **`apps/web/src/`** — the app itself. Composes SDK + UI + domain. Uses
+  TanStack Query for server state; RHF + Zod for forms.
 
 ## Read the code in this order
 

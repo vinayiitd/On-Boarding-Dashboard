@@ -1,26 +1,32 @@
 # @easyid/domain
 
-Framework-independent domain layer for the client tier. Holds entities, value
-objects and pure functions that model easyID's business rules — nothing here may
-depend on React, Next.js, the SDK, or any I/O library.
+The **shared domain layer** for the entire easyID monorepo. Entities, value
+objects and pure functions that model easyID's business rules live here and
+nowhere else — the web app and the API both depend on this package for their
+canonical view of the business.
 
 ## Rules
 
-- No `import "react"` — anywhere.
-- No `import "next"` — anywhere.
-- No fetching, no I/O — a domain function must be trivially unit-testable.
-- Depend on `@easyid/types` for shared HTTP contract types.
-- Do **not** depend on `@easyid/sdk` or `@easyid/ui`.
+- **Framework-independent.** No `import "react"`, no `import "next"`, no
+  Node-only APIs, no I/O of any kind. Every function must be trivially
+  unit-testable.
+- **No SDK, no UI.** Do not depend on `@easyid/sdk` or `@easyid/ui`. The
+  domain does not know how it is served or displayed.
+- **Wire types live elsewhere.** HTTP request/response shapes belong in
+  `@easyid/types`. Domain entities are richer than wire types (behaviour +
+  invariants) and may look different.
+- **Consumed cross-language.** The FastAPI service mirrors these entities as
+  Pydantic models at the HTTP boundary; keep entity shapes stable and
+  well-documented so both sides can stay in sync.
 
-## Relationship with the API domain
+## Where this used to live
 
-The FastAPI service has its own domain layer under
-`apps/api/src/easyid_api/domain/` following Clean Architecture. The two are
-distinct — the client-side domain models what the browser needs to reason about,
-while the server-side domain models the source of truth. Both must agree on the
-shape of data they exchange (defined in `@easyid/types`).
+Before this iteration, the API kept its own `apps/api/src/easyid_api/domain/`
+folder. It was consolidated here so the platform has a single source of
+truth for business rules. See
+[`docs/adr/0001-consolidate-domain-into-packages-domain.md`](../../docs/adr/0001-consolidate-domain-into-packages-domain.md).
 
 ## Contents
 
 Currently empty by design. Business entities land in follow-up iterations
-alongside their API counterparts.
+alongside their HTTP contracts in `@easyid/types`.

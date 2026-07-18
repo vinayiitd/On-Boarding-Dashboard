@@ -23,15 +23,20 @@ compliance reports, AI) are delivered in subsequent iterations.
 
 - **Modular monolith** — one API service, one web app, one Postgres.
 - **API-first**, versioned at `/api/v1/…`. OpenAPI available at `/openapi.json`.
-- **Domain-Driven Design + Clean Architecture** for the API. Layer boundaries
-  are enforced by CI (see [`docs/architecture.md`](docs/architecture.md)).
+- **Domain-Driven Design + Clean Architecture.** The domain layer is
+  **shared** across the monorepo — it lives in `packages/domain`
+  (`@easyid/domain`) and is consumed by both the web app and the API. Layer
+  boundaries are enforced by CI (see
+  [`docs/architecture.md`](docs/architecture.md); rationale in
+  [`docs/adr/0001-consolidate-domain-into-packages-domain.md`](docs/adr/0001-consolidate-domain-into-packages-domain.md)).
 - **CQRS-lite** — commands and queries kept separate in the application layer.
 - **Repository Pattern** at the persistence boundary.
 - **Dependency Injection** via FastAPI's `Depends`.
 
-The web tier mirrors the discipline: `@easyid/domain` for entities,
-`@easyid/sdk` for the HTTP client, `@easyid/ui` for the design system,
-`@easyid/types` for the wire contracts.
+Shared TypeScript packages: `@easyid/domain` (entities + rules),
+`@easyid/types` (wire contracts), `@easyid/sdk` (HTTP client), `@easyid/ui`
+(design system), `@easyid/common` (cross-cutting utilities), `@easyid/config`
+(TS + ESLint presets).
 
 ## Tech stack
 
@@ -53,11 +58,10 @@ The web tier mirrors the discipline: `@easyid/domain` for entities,
 ```
 easyid/
 ├── apps/
-│   ├── api/                    # FastAPI + Clean Architecture
+│   ├── api/                    # FastAPI + Clean Architecture (domain lives in packages/domain)
 │   │   ├── src/easyid_api/
 │   │   │   ├── api/            # HTTP surface (routers, error contract)
 │   │   │   ├── application/    # Use cases, ports
-│   │   │   ├── domain/         # Framework-independent domain
 │   │   │   └── infrastructure/ # SQLAlchemy engine, ORM models, repositories
 │   │   ├── alembic/            # Async-aware Alembic env
 │   │   ├── tests/              # Pytest + httpx
@@ -73,14 +77,16 @@ easyid/
 │       ├── Dockerfile
 │       └── package.json
 ├── packages/
+│   ├── common/                 # Cross-cutting utilities (assertions, guards, tiny helpers)
 │   ├── config/                 # Shared TS + ESLint configs
-│   ├── domain/                 # Client-tier domain (framework-independent)
+│   ├── domain/                 # Shared domain layer — entities + rules (web + API)
 │   ├── sdk/                    # Typed HTTP client for the API
 │   ├── types/                  # Shared wire contract types
 │   └── ui/                     # Design tokens + primitives
 ├── infrastructure/
 │   └── docker/                 # Postgres init SQL + supporting docker config
 ├── docs/                       # architecture, getting-started, development, deployment, contributing
+│   └── adr/                    # Architecture Decision Records
 ├── .github/
 │   ├── workflows/ci.yml
 │   ├── dependabot.yml
