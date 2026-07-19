@@ -8,7 +8,7 @@ from easyid_domain.kernel.domain_event import DomainEvent
 from easyid_domain.kernel.entity import Entity
 
 
-@dataclass(eq=False)
+@dataclass(eq=False, slots=True)
 class AggregateRoot[TId](Entity[TId]):
     """
     Entry point to an aggregate consistency boundary.
