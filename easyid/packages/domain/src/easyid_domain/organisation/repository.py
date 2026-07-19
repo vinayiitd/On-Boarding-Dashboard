@@ -21,7 +21,7 @@ class OrganisationRepository(Protocol):
     failure (e.g. `EntityNotFound`) is the caller's responsibility.
 
     Method names deliberately avoid CRUD verbs (`insert` / `update` /
-    `delete`).
+    `delete`). There is no removal API — easyID never deletes aggregates.
     """
 
     async def get_by_id(self, organisation_id: OrganisationId) -> Organisation | None:
@@ -34,8 +34,4 @@ class OrganisationRepository(Protocol):
 
         Covers both newly registered and previously loaded aggregates.
         """
-        ...
-
-    async def remove(self, organisation: Organisation) -> None:
-        """Mark the organisation for removal within the current unit of work."""
         ...

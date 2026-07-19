@@ -30,9 +30,6 @@ class InMemoryOrganisationRepository:
     async def save(self, organisation: Organisation) -> None:
         self._store[organisation.id] = organisation
 
-    async def remove(self, organisation: Organisation) -> None:
-        self._store.pop(organisation.id, None)
-
 
 @pytest.fixture
 def clock() -> FixedClock:
@@ -60,17 +57,13 @@ def test_protocol_exposes_async_aggregate_methods_only() -> None:
     assert save_hints["organisation"] is Organisation
     assert save_hints["return"] is type(None)
 
-    remove_hints = get_type_hints(OrganisationRepository.remove)
-    assert remove_hints["organisation"] is Organisation
-    assert remove_hints["return"] is type(None)
-
     method_names = {
         name
         for name, value in vars(OrganisationRepository).items()
         if callable(value) and not name.startswith("_")
     }
-    assert method_names == {"get_by_id", "save", "remove"}
-    for forbidden in ("insert", "update", "delete"):
+    assert method_names == {"get_by_id", "save"}
+    for forbidden in ("insert", "update", "delete", "remove"):
         assert forbidden not in method_names
 
 
@@ -94,17 +87,3 @@ def test_get_by_id_returns_none_when_missing(
     repository: InMemoryOrganisationRepository,
 ) -> None:
     assert asyncio.run(repository.get_by_id(OrganisationId.generate())) is None
-
-
-def test_remove_drops_organisation(
-    repository: InMemoryOrganisationRepository,
-    clock: FixedClock,
-) -> None:
-    organisation = Organisation.register(OrganisationName("Acme Pty Ltd"), clock=clock)
-
-    async def exercise() -> Organisation | None:
-        await repository.save(organisation)
-        await repository.remove(organisation)
-        return await repository.get_by_id(organisation.id)
-
-    assert asyncio.run(exercise()) is None
