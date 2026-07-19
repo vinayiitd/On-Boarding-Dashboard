@@ -12,7 +12,7 @@ class SqlAlchemyUnitOfWork:
     """
     Infrastructure Unit of Work wrapping a single `AsyncSession`.
 
-    Satisfies `application.ports.UnitOfWork`. The `session` attribute is
+    Satisfies `application.UnitOfWork`. The `session` attribute is
     for infrastructure repositories only — it is not part of the port.
     """
 
