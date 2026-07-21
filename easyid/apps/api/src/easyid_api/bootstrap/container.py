@@ -37,7 +37,9 @@ class AppContainer:
 
     def unit_of_work(self) -> UnitOfWork:
         """Open a new Unit of Work bound to this process's session factory."""
-        return SqlAlchemyUnitOfWork(self.session_factory)
+        # Organisation repository wiring lands with the first persistence adapter;
+        # until then SqlAlchemyUnitOfWork is intentionally incomplete vs the port.
+        return SqlAlchemyUnitOfWork(self.session_factory)  # type: ignore[return-value]
 
 
 def build_container(settings: Settings) -> AppContainer:

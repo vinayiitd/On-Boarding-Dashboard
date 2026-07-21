@@ -3,17 +3,30 @@
 from __future__ import annotations
 
 from types import TracebackType
-from typing import Protocol, Self
+from typing import Protocol, Self, runtime_checkable
+
+from easyid_domain.organisation import OrganisationRepository
 
 
+@runtime_checkable
 class UnitOfWork(Protocol):
     """
     Request-scoped unit of work.
 
-    Command handlers obtain a UoW, perform repository operations through it,
-    then `commit()` explicitly. Exiting the context without a commit rolls
-    back. The application never sees the underlying persistence session.
+    Command handlers obtain a UoW, perform repository operations through the
+    repositories exposed on this boundary, then `commit()` explicitly. Exiting
+    the context without a commit rolls back. The application never sees the
+    underlying persistence session.
+
+    Repositories that participate in the transaction are accessed as read-only
+    properties (e.g. `organisations`). Future aggregates (parties, evidence,
+    policies, cases, risk, …) follow the same pattern.
     """
+
+    @property
+    def organisations(self) -> OrganisationRepository:
+        """Organisation aggregate repository scoped to this unit of work."""
+        ...
 
     async def __aenter__(self) -> Self:
         """Open the unit of work (acquire a session / transaction)."""
@@ -37,6 +50,7 @@ class UnitOfWork(Protocol):
         ...
 
 
+@runtime_checkable
 class UnitOfWorkFactory(Protocol):
     """Process-scoped factory that opens a new `UnitOfWork` per call."""
 
