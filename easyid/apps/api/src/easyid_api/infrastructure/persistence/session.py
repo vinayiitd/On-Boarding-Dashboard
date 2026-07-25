@@ -23,3 +23,8 @@ def build_session_factory(engine: AsyncEngine) -> async_sessionmaker[AsyncSessio
         autoflush=False,
         autocommit=False,
     )
+
+
+def create_session(session_factory: async_sessionmaker[AsyncSession]) -> AsyncSession:
+    """Open a new `AsyncSession` from the factory."""
+    return session_factory()
