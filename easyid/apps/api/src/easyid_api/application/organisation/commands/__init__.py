@@ -5,9 +5,17 @@ from easyid_api.application.organisation.commands.register import (
     RegisterOrganisationHandler,
     RegisterOrganisationResult,
 )
+from easyid_api.application.organisation.commands.rename import (
+    RenameOrganisationCommand,
+    RenameOrganisationHandler,
+    RenameOrganisationResult,
+)
 
 __all__ = [
     "RegisterOrganisationCommand",
     "RegisterOrganisationHandler",
     "RegisterOrganisationResult",
+    "RenameOrganisationCommand",
+    "RenameOrganisationHandler",
+    "RenameOrganisationResult",
 ]
