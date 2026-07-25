@@ -5,6 +5,7 @@ from __future__ import annotations
 import ast
 import inspect
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 from types import TracebackType
 from typing import get_args, get_origin, get_type_hints
@@ -41,6 +42,13 @@ from easyid_api.application.unit_of_work import (
 )
 from easyid_api.application.unit_of_work import (
     UnitOfWorkFactory as UnitOfWorkFactoryFromModule,
+)
+from easyid_domain.kernel.clock import FixedClock
+from easyid_domain.organisation import (
+    Organisation,
+    OrganisationId,
+    OrganisationName,
+    OrganisationRepository,
 )
 
 APPLICATION_ROOT = Path(__file__).resolve().parents[1] / "src" / "easyid_api" / "application"
@@ -83,6 +91,19 @@ class OrganisationView:
     name: str
 
 
+class FakeOrganisationRepository:
+    """In-memory OrganisationRepository for UnitOfWork conformance tests."""
+
+    def __init__(self) -> None:
+        self._store: dict[OrganisationId, Organisation] = {}
+
+    async def get_by_id(self, organisation_id: OrganisationId) -> Organisation | None:
+        return self._store.get(organisation_id)
+
+    async def save(self, organisation: Organisation) -> None:
+        self._store[organisation.id] = organisation
+
+
 class FakeUnitOfWork:
     """In-memory UoW that records commit / rollback without I/O."""
 
@@ -91,7 +112,11 @@ class FakeUnitOfWork:
         self.committed = False
         self.rolled_back = False
         self.exited = False
-        self.names: dict[str, str] = {}
+        self._organisations = FakeOrganisationRepository()
+
+    @property
+    def organisations(self) -> OrganisationRepository:
+        return self._organisations
 
     async def __aenter__(self) -> FakeUnitOfWork:
         self.entered = True
@@ -126,19 +151,27 @@ class FakeUnitOfWorkFactory:
 
 
 class RegisterOrganisationHandler:
-    def __init__(self, uow_factory: UnitOfWorkFactory) -> None:
+    def __init__(
+        self,
+        uow_factory: UnitOfWorkFactory,
+        *,
+        clock: FixedClock | None = None,
+    ) -> None:
         self._uow_factory = uow_factory
+        self._clock = clock or FixedClock(datetime(2026, 7, 18, 12, 0, tzinfo=UTC))
         self.calls: list[RegisterOrganisationCommand] = []
 
     async def handle(self, command: RegisterOrganisationCommand) -> str:
         self.calls.append(command)
         uow = self._uow_factory()
         async with uow:
-            assert isinstance(uow, FakeUnitOfWork)
-            organisation_id = f"org-{len(uow.names) + 1}"
-            uow.names[organisation_id] = command.name
+            organisation = Organisation.register(
+                OrganisationName(command.name),
+                clock=self._clock,
+            )
+            await uow.organisations.save(organisation)
             await uow.commit()
-            return organisation_id
+            return str(organisation.id.value)
 
 
 class GetOrganisationHandler:
@@ -214,6 +247,12 @@ def test_unit_of_work_exposes_async_transaction_api() -> None:
     assert "delete" not in public
     assert "remove" not in public
 
+    organisations_prop = UnitOfWork.__dict__["organisations"]
+    assert isinstance(organisations_prop, property)
+    assert organisations_prop.fget is not None
+    org_hints = get_type_hints(organisations_prop.fget)
+    assert org_hints["return"] is OrganisationRepository
+
     commit_hints = get_type_hints(UnitOfWork.commit)
     assert commit_hints["return"] is type(None)
     rollback_hints = get_type_hints(UnitOfWork.rollback)
@@ -233,6 +272,9 @@ def test_unit_of_work_factory_returns_unit_of_work() -> None:
 def test_fakes_satisfy_unit_of_work_protocols() -> None:
     factory = FakeUnitOfWorkFactory()
     uow = factory()
+    assert isinstance(uow, UnitOfWork)
+    assert isinstance(factory, UnitOfWorkFactory)
+    assert isinstance(uow.organisations, OrganisationRepository)
     assert callable(uow.commit)
     assert callable(uow.rollback)
     assert callable(uow.__aenter__)
@@ -247,14 +289,16 @@ async def test_command_handler_persists_via_unit_of_work() -> None:
 
     organisation_id = await handler.handle(RegisterOrganisationCommand(name="Acme"))
 
-    assert organisation_id == "org-1"
     assert len(factory.created) == 1
     uow = factory.created[0]
     assert uow.entered is True
     assert uow.committed is True
     assert uow.rolled_back is False
     assert uow.exited is True
-    assert uow.names == {"org-1": "Acme"}
+
+    loaded = await uow.organisations.get_by_id(OrganisationId.from_str(organisation_id))
+    assert loaded is not None
+    assert loaded.name == OrganisationName("Acme")
 
 
 @pytest.mark.asyncio
@@ -344,6 +388,7 @@ def test_foundation_modules_only_use_typing_and_stdlib_plus_application() -> Non
         "abc",
         "dataclasses",
         "easyid_api.application",
+        "easyid_domain",
     )
     for path in FOUNDATION_MODULES:
         for name in _imported_modules(path):
