@@ -44,9 +44,9 @@ class OrganisationModel(Base):
 
 
 def to_domain(model: OrganisationModel) -> Organisation:
-    """Map an ORM row to the Organisation aggregate (no domain events raised)."""
-    return Organisation(
-        id=to_domain_id(OrganisationId, model.id),
+    """Map an ORM row to the Organisation aggregate via `Organisation.rehydrate`."""
+    return Organisation.rehydrate(
+        organisation_id=to_domain_id(OrganisationId, model.id),
         name=OrganisationName(model.name),
         status=OrganisationStatus(model.status),
         created_at=model.created_at,

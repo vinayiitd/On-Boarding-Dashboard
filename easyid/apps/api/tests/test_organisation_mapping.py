@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from unittest.mock import MagicMock
+
+import pytest
 
 from easyid_api.infrastructure.persistence.mappings import (
     OrganisationModel as ExportedOrganisationModel,
@@ -67,3 +70,23 @@ def test_organisation_model_tablename() -> None:
 
 def test_mappings_package_exports_organisation_model() -> None:
     assert ExportedOrganisationModel is OrganisationModel
+
+
+def test_to_domain_uses_rehydrate(monkeypatch: pytest.MonkeyPatch) -> None:
+    spy = MagicMock(wraps=Organisation.rehydrate)
+    monkeypatch.setattr(Organisation, "rehydrate", spy)
+
+    model = OrganisationModel(
+        id=OrganisationId.generate().value,
+        name="Acme",
+        status=OrganisationStatus.ACTIVE.value,
+        version=2,
+        created_at=datetime(2026, 1, 1, tzinfo=UTC),
+        updated_at=datetime(2026, 2, 1, tzinfo=UTC),
+    )
+
+    organisation = to_domain(model)
+
+    spy.assert_called_once()
+    assert organisation.id.value == model.id
+    assert organisation.pending_events == ()
