@@ -177,8 +177,8 @@ def test_reactivate_rejects_when_already_active(
 
 def test_identity_equality(clock: FixedClock, name: OrganisationName) -> None:
     left = Organisation.register(name, clock=clock)
-    right = Organisation(
-        id=left.id,
+    right = Organisation.rehydrate(
+        organisation_id=left.id,
         name=OrganisationName("Other"),
         status=OrganisationStatus.ACTIVE,
         created_at=left.created_at,
@@ -187,6 +187,30 @@ def test_identity_equality(clock: FixedClock, name: OrganisationName) -> None:
     )
     assert left == right
     assert hash(left) == hash(right)
+
+
+def test_rehydrate_restores_persisted_state_without_events() -> None:
+    organisation_id = OrganisationId.generate()
+    created_at = datetime(2026, 1, 1, 9, 0, tzinfo=UTC)
+    updated_at = datetime(2026, 2, 1, 10, 30, tzinfo=UTC)
+
+    organisation = Organisation.rehydrate(
+        organisation_id=organisation_id,
+        name=OrganisationName("Acme Pty Ltd"),
+        status=OrganisationStatus.SUSPENDED,
+        created_at=created_at,
+        updated_at=updated_at,
+        version=4,
+    )
+
+    assert organisation.id == organisation_id
+    assert organisation.name == OrganisationName("Acme Pty Ltd")
+    assert organisation.status is OrganisationStatus.SUSPENDED
+    assert organisation.created_at == created_at
+    assert organisation.updated_at == updated_at
+    assert organisation.version == 4
+    assert organisation.pending_events == ()
+    assert organisation.collect_events() == ()
 
 
 def test_id_is_immutable(clock: FixedClock, name: OrganisationName) -> None:

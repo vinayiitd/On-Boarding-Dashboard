@@ -29,8 +29,9 @@ class Organisation(AggregateRoot[OrganisationId]):
     """
     Consistency boundary for an organisation's identity, name, and status.
 
-    Construct via `register()`. Mutations go through `rename`, `suspend`, and
-    `reactivate`, each raising the corresponding domain event.
+    Construct new instances via `register()`. Reconstitute persisted state via
+    `rehydrate()`. Mutations go through `rename`, `suspend`, and `reactivate`,
+    each raising the corresponding domain event.
     """
 
     name: OrganisationName
@@ -59,6 +60,31 @@ class Organisation(AggregateRoot[OrganisationId]):
         )
         organisation.raise_event(OrganisationRegistered(organisation_id=org_id, name=name))
         return organisation
+
+    @classmethod
+    def rehydrate(  # noqa: PLR0913 — mirrors the full persisted aggregate shape
+        cls,
+        *,
+        organisation_id: OrganisationId,
+        name: OrganisationName,
+        status: OrganisationStatus,
+        created_at: datetime,
+        updated_at: datetime,
+        version: int,
+    ) -> Organisation:
+        """
+        Recreate an organisation from persisted state.
+
+        Does not generate an id, raise domain events, or run business workflows.
+        """
+        return cls(
+            id=organisation_id,
+            name=name,
+            status=status,
+            created_at=created_at,
+            updated_at=updated_at,
+            version=version,
+        )
 
     def rename(self, new_name: OrganisationName, *, clock: Clock) -> None:
         """Change the organisation name, or raise if suspended / unchanged."""
