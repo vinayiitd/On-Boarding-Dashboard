@@ -12,6 +12,7 @@ from easyid_api.infrastructure.persistence.mappings import (
 )
 from easyid_api.infrastructure.persistence.mappings.organisation import (
     OrganisationModel,
+    apply_domain,
     from_domain,
     to_domain,
 )
@@ -70,6 +71,27 @@ def test_organisation_model_tablename() -> None:
 
 def test_mappings_package_exports_organisation_model() -> None:
     assert ExportedOrganisationModel is OrganisationModel
+
+
+def test_apply_domain_updates_mutable_fields_only() -> None:
+    clock = FixedClock(datetime(2026, 7, 25, 12, 0, tzinfo=UTC))
+    organisation = Organisation.register(OrganisationName("Acme Pty Ltd"), clock=clock)
+    organisation.collect_events()
+    model = from_domain(organisation)
+    original_id = model.id
+    original_created_at = model.created_at
+
+    clock.advance(hours=1)
+    organisation.rename(OrganisationName("Acme Group"), clock=clock)
+    organisation.collect_events()
+    apply_domain(model, organisation)
+
+    assert model.id == original_id
+    assert model.created_at == original_created_at
+    assert model.name == "Acme Group"
+    assert model.status == OrganisationStatus.ACTIVE.value
+    assert model.version == organisation.version
+    assert model.updated_at == organisation.updated_at
 
 
 def test_to_domain_uses_rehydrate(monkeypatch: pytest.MonkeyPatch) -> None:

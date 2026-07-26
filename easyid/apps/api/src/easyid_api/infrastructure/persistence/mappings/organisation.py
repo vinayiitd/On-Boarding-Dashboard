@@ -65,3 +65,16 @@ def from_domain(aggregate: Organisation) -> OrganisationModel:
         created_at=aggregate.created_at,
         updated_at=aggregate.updated_at,
     )
+
+
+def apply_domain(model: OrganisationModel, aggregate: Organisation) -> None:
+    """
+    Copy mutable persisted state from the aggregate onto an existing ORM row.
+
+    Leaves `id` and `created_at` unchanged. Used for updates so the identity-
+    mapped instance is mutated in place rather than replaced.
+    """
+    model.name = aggregate.name.value
+    model.status = aggregate.status.value
+    model.version = aggregate.version
+    model.updated_at = aggregate.updated_at
